@@ -11,7 +11,7 @@ from aws_cdk import (
 from constructs import Construct
 
 
-class BucketStack(Construct):
+class BucketContruct(Construct):
     s3_bucket_member: aws_s3.Bucket
     selfie_validation_step_function: aws_stepfunctions.StateMachine
     cloudfront_distribution_member: aws_cloudfront.Distribution

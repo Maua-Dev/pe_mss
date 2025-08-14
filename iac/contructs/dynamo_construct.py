@@ -6,7 +6,7 @@ from constructs import Construct
 import os
 
 
-class DynamoStack(Construct):
+class DynamoConstruct(Construct):
     
     table: dynamodb.Table
 

@@ -7,7 +7,7 @@ from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
 
 
-class LambdaStack(Construct):
+class LambdaConstruct(Construct):
     functions_that_need_dynamo_permissions = []
 
     def create_lambda_api_gateway_integration(self, module_name: str, method: str, mss_student_api_resource: Resource,

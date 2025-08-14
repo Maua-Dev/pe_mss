@@ -6,8 +6,9 @@ from aws_cdk import (
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
-from .lambda_stack import LambdaStack
-from .dynamo_stack import DynamoStack
+from ..contructs.lambda_construct import LambdaConstruct
+from ..contructs.dynamo_construct import DynamoConstruct
+from ..contructs.bucket_construct import BucketContruct
 
 
 class IacStack(Stack):
@@ -34,7 +35,8 @@ class IacStack(Stack):
         }
                                                                )
 
-        self.dynamo_table = DynamoStack(self, "DynamoStack")
+        self.dynamo_table = DynamoConstruct(self, "DynamoStack")
+        self.s3_bucket = BucketContruct(self)
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": "DEV",
@@ -42,14 +44,16 @@ class IacStack(Stack):
             "DYNAMO_PARTITION_KEY": "PK",
             "DYNAMO_SORT_KEY": "SK",
             "REGION": self.region,
+            "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_member.bucket_name
         }
 
-
-
-        self.lambda_stack = LambdaStack(self, api_gateway_resource=api_gateway_resource,
+        self.lambda_stack = LambdaConstruct(self, api_gateway_resource=api_gateway_resource,
                                         environment_variables=ENVIRONMENT_VARIABLES)
 
         for function in self.lambda_stack.functions_that_need_dynamo_permissions:
+            self.dynamo_table.table.grant_read_write_data(function)
+            
+        for function in self.lambda_stack.functions_that_need_s3_permissions:
             self.dynamo_table.table.grant_read_write_data(function)
 
         
