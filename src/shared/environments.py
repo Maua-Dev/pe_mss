@@ -44,13 +44,14 @@ class Environments:
         self.mss_name = os.environ.get("MSS_NAME")
         
         if self.stage == STAGE.TEST:
-            self.s3_bucket_name = "bucket-test"
-            self.region = "sa-east-1"
+            self.s3_bucket_name = "portalentidadesstackd-portalentidadesbackbucket-sheet"
+            self.region = "us-east-1"
             self.endpoint_url = "http://localhost:8000"
-            self.dynamo_table_name = "user_mss_template-table"
+            self.dynamo_table_name = "pe_mss_member-table"
             self.dynamo_partition_key = "PK"
             self.dynamo_sort_key = "SK"
             self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
+            self.bucket_endpoint_url = "http://localhost:9000"
 
         else:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
