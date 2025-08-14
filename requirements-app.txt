@@ -1,0 +1,6 @@
+pytest==8.4.1
+pytest-cov==6.2.1
+python-dotenv==1.1.1
+boto3==1.40.9
+aws-lambda-powertools==3.19.0
+aws_xray_sdk==2.14.0
