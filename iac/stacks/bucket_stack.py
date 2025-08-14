@@ -37,10 +37,7 @@ class BucketStack(Construct):
                                        removal_policy=REMOVAL_POLICY
                                        )
 
-        oai = aws_cloudfront.OriginAccessIdentity(self, "PortalEntidades_Member_Sheet_OAI",
-                                                  comment="This is PortalEntidades member Sheet OAI")
-        
-        oac = aws_cloudfront.CfnOriginAccess(self, "PortalEntidades_Member_Sheet_OAC",
+        oac = aws_cloudfront.CfnOriginAccessControl(self, "PortalEntidades_Member_Sheet_OAC",
             origin_access_control_config=aws_cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty(
                 name="PortalEntidadesMemberSheetOAC",
                 origin_access_control_origin_type="s3",
@@ -48,19 +45,19 @@ class BucketStack(Construct):
                 signing_protocol="sigv4"
             )
         )
-        
-        self.s3_bucket_member.grant_read(oai)
 
-        self.cloudfront_distribution_member = aws_cloudfront.Distribution(self, "PortalEntidades_Member_Sheet_CloudFront_Distribution",
-                                                                     default_behavior=aws_cloudfront.BehaviorOptions(
-                                                                          origin=aws_cloudfront_origins.S3Origin(
-                                                                            self.s3_bucket_member,
-                                                                            origin_access_identity=oai),
-                                                                          origin_request_policy=aws_cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
-                                                                          viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-                                                                          response_headers_policy=aws_cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
-                                                                          cache_policy=aws_cloudfront.CachePolicy.CACHING_OPTIMIZED,
-                                                                          allowed_methods=aws_cloudfront.AllowedMethods.ALLOW_ALL
-                                                                     )
-                                                                     )
-     
+        self.cloudfront_distribution_member = aws_cloudfront.Distribution(
+            self, 
+            "PortalEntidades_Member_Sheet_CloudFront_Distribution",
+            default_behavior=aws_cloudfront.BehaviorOptions(
+                origin=aws_cloudfront_origins.S3Origin(
+                    self.s3_bucket_member,
+                    origin_access_control=oac),
+                origin_request_policy=aws_cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+                viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                response_headers_policy=aws_cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
+                cache_policy=aws_cloudfront.CachePolicy.CACHING_OPTIMIZED,
+                allowed_methods=aws_cloudfront.AllowedMethods.ALLOW_ALL
+            )
+        )
+    
