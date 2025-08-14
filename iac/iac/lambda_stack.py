@@ -11,7 +11,7 @@ class LambdaStack(Construct):
     functions_that_need_dynamo_permissions = []
 
     def create_lambda_api_gateway_integration(self, module_name: str, method: str, mss_student_api_resource: Resource,
-                                              environment_variables: dict = {"STAGE": "TEST"}):
+                                              environment_variables: dict = {"STAGE": "TEST"}, authorizer = None):
         function = lambda_.Function(
             self, module_name.title(),
             code=lambda_.Code.from_asset(f"../src/modules/{module_name}"),
@@ -29,9 +29,9 @@ class LambdaStack(Construct):
         return function
 
     def __init__(self, scope: Construct, api_gateway_resource: Resource, environment_variables: dict) -> None:
-        super().__init__(scope, "Template_Lambdas")
+        super().__init__(scope, "PortalEntidades_Lambdas")
 
-        self.lambda_layer = lambda_.LayerVersion(self, "Template_Layer",
+        self.lambda_layer = lambda_.LayerVersion(self, "PortalEntidades_Layer",
                                                  code=lambda_.Code.from_asset("./lambda_layer_out_temp"),
                                                  compatible_runtimes=[lambda_.Runtime.PYTHON_3_9]
                                                  )
@@ -68,3 +68,5 @@ class LambdaStack(Construct):
 
         self.functions_that_need_dynamo_permissions = [self.get_user_function, self.create_user_function,
                                                   self.delete_user_function, self.update_user_function]
+        
+        self.functions_that_need_s3_permissions = []

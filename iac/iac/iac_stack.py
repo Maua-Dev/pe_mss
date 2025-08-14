@@ -7,17 +7,17 @@ from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
 from .lambda_stack import LambdaStack
-from .template_dynamo_table import TemplateDynamoTable
+from .dynamo_stack import DynamoStack
 
 
-class TemplateStack(Stack):
+class IacStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        self.rest_api = RestApi(self, "Template_RestApi",
-                                    rest_api_name="Template_RestApi",
-                                    description="This is the Template RestApi",
+        self.rest_api = RestApi(self, "PortalEntidades_RestApi",
+                                    rest_api_name="PortalEntidades_RestApi",
+                                    description="This is the Portal das Entidades RestApi",
                                     default_cors_preflight_options=
                                     {
                                         "allow_origins": Cors.ALL_ORIGINS,
@@ -26,7 +26,7 @@ class TemplateStack(Stack):
                                     },
                                 )
 
-        api_gateway_resource = self.rest_api.root.add_resource("mss-template", default_cors_preflight_options=
+        api_gateway_resource = self.rest_api.root.add_resource("pe-mss", default_cors_preflight_options=
         {
             "allow_origins": Cors.ALL_ORIGINS,
             "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -34,7 +34,7 @@ class TemplateStack(Stack):
         }
                                                                )
 
-        self.dynamo_table = TemplateDynamoTable(self, "TemplateDynamoTable")
+        self.dynamo_table = DynamoStack(self, "DynamoStack")
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": "DEV",
