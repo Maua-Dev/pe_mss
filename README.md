@@ -140,7 +140,7 @@ Clone the repository using template
 
 ###### Linux
 
-    virtualenv -p python3.9 venv
+    virtualenv -p python3.11 venv
 
 ### Activate the venv
 
