@@ -1,25 +1,35 @@
 import abc
 import re
+import uuid
 
-from src.shared.domain.enums.state_enum import ENTITY, STATE, ROLE
-from src.shared.helpers.errors.domain_errors import EntityError
+from pe_mss.src.shared.domain.enums.course_enum import COURSE
+from pe_mss.src.shared.domain.enums.organization_enum import ORGANIZATION
+from pe_mss.src.shared.domain.enums.role_enum import ROLE
+from src.shared.domain.enums.state_enum import STATE
+from src.shared.helpers.errors.domain_errors import EntityError, InvalidUserIdFormat
+
 
 
 class User(abc.ABC):
     name: str
+    email: str
     ra: str
     state: STATE
-    course: str
+    course: COURSE
     year: int
     role: ROLE
-    entity: ENTITY
+    organization: ORGANIZATION
     MIN_NAME_LENGTH = 2
-    user_id: int
+    user_id: str
 
-    def __init__(self, name: str, ra: str, state: STATE, course: str, year: int, role: ROLE, entity: ENTITY, user_id: int = None):
+    def __init__(self, name: str, email: str, ra: str, state: STATE, course: COURSE, year: int, role: ROLE, organization: ORGANIZATION, user_id: str = None):
         if not User.validate_name(name):
             raise EntityError("name")
         self.name = name
+
+        if not User.validate_email(email):
+            raise EntityError("email")
+        self.email = email
 
         if not User.validate_ra(ra):
             raise EntityError("ra")
@@ -29,7 +39,7 @@ class User(abc.ABC):
             raise EntityError("state")
         self.state = state
 
-        if not User.validate_course(course):
+        if type(course) != COURSE:
             raise EntityError("course")
         self.course = course
         
@@ -41,17 +51,15 @@ class User(abc.ABC):
             raise EntityError("role")
         self.role = role
 
-        if type(entity) != ENTITY:
+        if type(organization) != ORGANIZATION:
             raise EntityError("entity")
-        self.entity = entity
+        self.organization = organization
 
-        if type(user_id) == int:
-            if user_id < 0:
-                raise EntityError("user_id")
-        if type(user_id) != int and user_id is not None:
+        if not User.validate_id(user_id):
             raise EntityError("user_id")
-
         self.user_id = user_id
+
+        
 
     @staticmethod
     def validate_name(name: str) -> bool:
@@ -63,6 +71,15 @@ class User(abc.ABC):
             return False
 
         return True
+    
+    @staticmethod
+    def validate_email(email: str) -> bool:
+        if email is None:
+            return False
+        
+        regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+
+        return bool(re.fullmatch(regex, email))
 
     @staticmethod
     def validate_ra(ra: str) -> bool:
@@ -74,15 +91,6 @@ class User(abc.ABC):
         ragex = re.compile(r"(^\d{2}\.?\d{5}-?\d{1}$)")
 
         return bool(re.fullmatch(ragex, ra))
-
-    @staticmethod
-    def validate_course(course: str) -> bool:
-        if course is None:
-            return False
-        elif type(course) != str:
-            return False
-        
-        return True
     
     @staticmethod
     def validate_year(year: int) -> bool:
@@ -95,5 +103,18 @@ class User(abc.ABC):
         
         return True
 
+    @staticmethod
+    def validate_id(user_id: str) -> bool:
+        if user_id is None:
+            return False
+        elif type(user_id) != str:
+            return False
+        try:
+            if uuid.UUID(user_id):
+                return True
+            
+        except ValueError:
+            raise InvalidUserIdFormat("Invalid format for user id")
+
     def __repr__(self):
-        return f"User(name={self.name}, ra={self.ra}, state={self.state}, course={self.course}, year={self.year}, role={self.role}, entity={self.entity}, user_id={self.user_id})"
+        return f"User(name={self.name}, email={self.email}, ra={self.ra}, state={self.state}, course={self.course}, year={self.year}, role={self.role}, organization={self.organization}, user_id={self.user_id})"
