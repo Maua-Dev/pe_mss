@@ -2,9 +2,9 @@ import abc
 import re
 import uuid
 
-from pe_mss.src.shared.domain.enums.course_enum import COURSE
-from pe_mss.src.shared.domain.enums.organization_enum import ORGANIZATION
-from pe_mss.src.shared.domain.enums.role_enum import ROLE
+from src.shared.domain.enums.course_enum import COURSE
+from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.domain_errors import EntityError, InvalidUserIdFormat
 
@@ -115,6 +115,33 @@ class User(abc.ABC):
             
         except ValueError:
             raise InvalidUserIdFormat("Invalid format for user id")
+        
+    def to_dict(self) -> dict:
+        
+        return {
+            "user_id": self.user_id,
+            "name": self.name,
+            "ra": self.ra,
+            "email": self.email,
+            "course": self.course.value,
+            "year": self.year,
+            "role": self.role.value,
+            "organization": self.organization.value,
+            "state": self.state.value
+        }
 
     def __repr__(self):
-        return f"User(name={self.name}, email={self.email}, ra={self.ra}, state={self.state}, course={self.course}, year={self.year}, role={self.role}, organization={self.organization}, user_id={self.user_id})"
+        return f"User(user_id={self.user_id}, name={self.name}, ra={self.ra}, email={self.email}, course={self.course.value}, year={self.year}, role={self.role}, organization={self.organization}, state={self.state})"
+
+    def __eq__(self, other: "User"):
+        return (
+            self.user_id == other.user_id,
+            self.name == other.name,
+            self.ra == other.ra,
+            self.email == other.email,
+            self.course == other.course,
+            self.year == other.year,
+            self.role == other.role,
+            self.organization == other.organization,
+            self.state == other.state
+        )
