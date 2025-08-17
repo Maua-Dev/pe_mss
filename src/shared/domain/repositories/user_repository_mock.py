@@ -26,7 +26,7 @@ class UserRepositoryMock(IUserRepository):
                 return user
         raise NoItemsFound(user_id)
             
-    def update_user(self, user_id: str, new_state: STATE =None, new_role: ROLE =None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None):
+    def update_user(self, user_id: str, new_state: STATE =None, new_role: ROLE= None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None):
         for user in self.users:
             if user.user_id == user_id:
                 if new_state != None:

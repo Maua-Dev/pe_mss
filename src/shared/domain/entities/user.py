@@ -22,7 +22,7 @@ class User(abc.ABC):
     MIN_NAME_LENGTH = 2
     user_id: str
 
-    def __init__(self, name: str, email: str, ra: str, state: STATE, course: COURSE, year: int, role: ROLE, organization: ORGANIZATION, user_id: str = None):
+    def __init__(self, name: str, email: str, ra: str, state: STATE, role: ROLE, course: COURSE=None, year: int=None,  organization: ORGANIZATION=None, user_id: str=None):
         if not User.validate_name(name):
             raise EntityError("name")
         self.name = name
@@ -38,24 +38,24 @@ class User(abc.ABC):
         if type(state) != STATE:
             raise EntityError("state")
         self.state = state
-
-        if type(course) != COURSE:
-            raise EntityError("course")
-        self.course = course
         
-        if not User.validate_year(year):
-            raise EntityError("year")
-        self.year = year
-
         if type(role) != ROLE:
             raise EntityError("role")
         self.role = role
+        
+        if type(course) != COURSE and course is not None:
+            raise EntityError("course")
+        self.course = course
+        
+        if not User.validate_year(year) and year is not None:
+            raise EntityError("year")
+        self.year = year
 
-        if type(organization) != ORGANIZATION:
+        if type(organization) != ORGANIZATION and organization is not None:
             raise EntityError("entity")
         self.organization = organization
 
-        if not User.validate_id(user_id):
+        if not User.validate_id(user_id) and user_id is not None:
             raise EntityError("user_id")
         self.user_id = user_id
 
@@ -94,9 +94,7 @@ class User(abc.ABC):
     
     @staticmethod
     def validate_year(year: int) -> bool:
-        if year is None:
-            return False
-        elif type(year) != int:
+        if type(year) != int:
             return False
         elif year < 0 or year > 5:
             return False
@@ -105,9 +103,7 @@ class User(abc.ABC):
 
     @staticmethod
     def validate_id(user_id: str) -> bool:
-        if user_id is None:
-            return False
-        elif type(user_id) != str:
+        if type(user_id) != str:
             return False
         try:
             if uuid.UUID(user_id):
