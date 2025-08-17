@@ -64,19 +64,19 @@ class Test_UserRepositoryMock:
 
     def test_update_user(self):
         repo = UserRepositoryMock()
-        updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440000", new_state=STATE.APPROVED, new_role=ROLE.ADM, new_course=COURSE.EEN, new_year=4, new_organization=ORGANIZATION.DEV)
+        updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440000", new_state=STATE.APPROVED, new_role=ROLE.ADM, new_course=COURSE.EEN, new_year=4, new_organization=ORGANIZATION.NAWAT)
         
         assert updated_user.state == STATE.APPROVED
         assert updated_user.role == ROLE.ADM
         assert updated_user.course == COURSE.EEN
         assert updated_user.year == 4
-        assert updated_user.organization == ORGANIZATION.DEV
+        assert updated_user.organization == ORGANIZATION.NAWAT
 
         assert repo.users[0].state == STATE.APPROVED
         assert repo.users[0].role == ROLE.ADM
         assert repo.users[0].course == COURSE.EEN
         assert repo.users[0].year == 4
-        assert repo.users[0].organization == ORGANIZATION.DEV
+        assert repo.users[0].organization == ORGANIZATION.NAWAT
 
     def test_update_user_state_role_course_year_organization_are_none(self):
         repo = UserRepositoryMock()
