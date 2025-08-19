@@ -76,6 +76,9 @@ class User(abc.ABC):
     def validate_email(email: str) -> bool:
         if email is None:
             return False
+
+        if email[-8:] != "@maua.br":
+            return False
         
         regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 

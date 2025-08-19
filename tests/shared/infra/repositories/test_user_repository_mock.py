@@ -36,7 +36,7 @@ class Test_UserRepositoryMock:
         repo = UserRepositoryMock()
         new_user = User(
             name="Vitor Soller",
-            email="dohype@vitin.com",
+            email="dohypevitin@maua.br",
             ra="20.00123-4",
             role=ROLE.USER,
             course=COURSE.ECM,
@@ -48,7 +48,7 @@ class Test_UserRepositoryMock:
         created_user = repo.create_user(new_user)
 
         assert created_user.name == "Vitor Soller"
-        assert created_user.email == "dohype@vitin.com"
+        assert created_user.email == "dohypevitin@maua.br"
         assert created_user.ra == "20.00123-4"
         assert created_user.role == ROLE.USER
         assert created_user.course == COURSE.ECM
