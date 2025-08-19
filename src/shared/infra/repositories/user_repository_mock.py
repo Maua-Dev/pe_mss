@@ -20,6 +20,19 @@ class UserRepositoryMock(IUserRepository):
             User(name="Bruno", email="21.00458-7@maua.br", ra="21.00458-7", state=STATE.REJECTED, role=ROLE.PRESIDENT, course=COURSE.EET, year=1, organization=ORGANIZATION.GUARDIAN, user_id="550e8400-e29b-41d4-a716-446655440003")
         ]
     
+    def get_user(self, user_id: int) -> User:
+        for user in self.users:
+            if user.user_id == user_id:
+                return user
+        raise NoItemsFound(user_id)
+    
+    def get_all_user(self) -> List[User]:
+        return self.users
+    
+    def create_user(self, new_user: User) -> User:
+        self.users.append(new_user)
+        return new_user
+
     def delete_user(self, user_id: str):
         for pos, user in enumerate(self.users):
             if user.user_id == user_id:

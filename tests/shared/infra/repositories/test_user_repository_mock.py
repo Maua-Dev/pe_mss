@@ -1,3 +1,4 @@
+from src.shared.domain.entities.user import User
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -10,42 +11,50 @@ import pytest
 
 
 class Test_UserRepositoryMock:
-#     def test_get_user(self):
-#         repo = UserRepositoryMock()
-#         deleted_user = repo.get_user(1)
+    def test_get_user(self):
+        repo = UserRepositoryMock()
+        user = repo.get_user(user_id="550e8400-e29b-41d4-a716-446655440000")
 
-#         assert deleted_user.name == "Bruno Soller"
-#         assert deleted_user.email == "soller@soller.com"
-#         assert deleted_user.user_id == 1
-#         assert deleted_user.state == STATE.APPROVED
+        assert user.name == "Guilherme"
+        assert user.email == "25.00178-5@maua.br"
+        assert user.user_id == "550e8400-e29b-41d4-a716-446655440000"
+        assert user.state == STATE.PENDING
+        assert user.role == ROLE.USER
 
-#     def test_get_user_not_found(self):
-#         repo = UserRepositoryMock()
-#         with pytest.raises(NoItemsFound):
-#             deleted_user = repo.get_user(69)
 
-#     def test_get_all_user(self):
-#         repo = UserRepositoryMock()
-#         users = repo.get_all_user()
-#         assert len(users) == 3
+    def test_get_user_not_found(self):
+        repo = UserRepositoryMock()
+        with pytest.raises(NoItemsFound):
+            user = repo.get_user(69)
 
-#     def test_create_user(self):
-#         repo = UserRepositoryMock()
-#         deleted_user = User(
-#             name="Vitor Soller",
-#             email="dohype@vitin.com",
-#             user_id=4,
-#             state=STATE.PENDING
-#         )
+    def test_get_all_user(self):
+        repo = UserRepositoryMock()
+        users = repo.get_all_user()
+        assert len(users) == 4
 
-#         repo.create_user(deleted_user)
+    def test_create_user(self):
+        repo = UserRepositoryMock()
+        new_user = User(
+            name="Vitor Soller",
+            email="dohype@vitin.com",
+            ra="20.00123-4",
+            role=ROLE.USER,
+            course=COURSE.ECM,
+            year=5,
+            organization=ORGANIZATION.DEV,
+            state=STATE.PENDING
+        )
 
-#         assert repo.users[3].name == "Vitor Soller"
-#         assert repo.users[3].email == "dohype@vitin.com"
-#         assert repo.users[3].user_id == 4
-#         assert repo.users[3].state == STATE.PENDING
+        created_user = repo.create_user(new_user)
 
-#         assert repo.user_counter == 4
+        assert created_user.name == "Vitor Soller"
+        assert created_user.email == "dohype@vitin.com"
+        assert created_user.ra == "20.00123-4"
+        assert created_user.role == ROLE.USER
+        assert created_user.course == COURSE.ECM
+        assert created_user.year == 5
+        assert created_user.organization == ORGANIZATION.DEV
+        assert created_user.state == STATE.PENDING
 
     def test_delete_user(self):
         repo = UserRepositoryMock()
