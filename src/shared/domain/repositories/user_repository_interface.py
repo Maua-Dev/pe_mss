@@ -19,10 +19,15 @@ class IUserRepository(ABC):
         
     @abstractmethod
     def get_all_user(self) -> List[User]:
+        """
+        If no users found raise NoItemsFound"""
         pass
 
     @abstractmethod
     def create_user(self, new_user: User) -> User:
+        """        
+        Creates a new user and returns it
+        """
         pass
 
     @abstractmethod

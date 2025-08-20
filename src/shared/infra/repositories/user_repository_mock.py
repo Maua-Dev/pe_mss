@@ -27,6 +27,8 @@ class UserRepositoryMock(IUserRepository):
         raise NoItemsFound(user_id)
     
     def get_all_user(self) -> List[User]:
+        if not self.users:
+            raise NoItemsFound("No users found")
         return self.users
     
     def create_user(self, new_user: User) -> User:
