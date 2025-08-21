@@ -6,7 +6,7 @@ from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 import pytest
-
+import uuid
 
 
 
@@ -35,6 +35,7 @@ class Test_UserRepositoryMock:
     def test_create_user(self):
         repo = UserRepositoryMock()
         new_user = User(
+            user_id=str(uuid.uuid4()),
             name="Vitor Soller",
             email="dohypevitin@maua.br",
             ra="20.00123-4",

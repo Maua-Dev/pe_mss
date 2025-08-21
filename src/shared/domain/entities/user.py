@@ -22,7 +22,18 @@ class User(abc.ABC):
     MIN_NAME_LENGTH = 2
     user_id: str
 
-    def __init__(self, name: str, email: str, ra: str, state: STATE, role: ROLE, course: COURSE=None, year: int=None,  organization: ORGANIZATION=None, user_id: str=None):
+    def __init__(
+        self, 
+        user_id: str,
+        name: str,
+        email: str,
+        state: STATE, 
+        role: ROLE, 
+        ra: str = None,        # essa linha deve existir pois existem emails maua sem ra, como por exemplo emails de professores
+        course: COURSE=None,   #ou emails customizados, como o dev@maua.br. Muito provavelmente o email do Godoy nao é igual
+        year: int=None,        #ao dos alunos que vamos conseguir extrair o ra direto.
+        organization: ORGANIZATION=None, 
+    ):
         if not User.validate_name(name):
             raise EntityError("name")
         self.name = name
@@ -31,7 +42,7 @@ class User(abc.ABC):
             raise EntityError("email")
         self.email = email
 
-        if not User.validate_ra(ra):
+        if not User.validate_ra(ra) and ra is not None:
             raise EntityError("ra")
         self.ra = ra
 
@@ -55,7 +66,7 @@ class User(abc.ABC):
             raise EntityError("entity")
         self.organization = organization
 
-        if not User.validate_id(user_id) and user_id is not None:
+        if not User.validate_id(user_id):
             raise EntityError("user_id")
         self.user_id = user_id
 
