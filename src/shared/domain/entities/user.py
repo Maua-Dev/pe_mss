@@ -22,7 +22,18 @@ class User(abc.ABC):
     MIN_NAME_LENGTH = 2
     user_id: str
 
-    def __init__(self, name: str, email: str, ra: str, state: STATE, course: COURSE, year: int, role: ROLE, organization: ORGANIZATION, user_id: str = None):
+    def __init__(
+        self, 
+        user_id: str,
+        name: str,
+        email: str,
+        state: STATE, 
+        role: ROLE, 
+        ra: str = None,        # essa linha deve existir pois existem emails maua sem ra, como por exemplo emails de professores
+        course: COURSE=None,   #ou emails customizados, como o dev@maua.br. Muito provavelmente o email do Godoy nao é igual
+        year: int=None,        #ao dos alunos que vamos conseguir extrair o ra direto.
+        organization: ORGANIZATION=None, 
+    ):
         if not User.validate_name(name):
             raise EntityError("name")
         self.name = name
@@ -31,27 +42,27 @@ class User(abc.ABC):
             raise EntityError("email")
         self.email = email
 
-        if not User.validate_ra(ra):
+        if not User.validate_ra(ra) and ra is not None:
             raise EntityError("ra")
         self.ra = ra
 
         if type(state) != STATE:
             raise EntityError("state")
         self.state = state
-
-        if type(course) != COURSE:
-            raise EntityError("course")
-        self.course = course
         
-        if not User.validate_year(year):
-            raise EntityError("year")
-        self.year = year
-
         if type(role) != ROLE:
             raise EntityError("role")
         self.role = role
+        
+        if type(course) != COURSE and course is not None:
+            raise EntityError("course")
+        self.course = course
+        
+        if not User.validate_year(year) and year is not None:
+            raise EntityError("year")
+        self.year = year
 
-        if type(organization) != ORGANIZATION:
+        if type(organization) != ORGANIZATION and organization is not None:
             raise EntityError("entity")
         self.organization = organization
 
@@ -76,6 +87,9 @@ class User(abc.ABC):
     def validate_email(email: str) -> bool:
         if email is None:
             return False
+
+        if email[-8:] != "@maua.br":
+            return False
         
         regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
@@ -94,9 +108,7 @@ class User(abc.ABC):
     
     @staticmethod
     def validate_year(year: int) -> bool:
-        if year is None:
-            return False
-        elif type(year) != int:
+        if type(year) != int:
             return False
         elif year < 0 or year > 5:
             return False
@@ -105,9 +117,7 @@ class User(abc.ABC):
 
     @staticmethod
     def validate_id(user_id: str) -> bool:
-        if user_id is None:
-            return False
-        elif type(user_id) != str:
+        if type(user_id) != str:
             return False
         try:
             if uuid.UUID(user_id):

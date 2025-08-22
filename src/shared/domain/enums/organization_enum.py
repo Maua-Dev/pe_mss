@@ -2,7 +2,7 @@ from enum import Enum
 
 class ORGANIZATION(Enum):
     DEV= "DEV"
-    ESPORTES= "ESPORTES"
+    ESPORTS= "ESPORTS"
     METAVERSO= "METAVERSO"
     GUARDIAN= "GUARDIAN"
     NAWAT= "NAWAT"
