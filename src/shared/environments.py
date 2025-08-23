@@ -28,6 +28,9 @@ class Environments:
     dynamo_table_name: str
     dynamo_partition_key: str
     dynamo_sort_key: str
+    db_name: str
+    db_cluster_arn: str
+    db_secret_arn: str
     cloud_frontget_user_presenter_distribution_domain: str
     mss_name: str 
 
@@ -47,9 +50,7 @@ class Environments:
             self.s3_bucket_name = "portalentidadesstackd-portalentidadesbackbucket-sheet"
             self.region = "us-east-1"
             self.endpoint_url = "http://localhost:8000"
-            self.dynamo_table_name = "pe_mss_member-table"
-            self.dynamo_partition_key = "PK"
-            self.dynamo_sort_key = "SK"
+            self.db_name = "PortalEntidades_UserTable"
             self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
             self.bucket_endpoint_url = "http://localhost:9000"
 
@@ -57,9 +58,9 @@ class Environments:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
             self.region = os.environ.get("REGION")
             self.endpoint_url = os.environ.get("ENDPOINT_URL")
-            self.dynamo_table_name = os.environ.get("DYNAMO_TABLE_NAME")
-            self.dynamo_partition_key = os.environ.get("DYNAMO_PARTITION_KEY")
-            self.dynamo_sort_key = os.environ.get("DYNAMO_SORT_KEY")
+            self.db_cluster_arn = os.environ.get("DB_CLUSTER_ARN")
+            self.db_secret_arn = os.environ.get("DB_SECRET_ARN")
+            self.db_name = os.environ.get("DB_NAME")
             self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
 
     @staticmethod
