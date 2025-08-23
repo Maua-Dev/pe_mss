@@ -8,8 +8,7 @@ from aws_cdk.aws_apigateway import Resource, LambdaIntegration
 
 
 class LambdaConstruct(Construct):
-    functions_that_need_dynamo_permissions = []
-
+   
     def create_lambda_api_gateway_integration(self, module_name: str, method: str, mss_student_api_resource: Resource,
                                               environment_variables: dict = {"STAGE": "TEST"}, authorizer = None):
         function = lambda_.Function(
@@ -45,6 +44,6 @@ class LambdaConstruct(Construct):
             environment_variables=environment_variables
         )
 
-        self.functions_that_need_dynamo_permissions = [self.update_user_function]
+        self.functions_that_need_db_access = [self.update_user_function]
         
         self.functions_that_need_s3_permissions = []

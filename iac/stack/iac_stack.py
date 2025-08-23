@@ -6,8 +6,8 @@ from aws_cdk import (
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
+from iac.contructs.aurora_construct import AuroraConstruct
 from ..contructs.lambda_construct import LambdaConstruct
-from ..contructs.dynamo_construct import DynamoConstruct
 from ..contructs.bucket_construct import BucketContruct
 
 
@@ -35,14 +35,14 @@ class IacStack(Stack):
         }
                                                                )
 
-        self.dynamo_table = DynamoConstruct(self, "DynamoStack")
+        self.aurora = AuroraConstruct(self, "Aurora")
         self.s3_bucket = BucketContruct(self)
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": "DEV",
-            "DYNAMO_TABLE_NAME": self.dynamo_table.table.table_name,
-            "DYNAMO_PARTITION_KEY": "PK",
-            "DYNAMO_SORT_KEY": "SK",
+             "DB_CLUSTER_ARN": self.aurora.cluster.cluster_arn,
+            "DB_SECRET_ARN":  self.aurora.secret.secret_arn,
+            "DB_NAME": self.aurora.default_database_name,
             "REGION": self.region,
             "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_member.bucket_name
         }
@@ -50,10 +50,9 @@ class IacStack(Stack):
         self.lambda_stack = LambdaConstruct(self, api_gateway_resource=api_gateway_resource,
                                         environment_variables=ENVIRONMENT_VARIABLES)
 
-        for function in self.lambda_stack.functions_that_need_dynamo_permissions:
-            self.dynamo_table.table.grant_read_write_data(function)
-            
-        for function in self.lambda_stack.functions_that_need_s3_permissions:
-            self.dynamo_table.table.grant_read_write_data(function)
+        for fn in self.lambda_stack.functions_that_need_db_access:
+            self.aurora.cluster.grant_data_api_access(fn)
+            self.aurora.secret.grant_read(fn)
+            self.s3_bucket.s3_bucket_member.grant_read_write(fn)
 
         
