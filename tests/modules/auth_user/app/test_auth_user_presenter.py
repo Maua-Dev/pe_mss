@@ -63,7 +63,7 @@ class Test_AuthUserPresenter:
 
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['name'] == 'Guilherme'
+        assert json.loads(response["body"])['displayName'] == 'Guilherme'
         assert json.loads(response["body"])['email'] == '25.00178-5@maua.br'
         assert json.loads(response["body"])['ra'] == '25.00178-5'
         assert json.loads(response["body"])['state'] == 'PENDING'
