@@ -41,13 +41,3 @@ class Test_AuthUserUsecase:
         assert returned_user[0].user_id == "550e8400-e29b-41d4-a716-446655440010"
         assert returned_user[0].name == "José"
 
-
-    def test_auth_user_usecase_user_is_not_of_type_user(self):
-        repo= UserRepositoryMock()
-        usecase= AuthUserUsecase(repo=repo)
-        with pytest.raises(EntityError):
-            returned_user= usecase(user="Guilherme")
-
-
-
-

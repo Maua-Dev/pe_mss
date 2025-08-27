@@ -13,7 +13,7 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': '550e8400-e29b-41d4-a716-446655440000',
+            'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 'Guilherme',
             'email': '25.00178-5@maua.br'
         })
@@ -21,7 +21,7 @@ class Test_AuthUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == '550e8400-e29b-41d4-a716-446655440000'
+        assert response.body['id'] == '550e8400-e29b-41d4-a716-446655440000'
         assert response.body['displayName'] == 'Guilherme'
         assert response.body['email'] == '25.00178-5@maua.br'
         assert response.body['ra'] == '25.00178-5'
@@ -36,7 +36,7 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': '550e8400-e29b-41d4-a716-446655440010',
+            'id': '550e8400-e29b-41d4-a716-446655440010',
             'displayName': 'José',
             'email': '20.00158-5@maua.br'
         })
@@ -44,7 +44,7 @@ class Test_AuthUserController:
         response= controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == '550e8400-e29b-41d4-a716-446655440010'
+        assert response.body['id'] == '550e8400-e29b-41d4-a716-446655440010'
         assert response.body['displayName'] == 'José'
         assert response.body['email'] == '20.00158-5@maua.br'
         assert response.body['ra'] == '20.00158-5'
@@ -52,13 +52,13 @@ class Test_AuthUserController:
         assert response.body['role'] == 'USER'
         assert response.body['message'] == 'the user was created successfully'
 
-    def test_auth_user_controller_user_is_in_repo_mock_however_the_request_only_have_user_id_like_in_repo(self):
+    def test_auth_user_controller_user_is_in_repo_mock_however_the_request_only_have_id_like_in_repo(self):
         repo = UserRepositoryMock()
         usecase= AuthUserUsecase(repo=repo)
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': '550e8400-e29b-41d4-a716-446655440000',
+            'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 'Aurélio',
             'email': '24.00564-5@maua.br'
         })
@@ -66,7 +66,7 @@ class Test_AuthUserController:
         response= controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == '550e8400-e29b-41d4-a716-446655440000'
+        assert response.body['id'] == '550e8400-e29b-41d4-a716-446655440000'
         assert response.body['displayName'] == 'Guilherme'
         assert response.body['email'] == '25.00178-5@maua.br'
         assert response.body['ra'] == '25.00178-5'
@@ -74,7 +74,7 @@ class Test_AuthUserController:
         assert response.body['role'] == 'USER'
         assert response.body['message'] == 'the user was retrieved successfully'
 
-    def test_auth_user_controller_user_id_is_missing(self):
+    def test_auth_user_controller_id_is_missing(self):
         repo = UserRepositoryMock()
         usecase= AuthUserUsecase(repo=repo)
         controller= AuthUserController(usecase=usecase)
@@ -87,7 +87,7 @@ class Test_AuthUserController:
         response= controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == 'Field user_id is missing'
+        assert response.body == 'Field id is missing'
 
     def test_auth_user_controller_display_display_name_is_missing(self):
         repo = UserRepositoryMock()
@@ -95,7 +95,7 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': '550e8400-e29b-41d4-a716-446655440000',
+            'id': '550e8400-e29b-41d4-a716-446655440000',
             'email': '24.00564-5@maua.br'
         })
 
@@ -110,7 +110,7 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': '550e8400-e29b-41d4-a716-446655440000',
+            'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 'Aurélio'
         })
 
@@ -119,13 +119,13 @@ class Test_AuthUserController:
         assert response.status_code == 400
         assert response.body == 'Field email is missing'
 
-    def test_auth_user_controller_user_id_is_not_of_type_str(self):
+    def test_auth_user_controller_id_is_not_of_type_str(self):
         repo = UserRepositoryMock()
         usecase= AuthUserUsecase(repo=repo)
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': 123456789,
+            'id': 123456789,
             'displayName': 'Aurélio',
             'email': '24.00564-5@maua.br'
         })
@@ -133,15 +133,50 @@ class Test_AuthUserController:
         response= controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == 'Field user_id isn\'t in the right type.\n Received: int.\n Expected: str'
+        assert response.body == 'Field id isn\'t in the right type.\n Received: int.\n Expected: str'
 
-    def test_auth_user_controller_user_id_is_not_on_uud_format(self):
+    def test_auth_user_controller_display_name_is_not_of_type_str(self):
         repo = UserRepositoryMock()
         usecase= AuthUserUsecase(repo=repo)
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': '123456789',
+            'id': '550e8400-e29b-41d4-a716-446655440000',
+            'displayName': 12345,
+            'email': '24.00564-5@maua.br'
+        })
+
+        response= controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == 'Field displayName isn\'t in the right type.\n Received: int.\n Expected: str'
+
+
+    def test_auth_user_controller_email_is_not_of_type_str(self):
+        repo = UserRepositoryMock()
+        usecase= AuthUserUsecase(repo=repo)
+        controller= AuthUserController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'id': '550e8400-e29b-41d4-a716-446655440000',
+            'displayName': 'Aurélio',
+            'email': 12345
+        })
+
+        response= controller(request=request)
+
+        assert response.status_code == 400
+        assert response.body == 'Field email isn\'t in the right type.\n Received: int.\n Expected: str'
+
+
+
+    def test_auth_user_controller_id_is_not_on_uud_format(self):
+        repo = UserRepositoryMock()
+        usecase= AuthUserUsecase(repo=repo)
+        controller= AuthUserController(usecase=usecase)
+
+        request = HttpRequest(body={
+            'id': '123456789',
             'displayName': 'Aurélio',
             'email': '24.00564-5@maua.br'
         })

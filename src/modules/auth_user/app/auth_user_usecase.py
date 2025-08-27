@@ -10,8 +10,6 @@ class AuthUserUsecase:
         self.repo = repo
 
     def __call__(self, user: User) -> Tuple[User, int]:
-        if type(user) != User:
-            raise EntityError("user")
         try:
             get_user= self.repo.get_user(user_id=user.user_id)
             if type(get_user) == User:

@@ -1,5 +1,6 @@
 from src.modules.auth_user.app.auth_user_viewmodel import AuthUserViewmodel
 from src.shared.domain.entities.user import User
+from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 
@@ -12,6 +13,7 @@ class Test_AuthUserViewmodel:
             email="25.00178-5@maua.br", 
             state=STATE.PENDING, 
             role=ROLE.USER,
+            organization= None,
             ra="25.00178-5"
         )
         case_number= 0
@@ -19,12 +21,13 @@ class Test_AuthUserViewmodel:
         registerd_user= AuthUserViewmodel(user=user, case_number=case_number)
 
         expected= {
-            'user_id': '550e8400-e29b-41d4-a716-446655440000',
+            'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 'Guilherme',
             'email': '25.00178-5@maua.br',
             'ra': '25.00178-5',
             'state': 'PENDING',
             'role': 'USER',
+            'organization': None,
             'message': 'the user was retrieved successfully'
         }
 
@@ -37,6 +40,7 @@ class Test_AuthUserViewmodel:
             email= "20.00158-5@maua.br", 
             state= STATE.PENDING, 
             role= ROLE.USER,
+            organization= None,
             ra= "20.00158-5"
         )
         case_number= 1
@@ -44,12 +48,13 @@ class Test_AuthUserViewmodel:
         registerd_user= AuthUserViewmodel(user=user, case_number=case_number)
 
         expected= {
-            'user_id' : '550e8400-e29b-41d4-a716-446655440010',
+            'id' : '550e8400-e29b-41d4-a716-446655440010',
             'displayName': 'José',
             'email': '20.00158-5@maua.br',
             'ra': '20.00158-5',
             'state': 'PENDING',
             'role': 'USER',
+            'organization': None,
             'message': 'the user was created successfully'
 
         }

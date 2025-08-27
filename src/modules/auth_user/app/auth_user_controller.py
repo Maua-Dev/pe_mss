@@ -1,3 +1,4 @@
+import re
 from src.modules.auth_user.app.auth_user_usecase import AuthUserUsecase
 from src.modules.auth_user.app.auth_user_viewmodel import AuthUserViewmodel
 from src.shared.domain.entities.user import User
@@ -16,26 +17,41 @@ class AuthUserController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            if request.data.get('user_id') is None:
-                raise MissingParameters('user_id')
+            if request.data.get('id') is None:
+                raise MissingParameters('id')
             if request.data.get('displayName') is None:
                 raise MissingParameters('displayName')
             if request.data.get('email') is None:
                 raise MissingParameters('email')
             
-            if type(request.data.get('user_id')) != str:
+            if type(request.data.get('id')) != str:
                 raise WrongTypeParameter(
-                    fieldName="user_id",
+                    fieldName="id",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_id').__class__.__name__
+                    fieldTypeReceived=request.data.get('id').__class__.__name__
+                )
+            
+            if type(request.data.get('displayName')) != str:
+                raise WrongTypeParameter(
+                    fieldName="displayName",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=request.data.get('displayName').__class__.__name__
+                )
+            
+            if type(request.data.get('email')) != str:
+                raise WrongTypeParameter(
+                    fieldName="email",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=request.data.get('email').__class__.__name__
                 )
             
             new_user=User(
-                user_id= request.data.get('user_id'),
+                user_id= request.data.get('id'),
                 name= request.data.get('displayName'),
                 email= request.data.get('email'),
                 state= STATE.PENDING,
                 role= ROLE.USER,
+                organization= None,
                 ra= request.data.get('email').split('@')[0]
             )
 

@@ -21,21 +21,19 @@ class Test_AuthUserPresenter:
                 "header2": "value1,value2"
             },
             "queryStringParameters": {
-                "parameter1": "1"
+                "id": "550e8400-e29b-41d4-a716-446655440000",
+                "displayName": "Guilherme", 
+                "email": "25.00178-5@maua.br"
             },
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
-                    "iam": {
-                        "accessKey": "AKIA...",
-                        "accountId": "111122223333",
-                        "callerId": "AIDA...",
-                        "cognitoIdentity": None,
-                        "principalOrgId": None,
-                        "userArn": "arn:aws:iam::111122223333:user/example-user",
-                        "userId": "AIDA..."
+                    "user": {
+                        "id": "550e8400-e29b-41d4-a716-446655440000",
+                        "displayName": "Guilherme", 
+                        "email": "25.00178-5@maua.br"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
@@ -53,7 +51,7 @@ class Test_AuthUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "550e8400-e29b-41d4-a716-446655440000", "displayName": "Guilherme", "email": "25.00178-5@maua.br"}',
+            "body": None,
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -63,11 +61,12 @@ class Test_AuthUserPresenter:
 
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['displayName'] == 'Guilherme'
+        assert json.loads(response["body"])["displayName"] == 'Guilherme'
         assert json.loads(response["body"])['email'] == '25.00178-5@maua.br'
         assert json.loads(response["body"])['ra'] == '25.00178-5'
         assert json.loads(response["body"])['state'] == 'PENDING'
         assert json.loads(response["body"])['role'] == 'USER'
+        assert json.loads(response["body"])['organization'] == None
         assert json.loads(response["body"])['message'] == 'the user was retrieved successfully'
 
     def test_auth_user_and_user_is_not_in_repo_mock(self):
@@ -85,7 +84,9 @@ class Test_AuthUserPresenter:
                 "header2": "value1,value2"
             },
             "queryStringParameters": {
-                "parameter1": "1"
+                "id": "550e8400-e29b-41d4-a716-446655440010", 
+                "displayName": "Aurélio",
+                "email": "23.00342-5@maua.br"
             },
             "requestContext": {
                 "accountId": "123456789012",
@@ -100,6 +101,11 @@ class Test_AuthUserPresenter:
                         "principalOrgId": None,
                         "userArn": "arn:aws:iam::111122223333:user/example-user",
                         "userId": "AIDA..."
+                    },
+                    "user": {
+                        "id": "550e8400-e29b-41d4-a716-446655440010", 
+                        "displayName": "Aurélio",
+                        "email": "23.00342-5@maua.br"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
@@ -117,7 +123,7 @@ class Test_AuthUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "550e8400-e29b-41d4-a716-446655440010", "displayName": "Aurélio", "email": "23.00342-5@maua.br"}',
+            "body": None,
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -131,4 +137,5 @@ class Test_AuthUserPresenter:
         assert json.loads(response["body"])['ra'] == '23.00342-5'
         assert json.loads(response["body"])['state'] == 'PENDING'
         assert json.loads(response["body"])['role'] == 'USER'
+        assert json.loads(response["body"])['organization'] == None
         assert json.loads(response["body"])['message'] == 'the user was created successfully'
