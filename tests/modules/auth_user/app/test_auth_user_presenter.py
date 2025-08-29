@@ -20,11 +20,7 @@ class Test_AuthUserPresenter:
                 "header1": "value1",
                 "header2": "value1,value2"
             },
-            "queryStringParameters": {
-                "id": "550e8400-e29b-41d4-a716-446655440000",
-                "displayName": "Guilherme", 
-                "email": "25.00178-5@maua.br"
-            },
+            "queryStringParameters": {},
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
@@ -33,7 +29,7 @@ class Test_AuthUserPresenter:
                     "user": {
                         "id": "550e8400-e29b-41d4-a716-446655440000",
                         "displayName": "Guilherme", 
-                        "email": "25.00178-5@maua.br"
+                        "mail": "25.00178-5@maua.br"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
@@ -83,11 +79,7 @@ class Test_AuthUserPresenter:
                 "header1": "value1",
                 "header2": "value1,value2"
             },
-            "queryStringParameters": {
-                "id": "550e8400-e29b-41d4-a716-446655440010", 
-                "displayName": "Aurélio",
-                "email": "23.00342-5@maua.br"
-            },
+            "queryStringParameters": {},
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
@@ -105,7 +97,7 @@ class Test_AuthUserPresenter:
                     "user": {
                         "id": "550e8400-e29b-41d4-a716-446655440010", 
                         "displayName": "Aurélio",
-                        "email": "23.00342-5@maua.br"
+                        "mail": "23.00342-5@maua.br"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",

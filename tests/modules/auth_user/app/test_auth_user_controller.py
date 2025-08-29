@@ -15,7 +15,7 @@ class Test_AuthUserController:
         request = HttpRequest(body={
             'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 'Guilherme',
-            'email': '25.00178-5@maua.br'
+            'mail': '25.00178-5@maua.br'
         })
 
         response = controller(request=request)
@@ -38,7 +38,7 @@ class Test_AuthUserController:
         request = HttpRequest(body={
             'id': '550e8400-e29b-41d4-a716-446655440010',
             'displayName': 'José',
-            'email': '20.00158-5@maua.br'
+            'mail': '20.00158-5@maua.br'
         })
 
         response= controller(request=request)
@@ -60,7 +60,7 @@ class Test_AuthUserController:
         request = HttpRequest(body={
             'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 'Aurélio',
-            'email': '24.00564-5@maua.br'
+            'mail': '24.00564-5@maua.br'
         })
 
         response= controller(request=request)
@@ -81,7 +81,7 @@ class Test_AuthUserController:
 
         request = HttpRequest(body={
             'displayName': 'Aurélio',
-            'email': '24.00564-5@maua.br'
+            'mail': '24.00564-5@maua.br'
         })
         
         response= controller(request=request)
@@ -96,7 +96,7 @@ class Test_AuthUserController:
 
         request = HttpRequest(body={
             'id': '550e8400-e29b-41d4-a716-446655440000',
-            'email': '24.00564-5@maua.br'
+            'mail': '24.00564-5@maua.br'
         })
 
         response= controller(request=request)
@@ -117,7 +117,7 @@ class Test_AuthUserController:
         response= controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == 'Field email is missing'
+        assert response.body == 'Field mail is missing'
 
     def test_auth_user_controller_id_is_not_of_type_str(self):
         repo = UserRepositoryMock()
@@ -127,7 +127,7 @@ class Test_AuthUserController:
         request = HttpRequest(body={
             'id': 123456789,
             'displayName': 'Aurélio',
-            'email': '24.00564-5@maua.br'
+            'mail': '24.00564-5@maua.br'
         })
 
         response= controller(request=request)
@@ -143,7 +143,7 @@ class Test_AuthUserController:
         request = HttpRequest(body={
             'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 12345,
-            'email': '24.00564-5@maua.br'
+            'mail': '24.00564-5@maua.br'
         })
 
         response= controller(request=request)
@@ -152,7 +152,7 @@ class Test_AuthUserController:
         assert response.body == 'Field displayName isn\'t in the right type.\n Received: int.\n Expected: str'
 
 
-    def test_auth_user_controller_email_is_not_of_type_str(self):
+    def test_auth_user_controller_mail_is_not_of_type_str(self):
         repo = UserRepositoryMock()
         usecase= AuthUserUsecase(repo=repo)
         controller= AuthUserController(usecase=usecase)
@@ -160,13 +160,13 @@ class Test_AuthUserController:
         request = HttpRequest(body={
             'id': '550e8400-e29b-41d4-a716-446655440000',
             'displayName': 'Aurélio',
-            'email': 12345
+            'mail': 12345
         })
 
         response= controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == 'Field email isn\'t in the right type.\n Received: int.\n Expected: str'
+        assert response.body == 'Field mail isn\'t in the right type.\n Received: int.\n Expected: str'
 
 
 
@@ -178,7 +178,7 @@ class Test_AuthUserController:
         request = HttpRequest(body={
             'id': '123456789',
             'displayName': 'Aurélio',
-            'email': '24.00564-5@maua.br'
+            'mail': '24.00564-5@maua.br'
         })
 
         response= controller(request=request)

@@ -21,8 +21,8 @@ class AuthUserController:
                 raise MissingParameters('id')
             if request.data.get('displayName') is None:
                 raise MissingParameters('displayName')
-            if request.data.get('email') is None:
-                raise MissingParameters('email')
+            if request.data.get('mail') is None:
+                raise MissingParameters('mail')
             
             if type(request.data.get('id')) != str:
                 raise WrongTypeParameter(
@@ -38,22 +38,39 @@ class AuthUserController:
                     fieldTypeReceived=request.data.get('displayName').__class__.__name__
                 )
             
-            if type(request.data.get('email')) != str:
+            if type(request.data.get('mail')) != str:
                 raise WrongTypeParameter(
-                    fieldName="email",
+                    fieldName="mail",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('email').__class__.__name__
+                    fieldTypeReceived=request.data.get('mail').__class__.__name__
                 )
+                
+            ra_pattern = r'[0-9]+\.[0-9]+-[0-9]+@maua\.br'
+            has_ra = re.match(ra_pattern, request.data.get('mail'))
             
-            new_user=User(
-                user_id= request.data.get('id'),
-                name= request.data.get('displayName'),
-                email= request.data.get('email'),
-                state= STATE.PENDING,
-                role= ROLE.USER,
-                organization= None,
-                ra= request.data.get('email').split('@')[0]
-            )
+            if has_ra:
+            
+                new_user=User(
+                    user_id= request.data.get('id'),
+                    name= request.data.get('displayName'),
+                    email= request.data.get('mail'),
+                    state= STATE.PENDING,
+                    role= ROLE.USER,
+                    organization= None,
+                    ra= request.data.get('mail').split('@')[0]
+                )
+                
+            else:
+                
+                new_user=User(
+                    user_id= request.data.get('id'),
+                    name= request.data.get('displayName'),
+                    email= request.data.get('mail'),
+                    state= STATE.PENDING,
+                    role= ROLE.USER,
+                    organization= None,
+                    ra= None
+                )
 
             user_and_number=self.AuthUserUsecase(user=new_user)
 
