@@ -2,8 +2,6 @@ import json
 
 from src.modules.auth_user.app.auth_user_presenter import lambda_handler
 
-
-
 class Test_AuthUserPresenter:
     
     def test_auth_user_and_user_is_in_repo_mock(self):

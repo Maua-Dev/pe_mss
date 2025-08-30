@@ -17,55 +17,58 @@ class AuthUserController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            if request.data.get('id') is None:
+            if request.data.get('user_from_authorizer') is None:
+                raise MissingParameters('user_from_authorizer')
+
+            if request.data['user_from_authorizer'].get('id') is None:
                 raise MissingParameters('id')
-            if request.data.get('displayName') is None:
+            if request.data['user_from_authorizer'].get('displayName') is None:
                 raise MissingParameters('displayName')
-            if request.data.get('mail') is None:
+            if request.data['user_from_authorizer'].get('mail') is None:
                 raise MissingParameters('mail')
             
-            if type(request.data.get('id')) != str:
+            if type(request.data['user_from_authorizer'].get('id')) != str:
                 raise WrongTypeParameter(
                     fieldName="id",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('id').__class__.__name__
+                    fieldTypeReceived=request.data['user_from_authorizer'].get('id').__class__.__name__
                 )
             
-            if type(request.data.get('displayName')) != str:
+            if type(request.data['user_from_authorizer'].get('displayName')) != str:
                 raise WrongTypeParameter(
                     fieldName="displayName",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('displayName').__class__.__name__
+                    fieldTypeReceived=request.data['user_from_authorizer'].get('displayName').__class__.__name__
                 )
             
-            if type(request.data.get('mail')) != str:
+            if type(request.data['user_from_authorizer'].get('mail')) != str:
                 raise WrongTypeParameter(
                     fieldName="mail",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('mail').__class__.__name__
+                    fieldTypeReceived=request.data['user_from_authorizer'].get('mail').__class__.__name__
                 )
                 
             ra_pattern = r'[0-9]+\.[0-9]+-[0-9]+@maua\.br'
-            has_ra = re.match(ra_pattern, request.data.get('mail'))
+            has_ra = re.match(ra_pattern, request.data['user_from_authorizer'].get('mail'))
             
             if has_ra:
             
                 new_user=User(
-                    user_id= request.data.get('id'),
-                    name= request.data.get('displayName'),
-                    email= request.data.get('mail'),
+                    user_id= request.data['user_from_authorizer'].get('id'),
+                    name= request.data['user_from_authorizer'].get('displayName'),
+                    email= request.data['user_from_authorizer'].get('mail'),
                     state= STATE.PENDING,
                     role= ROLE.USER,
                     organization= None,
-                    ra= request.data.get('mail').split('@')[0]
+                    ra= request.data['user_from_authorizer'].get('mail').split('@')[0]
                 )
                 
             else:
                 
                 new_user=User(
-                    user_id= request.data.get('id'),
-                    name= request.data.get('displayName'),
-                    email= request.data.get('mail'),
+                    user_id= request.data['user_from_authorizer'].get('id'),
+                    name= request.data['user_from_authorizer'].get('displayName'),
+                    email= request.data['user_from_authorizer'].get('mail'),
                     state= STATE.PENDING,
                     role= ROLE.USER,
                     organization= None,

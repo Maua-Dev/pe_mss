@@ -13,9 +13,11 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '550e8400-e29b-41d4-a716-446655440000',
-            'displayName': 'Guilherme',
-            'mail': '25.00178-5@maua.br'
+            'user_from_authorizer':{
+                'id': '550e8400-e29b-41d4-a716-446655440000',
+                'displayName': 'Guilherme',
+                'mail': '25.00178-5@maua.br'
+            }
         })
 
         response = controller(request=request)
@@ -36,9 +38,11 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '550e8400-e29b-41d4-a716-446655440010',
-            'displayName': 'José',
-            'mail': '20.00158-5@maua.br'
+            'user_from_authorizer':{
+                'id': '550e8400-e29b-41d4-a716-446655440010',
+                'displayName': 'José',
+                'mail': '20.00158-5@maua.br'
+            }
         })
 
         response= controller(request=request)
@@ -58,9 +62,11 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '550e8400-e29b-41d4-a716-446655440000',
-            'displayName': 'Aurélio',
-            'mail': '24.00564-5@maua.br'
+            'user_from_authorizer': {
+                'id': '550e8400-e29b-41d4-a716-446655440000',
+                'displayName': 'Aurélio',
+                'mail': '24.00564-5@maua.br'
+            }
         })
 
         response= controller(request=request)
@@ -80,8 +86,10 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'displayName': 'Aurélio',
-            'mail': '24.00564-5@maua.br'
+            'user_from_authorizer':{
+                'displayName': 'Aurélio',
+                'mail': '24.00564-5@maua.br'
+            }
         })
         
         response= controller(request=request)
@@ -95,8 +103,10 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '550e8400-e29b-41d4-a716-446655440000',
-            'mail': '24.00564-5@maua.br'
+            'user_from_authorizer':{
+                'id': '550e8400-e29b-41d4-a716-446655440000',
+                'mail': '24.00564-5@maua.br'
+            }
         })
 
         response= controller(request=request)
@@ -110,8 +120,10 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '550e8400-e29b-41d4-a716-446655440000',
-            'displayName': 'Aurélio'
+            'user_from_authorizer':{
+                'id': '550e8400-e29b-41d4-a716-446655440000',
+                'displayName': 'Aurélio'
+            }
         })
 
         response= controller(request=request)
@@ -125,9 +137,11 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': 123456789,
-            'displayName': 'Aurélio',
-            'mail': '24.00564-5@maua.br'
+            'user_from_authorizer':{
+                'id': 123456789,
+                'displayName': 'Aurélio',
+                'mail': '24.00564-5@maua.br'
+            }
         })
 
         response= controller(request=request)
@@ -141,9 +155,11 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '550e8400-e29b-41d4-a716-446655440000',
-            'displayName': 12345,
-            'mail': '24.00564-5@maua.br'
+            'user_from_authorizer':{
+                'id': '550e8400-e29b-41d4-a716-446655440000',
+                'displayName': 12345,
+                'mail': '24.00564-5@maua.br'
+            }
         })
 
         response= controller(request=request)
@@ -158,9 +174,11 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '550e8400-e29b-41d4-a716-446655440000',
-            'displayName': 'Aurélio',
-            'mail': 12345
+            'user_from_authorizer':{
+                'id': '550e8400-e29b-41d4-a716-446655440000',
+                'displayName': 'Aurélio',
+                'mail': 12345
+            }
         })
 
         response= controller(request=request)
@@ -176,9 +194,11 @@ class Test_AuthUserController:
         controller= AuthUserController(usecase=usecase)
 
         request = HttpRequest(body={
-            'id': '123456789',
-            'displayName': 'Aurélio',
-            'mail': '24.00564-5@maua.br'
+            'user_from_authorizer':{
+                'id': '123456789',
+                'displayName': 'Aurélio',
+                'mail': '24.00564-5@maua.br'
+            }
         })
 
         response= controller(request=request)
