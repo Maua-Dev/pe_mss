@@ -40,7 +40,7 @@ class IacStack(Stack):
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": "DEV",
-             "DB_CLUSTER_ARN": self.aurora.cluster.cluster_arn,
+            "DB_CLUSTER_ARN": self.aurora.cluster.cluster_arn,
             "DB_SECRET_ARN":  self.aurora.secret.secret_arn,
             "DB_NAME": self.aurora.default_database_name,
             "REGION": self.region,
