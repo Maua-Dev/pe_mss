@@ -10,6 +10,9 @@ controller = DeleteUserController(usecase)
 
 def lambda_handler(event, context):
     httpRequest = LambdaHttpRequest(data=event)
+
+    httpRequest.data['user_from_authorizer']= event.get("requestContext", {}).get("authorizer", {}).get("user", None)
+    
     response = controller(httpRequest)
     httpResponse = LambdaHttpResponse(status_code=response.status_code, body=response.body, headers=response.headers)
 
