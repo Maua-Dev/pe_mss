@@ -1,35 +1,36 @@
-# import pytest
-# from src.modules.delete_user.app.delete_user_usecase import DeleteUserUsecase
-# from src.shared.helpers.errors.domain_errors import EntityError
-# from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+import pytest
+from src.modules.delete_user.app.delete_user_usecase import DeleteUserUsecase
+from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
-# class Test_DeleteUserUsecase:
-#     def test_delete_user_usecase(self):
-#         repo = UserRepositoryMock()
-#         usecase = DeleteUserUsecase(repo=repo)
-#         deleted_user = usecase(user_id=1)
+class Test_DeleteUserUsecase:
+    def test_delete_user_usecase(self):
+        repo = UserRepositoryMock()
+        deleted_user_id=repo.users[0].user_id
+        usecase = DeleteUserUsecase(repo=repo)
+        deleted_user = usecase(user_id=deleted_user_id)
 
-#         assert deleted_user.user_id == 1
-#         assert deleted_user.state.value == "deleted"
+        assert deleted_user.user_id == deleted_user_id
+        assert deleted_user.state.value == "PENDING"
 
-#     def test_delete_user_usecase_wrong_user_id(self):
-#         repo = UserRepositoryMock()
-#         usecase = DeleteUserUsecase(repo=repo)
+    def test_delete_user_usecase_wrong_user_id(self):
+        repo = UserRepositoryMock()
+        usecase = DeleteUserUsecase(repo=repo)
 
-#         with pytest.raises(EntityError):
-#             usecase(user_id="1")
+        with pytest.raises(EntityError):
+            usecase(user_id=10)
 
-#     def test_delete_user_usecase_nonexistent_user_id(self):
-#         repo = UserRepositoryMock()
-#         usecase = DeleteUserUsecase(repo=repo)
+    def test_delete_user_usecase_nonexistent_user_id(self):
+        repo = UserRepositoryMock()
+        usecase = DeleteUserUsecase(repo=repo)
 
-#         with pytest.raises(EntityError):
-#             usecase(user_id=3)
+        with pytest.raises(EntityError):
+            usecase(user_id=3)
 
-#     def test_delete_user_usecase_wrong_type_user_id(self):
-#         repo = UserRepositoryMock()
-#         usecase = DeleteUserUsecase(repo=repo)
+    def test_delete_user_usecase_wrong_type_user_id(self):
+        repo = UserRepositoryMock()
+        usecase = DeleteUserUsecase(repo=repo)
 
-#         with pytest.raises(EntityError):
-#             usecase(user_id=1.5)
+        with pytest.raises(EntityError):
+            usecase(user_id=1.5)

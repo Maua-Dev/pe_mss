@@ -24,7 +24,7 @@ class DeleteUserController:
                     fieldTypeReceived=request.data.get('user_id').__class__.__name__
                 )
 
-            user = self.DeleteUserUsecase(user_id=int(request.data.get('user_id')))
+            user = self.DeleteUserUsecase(user_id=str(request.data.get('user_id')))
 
             viewmodel = DeleteUserViewmodel(user=user)
 
