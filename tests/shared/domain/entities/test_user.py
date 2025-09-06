@@ -99,4 +99,12 @@ class Test_User:
         with pytest.raises(InvalidUserIdFormat):
             User(name="VITOR", email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active=ACTIVE.ACTIVE, organization=ORGANIZATION.DEV, user_id="1")
 
+    def test_user_user_active_is_not_active_enum(self):
+        with pytest.raises(EntityError):
+            User(name="VITOR", email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active="ACTIVE", organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
+
+    def test_user_user_active_is_none(self):
+        with pytest.raises(EntityError):
+            User(name="VITOR", email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active=None, organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
+
     

@@ -2,6 +2,7 @@ import re
 from src.modules.auth_user.app.auth_user_usecase import AuthUserUsecase
 from src.modules.auth_user.app.auth_user_viewmodel import AuthUserViewmodel
 from src.shared.domain.entities.user import User
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
@@ -59,6 +60,7 @@ class AuthUserController:
                     email= request.data['user_from_authorizer'].get('mail'),
                     state= STATE.PENDING,
                     role= ROLE.USER,
+                    active= ACTIVE.ACTIVE,
                     organization= None,
                     ra= request.data['user_from_authorizer'].get('mail').split('@')[0]
                 )
@@ -70,6 +72,7 @@ class AuthUserController:
                     name= request.data['user_from_authorizer'].get('displayName'),
                     email= request.data['user_from_authorizer'].get('mail'),
                     state= STATE.PENDING,
+                    active= ACTIVE.ACTIVE,
                     role= ROLE.USER,
                     organization= None,
                     ra= None
