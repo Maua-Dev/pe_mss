@@ -2,6 +2,7 @@ import abc
 import re
 import uuid
 
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -18,6 +19,7 @@ class User(abc.ABC):
     course: COURSE
     year: int
     role: ROLE
+    active: ACTIVE
     organization: ORGANIZATION
     MIN_NAME_LENGTH = 2
     user_id: str
@@ -29,6 +31,7 @@ class User(abc.ABC):
         email: str,
         state: STATE, 
         role: ROLE, 
+        active: ACTIVE,
         ra: str = None,        # essa linha deve existir pois existem emails maua sem ra, como por exemplo emails de professores
         course: COURSE=None,   #ou emails customizados, como o dev@maua.br. Muito provavelmente o email do Godoy nao é igual
         year: int=None,        #ao dos alunos que vamos conseguir extrair o ra direto.
@@ -57,6 +60,9 @@ class User(abc.ABC):
         if type(course) != COURSE and course is not None:
             raise EntityError("course")
         self.course = course
+
+        if type(active) != ACTIVE and active is not None:
+            raise EntityError("active")
         
         if not User.validate_year(year) and year is not None:
             raise EntityError("year")
@@ -136,12 +142,13 @@ class User(abc.ABC):
             "course": self.course.value,
             "year": self.year,
             "role": self.role.value,
+            "active": self.active.value,
             "organization": self.organization.value,
             "state": self.state.value
         }
 
     def __repr__(self):
-        return f"User(user_id={self.user_id}, name={self.name}, ra={self.ra}, email={self.email}, course={self.course.value}, year={self.year}, role={self.role}, organization={self.organization}, state={self.state})"
+        return f"User(user_id={self.user_id}, name={self.name}, ra={self.ra}, email={self.email}, course={self.course.value}, year={self.year}, role={self.role}, active={self.active}, organization={self.organization}, state={self.state})"
 
     def __eq__(self, other: "User"):
         return (
@@ -152,6 +159,7 @@ class User(abc.ABC):
             self.course == other.course,
             self.year == other.year,
             self.role == other.role,
+            self.active == other.active,
             self.organization == other.organization,
             self.state == other.state
         )
