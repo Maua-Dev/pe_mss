@@ -1,6 +1,5 @@
 from src.modules.auth_user.app.auth_user_viewmodel import AuthUserViewmodel
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
@@ -14,7 +13,6 @@ class Test_AuthUserViewmodel:
             email="25.00178-5@maua.br", 
             state=STATE.PENDING, 
             role=ROLE.USER,
-            active=ACTIVE.ACTIVE,
             organization= None,
             ra="25.00178-5"
         )
@@ -29,7 +27,6 @@ class Test_AuthUserViewmodel:
             'ra': '25.00178-5',
             'state': 'PENDING',
             'role': 'USER',
-            'active': 'active',
             'organization': None,
             'message': 'the user was retrieved successfully'
         }
@@ -43,7 +40,6 @@ class Test_AuthUserViewmodel:
             email= "20.00158-5@maua.br", 
             state= STATE.PENDING, 
             role= ROLE.USER,
-            active= ACTIVE.ACTIVE,
             organization= None,
             ra= "20.00158-5"
         )
@@ -58,7 +54,6 @@ class Test_AuthUserViewmodel:
             'ra': '20.00158-5',
             'state': 'PENDING',
             'role': 'USER',
-            'active': 'active',
             'organization': None,
             'message': 'the user was created successfully'
 

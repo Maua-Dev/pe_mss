@@ -13,7 +13,6 @@ class UpdateUserViewmodel:
         self.name = user.name
         self.email = user.email
         self.state = user.state
-        self.active = user.active
 
     def to_dict(self):
         return {
@@ -21,7 +20,6 @@ class UpdateUserViewmodel:
             'name': self.name,
             'email': self.email,
             'state': self.state.value,
-            'active': self.active.value,
             'message': "the user was updated successfully"
         }
 

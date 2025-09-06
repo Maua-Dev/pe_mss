@@ -61,9 +61,8 @@ class User(abc.ABC):
             raise EntityError("course")
         self.course = course
 
-        if type(active) != ACTIVE:
+        if type(active) != ACTIVE and active is not None:
             raise EntityError("active")
-        self.active = active
         
         if not User.validate_year(year) and year is not None:
             raise EntityError("year")

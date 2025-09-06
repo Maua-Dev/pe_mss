@@ -1,7 +1,6 @@
 from typing import List
 from src.shared.domain.entities.user import User
 
-from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -15,10 +14,10 @@ class UserRepositoryMock(IUserRepository):
     
     def __init__(self):
         self.users = [
-            User(name="Guilherme",email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.PENDING, role=ROLE.USER, active=ACTIVE.ACTIVE, user_id="550e8400-e29b-41d4-a716-446655440000"),
-            User(name="João",email="21.00678-2@maua.br", ra="24.00678-2", state=STATE.APPROVED, role=ROLE.ADM, active=ACTIVE.ACTIVE, course=COURSE.CIC, year=4, organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440001"),
-            User(name="Heitor", email="21.00453-7@maua.br", ra="21.00453-7", state=STATE.APPROVED, role=ROLE.USER, active=ACTIVE.ACTIVE, course=COURSE.ECM, year=4, organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440002"),
-            User(name="Bruno", email="21.00458-7@maua.br", ra="21.00458-7", state=STATE.REJECTED, role=ROLE.PRESIDENT, active=ACTIVE.DISCONNECTED, course=COURSE.EET, year=1, organization=ORGANIZATION.GUARDIAN, user_id=str(uuid.uuid4())) # testing if uuid4 is a valid id for user entity
+            User(name="Guilherme",email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.PENDING, role=ROLE.USER, user_id="550e8400-e29b-41d4-a716-446655440000"),
+            User(name="João",email="21.00678-2@maua.br", ra="24.00678-2", state=STATE.APPROVED, role=ROLE.ADM, course=COURSE.CIC, year=4, organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440001"),
+            User(name="Heitor", email="21.00453-7@maua.br", ra="21.00453-7", state=STATE.APPROVED, role=ROLE.USER, course=COURSE.ECM, year=4, organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440002"),
+            User(name="Bruno", email="21.00458-7@maua.br", ra="21.00458-7", state=STATE.REJECTED, role=ROLE.PRESIDENT, course=COURSE.EET, year=1, organization=ORGANIZATION.GUARDIAN, user_id=str(uuid.uuid4())) # testing if uuid4 is a valid id for user entity
         ]
     
     def get_user(self, user_id: int) -> User:
@@ -42,16 +41,14 @@ class UserRepositoryMock(IUserRepository):
                 self.users.pop(pos)
                 return user
         raise NoItemsFound(user_id)
-
-    def update_user(self, user_id: str, new_state: STATE =None, new_role: ROLE =None, new_active: ACTIVE=None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None):
+            
+    def update_user(self, user_id: str, new_state: STATE =None, new_role: ROLE =None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None):
         for user in self.users:
             if user.user_id == user_id:
                 if new_state != None:
                     user.state= new_state
                 if new_role != None:
                     user.role= new_role
-                if new_active != None:
-                    user.active= new_active
                 if new_course != None:
                     user.course= new_course
                 if new_year != None:

@@ -1,5 +1,4 @@
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -21,7 +20,6 @@ class Test_UserRepositoryMock:
         assert user.user_id == "550e8400-e29b-41d4-a716-446655440000"
         assert user.state == STATE.PENDING
         assert user.role == ROLE.USER
-        assert user.active == ACTIVE.ACTIVE
 
 
     def test_get_user_not_found(self):
@@ -45,8 +43,7 @@ class Test_UserRepositoryMock:
             course=COURSE.ECM,
             year=5,
             organization=ORGANIZATION.DEV,
-            state=STATE.PENDING,
-            active=ACTIVE.ACTIVE
+            state=STATE.PENDING
         )
 
         created_user = repo.create_user(new_user)
@@ -59,7 +56,6 @@ class Test_UserRepositoryMock:
         assert created_user.year == 5
         assert created_user.organization == ORGANIZATION.DEV
         assert created_user.state == STATE.PENDING
-        assert created_user.active == ACTIVE.ACTIVE
 
     def test_delete_user(self):
         repo = UserRepositoryMock()
@@ -78,8 +74,8 @@ class Test_UserRepositoryMock:
 
     def test_update_user(self):
         repo = UserRepositoryMock()
-        updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440000", new_state=STATE.APPROVED, new_role=ROLE.ADM, new_active=ACTIVE.ACTIVE, new_course=COURSE.EEN, new_year=4, new_organization=ORGANIZATION.NAWAT)
-
+        updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440000", new_state=STATE.APPROVED, new_role=ROLE.ADM, new_course=COURSE.EEN, new_year=4, new_organization=ORGANIZATION.NAWAT)
+        
         assert updated_user.state == STATE.APPROVED
         assert updated_user.role == ROLE.ADM
         assert updated_user.course == COURSE.EEN
@@ -94,18 +90,16 @@ class Test_UserRepositoryMock:
 
     def test_update_user_state_role_course_year_organization_are_none(self):
         repo = UserRepositoryMock()
-        updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440001", new_state=None, new_role=None, new_active=None, new_course=None, new_year=None, new_organization=None)
+        updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440001", new_state=None, new_role=None, new_course=None, new_year=None, new_organization=None)
 
         assert updated_user.state == STATE.APPROVED
         assert updated_user.role == ROLE.ADM
         assert updated_user.course == COURSE.CIC
-        assert updated_user.active == ACTIVE.ACTIVE
         assert updated_user.year == 4
         assert updated_user.organization == ORGANIZATION.DEV
 
         assert repo.users[1].state == STATE.APPROVED
         assert repo.users[1].role == ROLE.ADM
-        assert repo.users[1].active == ACTIVE.ACTIVE
         assert repo.users[1].course == COURSE.CIC
         assert repo.users[1].year == 4
         assert repo.users[1].organization == ORGANIZATION.DEV
@@ -114,7 +108,7 @@ class Test_UserRepositoryMock:
         repo = UserRepositoryMock()
 
         with pytest.raises(NoItemsFound):
-            updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440005", new_state=STATE.APPROVED, new_role=ROLE.ADM, new_active=ACTIVE.ACTIVE, new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+            updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440005", new_state=STATE.APPROVED, new_role=ROLE.ADM, new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
 
 #     def test_get_users_counter(self):
 #         repo = UserRepositoryMock()
