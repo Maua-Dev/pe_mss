@@ -2,6 +2,7 @@ import pytest
 
 from src.modules.auth_user.app.auth_user_usecase import AuthUserUsecase
 from src.shared.domain.entities.user import User
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.domain_errors import EntityError
@@ -16,7 +17,8 @@ class Test_AuthUserUsecase:
             name="Guilherme",
             email="25.00178-5@maua.br", 
             state=STATE.PENDING, 
-            role=ROLE.USER
+            role=ROLE.USER,
+            active=ACTIVE.ACTIVE
         )
         returned_user= usecase(user=posible_new_user)
 
@@ -33,7 +35,8 @@ class Test_AuthUserUsecase:
             name="José",
             email="20.00158-5@maua.br", 
             state=STATE.PENDING, 
-            role=ROLE.USER
+            role=ROLE.USER,
+            active=ACTIVE.ACTIVE
         )
         returned_user= usecase(user=posible_new_user)
 

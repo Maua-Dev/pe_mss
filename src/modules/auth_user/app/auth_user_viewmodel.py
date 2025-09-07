@@ -20,6 +20,7 @@ class AuthUserViewmodel:
         self.ra= user.ra
         self.state= user.state
         self.role= user.role
+        self.active= user.active
         self.organization= user.organization
         self.case_number= case_number
     
@@ -31,6 +32,7 @@ class AuthUserViewmodel:
             'ra': self.ra,
             'state': self.state.value,
             'role': self.role.value,
+            'active': self.active.value,
             'organization': self.organization
         }
 
