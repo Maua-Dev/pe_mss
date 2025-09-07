@@ -1,17 +1,22 @@
-version: '3.8'
+
 services:
-  dynamodb-local:
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-    image: "amazon/dynamodb-local:latest"
-    container_name: dynamodb
+  postgres-local:
+    image: "postgres:15" 
+    container_name: postgres_db_pe_mss
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
     ports:
-      - "8000:8000"
+      - "5432:5432" 
     volumes:
-      - "./docker/dynamodb:/home/dynamodblocal/data"
-    working_dir: /home/dynamodblocal
+      - postgres-data:/var/lib/postgresql/data 
     networks:
-      - dynamodb-local
+      - app-network
+
+volumes:
+  postgres-data:
 
 networks:
-    dynamodb-local:
-        name: dynamodb-local
+  app-network:
+    name: app-network
