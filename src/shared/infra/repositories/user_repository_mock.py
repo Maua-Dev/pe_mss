@@ -57,3 +57,14 @@ class UserRepositoryMock(IUserRepository):
                     user.organization= new_organization
                 return user
         raise NoItemsFound(user_id)
+    
+    def check_if_president_and_new_user_have_same_role(self, id_user_requester : str, new_user :User) -> bool:
+        for user in self.users:
+            if user.user_id == id_user_requester :
+                requester_user_organization = user.organization
+                break
+
+        if requester_user_organization == new_user.organization:
+            return True
+        
+        return False

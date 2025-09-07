@@ -50,3 +50,10 @@ class IUserRepository(ABC):
     #     Returns the number of all users that have ever been created
     #     """
     #     pass
+
+    @abstractmethod
+    def check_if_requester_user_and_new_user_have_same_organization(self, id_user_requester : str, new_user :User) -> bool:
+        """"
+        Returns True if both users have the same organization, False otherwise
+        """
+        pass

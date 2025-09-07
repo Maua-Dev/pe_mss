@@ -8,7 +8,7 @@ from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 class Test_AuthUserUsecase:
-    def test_auth_user_usecase_user_is_in_repo_mock(selfs):
+    def test_auth_user_usecase_user_is_in_repo_mock(self):
         repo= UserRepositoryMock()
         usecase= AuthUserUsecase(repo=repo)
         posible_new_user= User(

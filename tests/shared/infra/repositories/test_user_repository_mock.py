@@ -115,3 +115,17 @@ class Test_UserRepositoryMock:
 
 #         assert repo.get_user_counter() == 3
 
+    def test_check_if_president_and_new_user_have_same_organization(self):
+        repo = UserRepositoryMock()
+        new_user = User(
+            user_id=str(uuid.uuid4()),
+            name="Vitor Soller",
+            email="20.00978-5@maua.br",
+            ra="20.00978-5",
+            role=ROLE.USER,
+            course=COURSE.ECM,
+            year=5,
+            organization=ORGANIZATION.DEV,
+            state=STATE.PENDING
+        )
+
