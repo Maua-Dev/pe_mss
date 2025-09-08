@@ -4,6 +4,7 @@ from src.modules.auth_user.app.auth_user_viewmodel import AuthUserViewmodel
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -60,6 +61,7 @@ class AuthUserController:
                     state= STATE.PENDING,
                     role= ROLE.USER,
                     organization= None,
+                    active=ACTIVE.ACTIVE,
                     ra= request.data['user_from_authorizer'].get('mail').split('@')[0]
                 )
                 
@@ -72,6 +74,7 @@ class AuthUserController:
                     state= STATE.PENDING,
                     role= ROLE.USER,
                     organization= None,
+                    active=ACTIVE.ACTIVE,
                     ra= None
                 )
 
