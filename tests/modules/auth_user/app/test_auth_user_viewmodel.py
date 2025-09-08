@@ -31,7 +31,7 @@ class Test_AuthUserViewmodel:
             'ra': '25.00178-5',
             'state': 'PENDING',
             'role': 'USER',
-            'active': 'active',
+            'active': 'ACTIVE',
             'organization': None,
             'course': None,
             'message': 'the user was retrieved successfully',
@@ -64,7 +64,7 @@ class Test_AuthUserViewmodel:
             'ra': '20.00158-5',
             'state': 'PENDING',
             'role': 'USER',
-            'active': 'freezed',
+            'active': 'FREEZED',
             'organization': None,
             'message': 'the user was created successfully',
             'course': None
