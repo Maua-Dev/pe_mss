@@ -4,7 +4,7 @@ from src.shared.domain.entities.user import User
 from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -15,10 +15,53 @@ class UserRepositoryMock(IUserRepository):
     
     def __init__(self):
         self.users = [
-            User(name="Guilherme",email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.PENDING, role=ROLE.USER, active=ACTIVE.ACTIVE, user_id="550e8400-e29b-41d4-a716-446655440000"),
-            User(name="João",email="21.00678-2@maua.br", ra="24.00678-2", state=STATE.APPROVED, role=ROLE.ADM, active=ACTIVE.ACTIVE, course=COURSE.CIC, year=4, organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440001"),
-            User(name="Heitor", email="21.00453-7@maua.br", ra="21.00453-7", state=STATE.APPROVED, role=ROLE.USER, active=ACTIVE.ACTIVE, course=COURSE.ECM, year=4, organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440002"),
-            User(name="Bruno", email="21.00458-7@maua.br", ra="21.00458-7", state=STATE.REJECTED, role=ROLE.PRESIDENT, active=ACTIVE.DISCONNECTED, course=COURSE.EET, year=1, organization=ORGANIZATION.GUARDIAN, user_id=str(uuid.uuid4())) # testing if uuid4 is a valid id for user entity
+            User(
+                name="Guilherme",
+                email="25.00178-5@maua.br", 
+                ra="25.00178-5", 
+                state=STATE.PENDING, 
+                role=ROLE.USER, 
+                active=ACTIVE.ACTIVE, user_id="550e8400-e29b-41d4-a716-446655440000"),
+            User(
+                name="João",
+                email="21.00678-2@maua.br", 
+                ra="24.00678-2", 
+                state=STATE.APPROVED, 
+                role=ROLE.ADM, 
+                active=ACTIVE.DISCONNECTED, 
+                course=COURSE.CIC, year=4, 
+                organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440001"),
+            User(
+                name="Heitor", 
+                email="21.00453-7@maua.br", 
+                ra="21.00453-7", 
+                state=STATE.APPROVED, 
+                role=ROLE.PRESIDENT, 
+                active=ACTIVE.ACTIVE, 
+                course=COURSE.ECM, 
+                year=4, 
+                organization=ORGANIZATION.NAWAT, user_id="550e8400-e29b-41d4-a716-446655440002"),
+            User(
+                name="Bruno", 
+                email="21.00458-7@maua.br", 
+                ra="21.00458-7", 
+                state=STATE.REJECTED, 
+                role=ROLE.PRESIDENT, 
+                active=ACTIVE.DISCONNECTED, 
+                course=COURSE.EET, 
+                year=1, 
+                organization=ORGANIZATION.GUARDIAN, 
+                user_id=str(uuid.uuid4())),# testing if uuid4 is a valid id for user entity
+            User(
+                name="Pedro", 
+                email="20.00789-4@maua.br", 
+                ra="20.00789-4", 
+                state=STATE.APPROVED, 
+                role=ROLE.PRESIDENT, 
+                active=ACTIVE.ACTIVE, 
+                course=COURSE.ECM, 
+                year=5, 
+                organization=ORGANIZATION.DEV, user_id="e6bed58f-424a-4b62-b408-18e0a8d1f069")
         ]
     
     def get_user(self, user_id: int) -> User:
@@ -60,3 +103,19 @@ class UserRepositoryMock(IUserRepository):
                     user.organization= new_organization
                 return user
         raise NoItemsFound(user_id)
+    
+    def has_permission(self, id_user_requester : str, new_user :User) -> bool:
+        try:
+            requester_user= self.get_user(user_id=id_user_requester)
+            if requester_user.active != ACTIVE.ACTIVE:
+                raise ForbiddenAction("The requester user is not active")
+            
+            if requester_user.organization == new_user.organization:
+                return True
+            raise ForbiddenAction("The requester user does not have permission to create a user in a different organization")
+            
+        except NoItemsFound:
+            raise NoItemsFound(id_user_requester)
+        
+        except ForbiddenAction as e:
+            raise ForbiddenAction(e.message)

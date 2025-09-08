@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
@@ -50,3 +50,10 @@ class IUserRepository(ABC):
     #     Returns the number of all users that have ever been created
     #     """
     #     pass
+
+    @abstractmethod
+    def has_permission(self, id_user_requester : str, new_user :User) -> bool:
+        """"
+        Returns True if both users have the same organization, Raises error otherwise
+        """
+        pass

@@ -4,7 +4,7 @@ from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 import pytest
 import uuid
@@ -32,7 +32,7 @@ class Test_UserRepositoryMock:
     def test_get_all_user(self):
         repo = UserRepositoryMock()
         users = repo.get_all_user()
-        assert len(users) == 4
+        assert len(users) == 5
 
     def test_create_user(self):
         repo = UserRepositoryMock()
@@ -99,13 +99,13 @@ class Test_UserRepositoryMock:
         assert updated_user.state == STATE.APPROVED
         assert updated_user.role == ROLE.ADM
         assert updated_user.course == COURSE.CIC
-        assert updated_user.active == ACTIVE.ACTIVE
+        assert updated_user.active == ACTIVE.DISCONNECTED
         assert updated_user.year == 4
         assert updated_user.organization == ORGANIZATION.DEV
 
         assert repo.users[1].state == STATE.APPROVED
         assert repo.users[1].role == ROLE.ADM
-        assert repo.users[1].active == ACTIVE.ACTIVE
+        assert repo.users[1].active == ACTIVE.DISCONNECTED
         assert repo.users[1].course == COURSE.CIC
         assert repo.users[1].year == 4
         assert repo.users[1].organization == ORGANIZATION.DEV
@@ -121,3 +121,81 @@ class Test_UserRepositoryMock:
 
 #         assert repo.get_user_counter() == 3
 
+    def test_has_permission_true(self):
+        repo = UserRepositoryMock()
+        new_user = User(
+            user_id=str(uuid.uuid4()),
+            name="Vitor Soller",
+            email="20.00123-4@maua.br",
+            ra="20.00123-4",
+            role=ROLE.USER,
+            course=COURSE.ECM,
+            year=5,
+            organization=ORGANIZATION.DEV,
+            state=STATE.PENDING,
+            active=ACTIVE.ACTIVE
+        )
+        id_user_requester= "e6bed58f-424a-4b62-b408-18e0a8d1f069"
+
+        response= repo.has_permission(id_user_requester, new_user)
+
+        assert response == True
+
+
+    def test_has_permission_raise_forbidden(self):
+        repo = UserRepositoryMock()
+        new_user = User(
+                    user_id=str(uuid.uuid4()),
+                    name="Vitor Soller",
+                    email="20.00123-4@maua.br",
+                    ra="20.00123-4",
+                    role=ROLE.USER,
+                    course=COURSE.ECM,
+                    year=5,
+                    organization=ORGANIZATION.DEV,
+                    state=STATE.PENDING,
+                    active=ACTIVE.ACTIVE
+        )
+        id_user_requester= "550e8400-e29b-41d4-a716-446655440001"
+
+        with pytest.raises(ForbiddenAction):
+            repo.has_permission(id_user_requester, new_user)
+
+
+    def test_has_permission_user_requester_does_not_has_the_same_organization_of_new_user(self):
+        repo = UserRepositoryMock()
+        new_user = User(
+                    user_id=str(uuid.uuid4()),
+                    name="Vitor Soller",
+                    email="20.00123-4@maua.br",
+                    ra="20.00123-4",
+                    role=ROLE.USER,
+                    course=COURSE.ECM,
+                    year=5,
+                    organization=ORGANIZATION.DEV,
+                    state=STATE.PENDING,
+                    active=ACTIVE.ACTIVE
+        )
+        id_user_requester= "550e8400-e29b-41d4-a716-446655440002"
+
+        with pytest.raises(ForbiddenAction):
+            response= repo.has_permission(id_user_requester, new_user)
+
+    def test_has_permission_user_requester_not_found(self):
+        repo = UserRepositoryMock()
+        new_user = User(
+                    user_id=str(uuid.uuid4()),
+                    name="Vitor Soller",
+                    email="20.00123-4@maua.br",
+                    ra="20.00123-4",
+                    role=ROLE.USER,
+                    course=COURSE.ECM,
+                    year=5,
+                    organization=ORGANIZATION.DEV,
+                    state=STATE.PENDING,
+                    active=ACTIVE.ACTIVE
+        )
+        id_user_requester= "550e8400-e29b-41d4-a716-446655440005"
+
+        with pytest.raises(NoItemsFound):
+            repo.has_permission(id_user_requester, new_user)
