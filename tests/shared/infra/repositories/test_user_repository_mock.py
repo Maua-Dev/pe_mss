@@ -140,7 +140,6 @@ class Test_UserRepositoryMock:
             course=COURSE.ECM,
             year=5,
             organization=ORGANIZATION.DEV,
-            state=STATE.PENDING
             state=STATE.PENDING,
             active=ACTIVE.ACTIVE
         )

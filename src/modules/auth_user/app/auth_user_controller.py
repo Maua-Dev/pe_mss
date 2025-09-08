@@ -63,7 +63,6 @@ class AuthUserController:
                     role= ROLE.USER,
                     active= ACTIVE.ACTIVE,
                     organization= None,
-                    active=ACTIVE.ACTIVE,
                     ra= request.data['user_from_authorizer'].get('mail').split('@')[0]
                 )
                 
@@ -77,7 +76,6 @@ class AuthUserController:
                     active= ACTIVE.ACTIVE,
                     role= ROLE.USER,
                     organization= None,
-                    active=ACTIVE.ACTIVE,
                     ra= None
                 )
 
