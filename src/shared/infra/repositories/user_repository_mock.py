@@ -208,4 +208,3 @@ class UserRepositoryMock(IUserRepository):
             raise NoItemsFound(requester_id)
         except ForbiddenAction as e:
             raise ForbiddenAction(e.message)
-

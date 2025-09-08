@@ -2,7 +2,7 @@ import json
 import pytest
 from src.modules.auth_user.app.auth_user_presenter import lambda_handler
 
-class Test_AuthUserPresenter:
+class TestAuthUserPresenter:
     
     def test_auth_user_and_user_is_in_repo_mock(self):
         event = {
@@ -53,9 +53,8 @@ class Test_AuthUserPresenter:
 
         response = lambda_handler(event, None)
 
-
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])["displayName"] == 'Guilherme'
+        assert json.loads(response["body"])["name"] == 'Guilherme'
         assert json.loads(response["body"])['email'] == '25.00178-5@maua.br'
         assert json.loads(response["body"])['ra'] == '25.00178-5'
         assert json.loads(response["body"])['state'] == 'PENDING'
@@ -123,7 +122,7 @@ class Test_AuthUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['displayName'] == 'Aurélio'
+        assert json.loads(response["body"])['name'] == 'Aurélio'
         assert json.loads(response["body"])['email'] == '23.00342-5@maua.br'
         assert json.loads(response["body"])['ra'] == '23.00342-5'
         assert json.loads(response["body"])['state'] == 'PENDING'

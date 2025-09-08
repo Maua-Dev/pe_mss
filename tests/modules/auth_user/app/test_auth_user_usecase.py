@@ -9,7 +9,7 @@ from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 class Test_AuthUserUsecase:
-    def test_auth_user_usecase_user_is_in_repo_mock(selfs):
+    def test_auth_user_usecase_user_is_in_repo_mock(self):
         repo= UserRepositoryMock()
         usecase= AuthUserUsecase(repo=repo)
         posible_new_user= User(
@@ -18,7 +18,7 @@ class Test_AuthUserUsecase:
             email="25.00178-5@maua.br", 
             state=STATE.PENDING, 
             role=ROLE.USER,
-            active=ACTIVE.ACTIVE
+            active=ACTIVE.ACTIVE # Adicionado
         )
         returned_user= usecase(user=posible_new_user)
 
@@ -36,11 +36,10 @@ class Test_AuthUserUsecase:
             email="20.00158-5@maua.br", 
             state=STATE.PENDING, 
             role=ROLE.USER,
-            active=ACTIVE.ACTIVE
+            active=ACTIVE.ACTIVE # Adicionado
         )
         returned_user= usecase(user=posible_new_user)
 
         assert returned_user[1] == 1
         assert returned_user[0].user_id == "550e8400-e29b-41d4-a716-446655440010"
         assert returned_user[0].name == "José"
-

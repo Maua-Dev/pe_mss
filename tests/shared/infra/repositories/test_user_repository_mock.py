@@ -134,8 +134,8 @@ class Test_UserRepositoryMock:
         new_user = User(
             user_id=str(uuid.uuid4()),
             name="Vitor Soller",
-            email="20.00123-4@maua.br",
-            ra="20.00123-4",
+            email="20.00978-5@maua.br",
+            ra="20.00978-5",
             role=ROLE.USER,
             course=COURSE.ECM,
             year=5,
