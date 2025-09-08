@@ -1,5 +1,5 @@
 import json
-
+import pytest
 from src.modules.auth_user.app.auth_user_presenter import lambda_handler
 
 class TestAuthUserPresenter:
@@ -59,6 +59,7 @@ class TestAuthUserPresenter:
         assert json.loads(response["body"])['ra'] == '25.00178-5'
         assert json.loads(response["body"])['state'] == 'PENDING'
         assert json.loads(response["body"])['role'] == 'USER'
+        assert json.loads(response["body"])['active'] == 'active'
         assert json.loads(response["body"])['organization'] == None
         assert json.loads(response["body"])['message'] == 'the user was retrieved successfully'
 
@@ -126,5 +127,6 @@ class TestAuthUserPresenter:
         assert json.loads(response["body"])['ra'] == '23.00342-5'
         assert json.loads(response["body"])['state'] == 'PENDING'
         assert json.loads(response["body"])['role'] == 'USER'
+        assert json.loads(response["body"])['active'] == 'active'
         assert json.loads(response["body"])['organization'] == None
         assert json.loads(response["body"])['message'] == 'the user was created successfully'

@@ -24,6 +24,7 @@ class AuthUserViewmodel:
         self.ra= user.ra
         self.state= user.state
         self.role= user.role
+        self.active= user.active
         self.organization= user.organization
         self.case_number= case_number
         self.active = user.active
@@ -40,6 +41,7 @@ class AuthUserViewmodel:
             'organization': self.organization.value,
             'active': self.active.value,
             'course': self.course.value
+
         }
 
         if self.case_number == 0:
