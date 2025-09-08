@@ -3,6 +3,7 @@ from src.shared.domain.entities.user import User
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
+from src.shared.domain.enums.active_enum import ACTIVE
 
 
 class Test_AuthUserViewmodel:
@@ -14,7 +15,8 @@ class Test_AuthUserViewmodel:
             state=STATE.PENDING, 
             role=ROLE.USER,
             organization= None,
-            ra="25.00178-5"
+            ra="25.00178-5",
+            active=ACTIVE.ACTIVE
         )
         case_number= 0
 
@@ -28,7 +30,8 @@ class Test_AuthUserViewmodel:
             'state': 'PENDING',
             'role': 'USER',
             'organization': None,
-            'message': 'the user was retrieved successfully'
+            'message': 'the user was retrieved successfully',
+            'active': 'ACTIVE'
         }
 
         assert registerd_user.to_dict() == expected
@@ -41,7 +44,8 @@ class Test_AuthUserViewmodel:
             state= STATE.PENDING, 
             role= ROLE.USER,
             organization= None,
-            ra= "20.00158-5"
+            ra= "20.00158-5",
+            active=ACTIVE.FREEZED
         )
         case_number= 1
 
@@ -55,7 +59,8 @@ class Test_AuthUserViewmodel:
             'state': 'PENDING',
             'role': 'USER',
             'organization': None,
-            'message': 'the user was created successfully'
+            'message': 'the user was created successfully',
+            'active': 'FREEZED'
 
         }
 

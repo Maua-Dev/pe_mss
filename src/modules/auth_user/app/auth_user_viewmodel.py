@@ -3,6 +3,7 @@ from src.shared.domain.enums.state_enum import STATE
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.enums.active_enum import ACTIVE
 
 class AuthUserViewmodel:
     id: str
@@ -12,6 +13,9 @@ class AuthUserViewmodel:
     role: ROLE
     ra: str
     case_number: int
+    active: ACTIVE
+    course: COURSE
+    organization: ORGANIZATION
 
     def __init__(self, user: User, case_number: int):
         self.id= user.user_id
@@ -22,16 +26,20 @@ class AuthUserViewmodel:
         self.role= user.role
         self.organization= user.organization
         self.case_number= case_number
+        self.active = user.active
+        self.course = user.course
     
     def to_dict(self):
         model={
             'id': self.id,
-            'displayName': self.name,
+            'name': self.name,
             'email': self.email,
             'ra': self.ra,
             'state': self.state.value,
             'role': self.role.value,
-            'organization': self.organization
+            'organization': self.organization.value,
+            'active': self.active.value,
+            'course': self.course.value
         }
 
         if self.case_number == 0:
