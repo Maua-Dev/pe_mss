@@ -32,7 +32,7 @@ class Test_UserRepositoryMock:
     def test_get_all_user(self):
         repo = UserRepositoryMock()
         users = repo.get_all_user()
-        assert len(users) == 5
+        assert len(users) == 6
 
     def test_create_user(self):
         repo = UserRepositoryMock()
@@ -94,18 +94,26 @@ class Test_UserRepositoryMock:
 
     def test_update_user_state_role_course_year_organization_are_none(self):
         repo = UserRepositoryMock()
-        updated_user= repo.update_user(user_id="550e8400-e29b-41d4-a716-446655440001", new_state=None, new_role=None, new_active=None, new_course=None, new_year=None, new_organization=None)
+        updated_user= repo.update_user(
+            user_id="550e8400-e29b-41d4-a716-446655440001", 
+            new_state=None, 
+            new_role=None, 
+            new_active=None, 
+            new_course=None, 
+            new_year=None, 
+            new_organization=None
+        )
 
         assert updated_user.state == STATE.APPROVED
         assert updated_user.role == ROLE.ADM
         assert updated_user.course == COURSE.CIC
-        assert updated_user.active == ACTIVE.DISCONNECTED
+        assert updated_user.active == ACTIVE.ACTIVE
         assert updated_user.year == 4
         assert updated_user.organization == ORGANIZATION.DEV
 
         assert repo.users[1].state == STATE.APPROVED
         assert repo.users[1].role == ROLE.ADM
-        assert repo.users[1].active == ACTIVE.DISCONNECTED
+        assert repo.users[1].active == ACTIVE.ACTIVE
         assert repo.users[1].course == COURSE.CIC
         assert repo.users[1].year == 4
         assert repo.users[1].organization == ORGANIZATION.DEV
@@ -137,7 +145,7 @@ class Test_UserRepositoryMock:
         )
         id_user_requester= "e6bed58f-424a-4b62-b408-18e0a8d1f069"
 
-        response= repo.has_permission(id_user_requester, new_user)
+        response= repo.has_permission_target_user(id_user_requester, new_user)
 
         assert response == True
 
@@ -156,10 +164,10 @@ class Test_UserRepositoryMock:
                     state=STATE.PENDING,
                     active=ACTIVE.ACTIVE
         )
-        id_user_requester= "550e8400-e29b-41d4-a716-446655440001"
+        id_user_requester= "550e8400-e29b-41d4-a716-446655440002"
 
         with pytest.raises(ForbiddenAction):
-            repo.has_permission(id_user_requester, new_user)
+            repo.has_permission_target_user(id_user_requester, new_user)
 
 
     def test_has_permission_user_requester_does_not_has_the_same_organization_of_new_user(self):
@@ -179,7 +187,7 @@ class Test_UserRepositoryMock:
         id_user_requester= "550e8400-e29b-41d4-a716-446655440002"
 
         with pytest.raises(ForbiddenAction):
-            response= repo.has_permission(id_user_requester, new_user)
+            response= repo.has_permission_target_user(id_user_requester, new_user)
 
     def test_has_permission_user_requester_not_found(self):
         repo = UserRepositoryMock()
@@ -198,4 +206,102 @@ class Test_UserRepositoryMock:
         id_user_requester= "550e8400-e29b-41d4-a716-446655440005"
 
         with pytest.raises(NoItemsFound):
-            repo.has_permission(id_user_requester, new_user)
+            repo.has_permission_target_user(id_user_requester, new_user)
+            
+            
+    def test_has_permission_target_id_president_in_own_org(self):
+        repo = UserRepositoryMock()
+        target_user = User(
+            user_id=str(uuid.uuid4()),
+            name="Target User",
+            email="23.00000-0@maua.br",
+            ra="23.00000-0",
+            role=ROLE.USER,
+            organization=ORGANIZATION.DEV,
+            active=ACTIVE.ACTIVE, course=COURSE.ECM, state=STATE.APPROVED, year=1
+        )
+        repo.create_user(target_user)
+        
+        dev_president_user = repo.get_dev_president()
+        
+        response = repo.has_permission_target_id(
+            requester_id=dev_president_user.user_id,
+            target_id=target_user.user_id
+        )
+        
+        assert response == True
+        
+    def test_has_permission_target_id_common_user_raises_forbidden(self):
+        repo = UserRepositoryMock()
+        requester_user = User(
+            user_id=str(uuid.uuid4()),
+            name="Requester User",
+            email="23.00001-0@maua.br",
+            ra="23.00001-0",
+            role=ROLE.USER,
+            organization=ORGANIZATION.DEV,
+            active=ACTIVE.ACTIVE, course=COURSE.ECM, state=STATE.APPROVED, year=1
+        )
+        repo.create_user(requester_user)
+        
+        dev_president_user = repo.get_dev_president()
+        
+        with pytest.raises(ForbiddenAction) as e:
+            repo.has_permission_target_id(
+                requester_id=requester_user.user_id,
+                target_id=dev_president_user.user_id
+            )
+        assert e.value.message == "Common user is not allowed to perform actions in other entities"
+
+    def test_has_permission_target_id_president_outside_org_raises_forbidden(self):
+        repo = UserRepositoryMock()
+        target_user = User(
+            user_id=str(uuid.uuid4()),
+            name="Target User",
+            email="23.00000-0@maua.br",
+            ra="23.00000-0",
+            role=ROLE.USER,
+            organization=ORGANIZATION.DEV,
+            active=ACTIVE.ACTIVE, course=COURSE.ECM, state=STATE.APPROVED, year=1
+        )
+        repo.create_user(target_user)
+        
+        nawat_president_user = repo.get_nawat_president()
+        
+        with pytest.raises(ForbiddenAction) as e:
+            repo.has_permission_target_id(
+                requester_id=nawat_president_user.user_id,
+                target_id=target_user.user_id
+            )
+        assert e.value.message == "President is not allowed to perform action in other organization besides he's"
+
+    def test_has_permission_target_id_admin_on_any_user(self):
+        repo = UserRepositoryMock()
+        target_user = User(
+            user_id=str(uuid.uuid4()),
+            name="Target User",
+            email="23.00000-0@maua.br",
+            ra="23.00000-0",
+            role=ROLE.USER,
+            organization=ORGANIZATION.DEV,
+            active=ACTIVE.ACTIVE, course=COURSE.ECM, state=STATE.APPROVED, year=1
+        )
+        repo.create_user(target_user)
+        
+        system_admin = repo.get_system_admin()
+        nawat_president_user = repo.get_nawat_president()
+        
+        # Admin on president
+        response_admin_on_president = repo.has_permission_target_id(
+            requester_id=system_admin.user_id,
+            target_id=nawat_president_user.user_id
+        )
+        assert response_admin_on_president == True
+        
+        # Admin on common user
+        response_admin_on_user = repo.has_permission_target_id(
+            requester_id=system_admin.user_id,
+            target_id=target_user.user_id
+        )
+        assert response_admin_on_user == True
+            
