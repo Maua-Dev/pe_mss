@@ -2,7 +2,6 @@ import enum
 from enum import Enum
 import os
 from src.shared.domain.observability.observability_interface import IObservability
-
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 
 
