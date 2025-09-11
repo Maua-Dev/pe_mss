@@ -60,3 +60,24 @@ class TestUserRepositoryPostgres:
         }
 
         mock_datasource.query.assert_called_once_with(sql=expected_sql, params=expected_params)
+
+    def test_delete_user(self):
+        mock_datasource = MagicMock(spec=RdsDataDatasource)
+
+        user_id_to_delete = "550e8400-e29b-41d4-a716-446655440000"
+
+        mock_datasource.query.return_value = []
+
+        repo = UserRepositoryPostgres(db_datasource=mock_datasource)
+
+        result = repo.delete_user(user_id=user_id_to_delete)
+
+        assert result is True
+
+        expected_sql = """
+            DELETE FROM users WHERE user_id = :user_id
+        """
+        
+        expected_params = {"user_id": user_id_to_delete}
+
+        mock_datasource.query.assert_called_once_with(sql=expected_sql, params=expected_params)

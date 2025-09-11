@@ -36,8 +36,13 @@ class UserRepositoryPostgres(IUserRepository):
             
         return None
     
-    def delete_user(self, *args, **kwargs):
-        raise NotImplementedError
+    def delete_user(self, user_id: str) -> bool:
+        query = """
+            DELETE FROM users WHERE user_id = :user_id
+        """
+        params = {"user_id": user_id}
+        result = self.postgres.query(sql=query, params=params)
+        return result is not None
 
     def get_all_user(self, *args, **kwargs):
         raise NotImplementedError
