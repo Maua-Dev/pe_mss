@@ -51,50 +51,55 @@ class CreateUserController:
                     fieldTypeReceived=request.data['user_from_authorizer'].get('mail').__class__.__name__
                 )
 
-            requested_user_role = self.create_user_usecase.repo.get_user(user_id=request.data['user_from_authorizer'].get('id')).role
+            requester_user_id = request.data['user_from_authorizer'].get('id')
+            requester_user_role = self.create_user_usecase.repo.get_user(user_id=requester_user_id).role
 
-            match requested_user_role:
+            if request.data.get('new_user') is None:
+                raise MissingParameters('new_user')
+            
+            if type(request.data.get('new_user')) == list:
+                users = self.create_user_usecase(user_data=request.data, case="planilha", requester_id=requester_user_id)
+                viewmodels = [CreateUserViewmodel(user=user).to_dict() for user in users]
+                return OK(viewmodels)
+
+            new_user_data = request.data['new_user']
+
+            match requester_user_role:
                 case ROLE.ADM:
                     # nome, email, organization; role
-                    if request.data.get('name') is None:
+                    if new_user_data.get('name') is None:
                         raise MissingParameters('name')
                     
-                    if request.data.get('email') is None:
+                    if new_user_data.get('email') is None:
                         raise MissingParameters('email')
-                    
-                    if request.data.get('organization') is None:
+
+                    if new_user_data.get('organization') is None:
                         raise MissingParameters('organization')
-                    
-                    if request.data.get('role') is None:
+
+                    if new_user_data.get('role') is None:
                         raise MissingParameters('role')
                     
-                    user=self.create_user_usecase(user_data=request.data, case=requested_user_role)
-
+                    user=self.create_user_usecase(user_data=request.data, case=requester_user_role, requester_id=requester_user_id)
                 case ROLE.PRESIDENT:
                     # nome*, email*, organization*, periodo, curso
-                    if request.data.get('name') is None:
+                    if new_user_data.get('name') is None:
                         raise MissingParameters('name')
                     
-                    if request.data.get('email') is None:
+                    if new_user_data.get('email') is None:
                         raise MissingParameters('email')
-                    
-                    if request.data.get('organization') is None:
+
+                    if new_user_data.get('organization') is None:
                         raise MissingParameters('organization')
-                    
-                    if request.data.get('course') is None:
+
+                    if new_user_data.get('course') is None:
                         raise MissingParameters('course')
                     
-                    if request.data.get('period') is None:
-                        raise MissingParameters('period')
-                    
-                    user=self.create_user_usecase(user_data=request.data, case=requested_user_role)
+                    if new_user_data.get('year') is None:
+                        raise MissingParameters('year')
 
-                case _:
-                    # Criando pela planilha
-                    user=self.create_user_usecase(user_data=request.data, case="planilha")
+                    user=self.create_user_usecase(user_data=request.data, case=requester_user_role, requester_id=requester_user_id)
 
             viewmodel= CreateUserViewmodel(user=user)
-
             return OK(viewmodel.to_dict())
 
         except NoItemsFound as err:
