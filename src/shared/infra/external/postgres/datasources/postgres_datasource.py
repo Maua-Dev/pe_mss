@@ -5,7 +5,6 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Generator
 
-# Configuração básica de logging para o módulo
 logger = logging.getLogger(__name__)
 
 class RdsDataError(Exception):

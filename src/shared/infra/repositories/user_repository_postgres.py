@@ -8,25 +8,49 @@ class UserRepositoryPostgres(IUserRepository):
     def __init__(self, db_datasource):
         self.postgres = db_datasource
 
-    def create_user(self, new_user: User) -> User:
+    def create_user(self, new_user: User) -> User | None:
         query = """
-            INSERT INTO users (user_id, name, email, role, state, active, course, year, organization)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO users (user_id, name, email, ra, role, state, active, course, year, organization)
+            VALUES (:user_id, :name, :email, :ra, :role, :state, :active, :course, :year, :organization)
             RETURNING *;
         """
-        params = (
-            new_user.user_id,
-            new_user.name,
-            new_user.email,
-            new_user.role.value if new_user.role else None,
-            new_user.state.value if new_user.state else None,
-            new_user.active.value if new_user.active else None,
-            new_user.course.value if new_user.course else None,
-            new_user.year,
-            new_user.organization.value if new_user.organization else None
-        )
-        result = self.postgres.query(query=query, params=params)
+        
+        params = {
+            "user_id": new_user.user_id,
+            "name": new_user.name,
+            "email": new_user.email,
+            "ra": new_user.ra,
+            "role": new_user.role.value if new_user.role else None,
+            "state": new_user.state.value if new_user.state else None,
+            "active": new_user.active.value if new_user.active else None,
+            "course": new_user.course.value if new_user.course else None,
+            "year": new_user.year,
+            "organization": new_user.organization.value if new_user.organization else None
+        }
+        
+        result = self.postgres.query(sql=query, params=params)
 
         if result:
-            return User(**result[0])
+            user_data_from_db = result[0]
+            return User.from_dict(user_data_from_db)
+            
         return None
+    
+    def delete_user(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def get_all_user(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def get_user(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def has_permission_target_id(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def has_permission_target_user(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def update_user(self, *args, **kwargs):
+        raise NotImplementedError
+    
