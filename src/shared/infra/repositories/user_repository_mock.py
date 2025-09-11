@@ -77,7 +77,19 @@ class UserRepositoryMock(IUserRepository):
                 active=ACTIVE.DISCONNECTED, 
                 course=COURSE.ECM, 
                 year=5, 
-                organization=ORGANIZATION.DEV, user_id="3d32ec27-09c3-41da-92e2-be106e449b6a")
+                organization=ORGANIZATION.DEV, user_id="3d32ec27-09c3-41da-92e2-be106e449b6a"),
+            User(
+                name="Murillo Strina",
+                email="22.00730-0@maua.br",
+                ra="22.00730-0",
+                state=STATE.PENDING,
+                role=ROLE.USER,
+                active=ACTIVE.ACTIVE,
+                course=COURSE.ECM,
+                year=4,
+                organization=ORGANIZATION.NAWAT,
+                user_id="b423780f-2045-44e1-9c0b-98352841817d"
+            )
         ]
         
     def get_dev_president(self) -> Optional[User]:

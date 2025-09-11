@@ -47,8 +47,18 @@ class UserRepositoryPostgres(IUserRepository):
     def get_all_user(self, *args, **kwargs):
         raise NotImplementedError
 
-    def get_user(self, *args, **kwargs):
-        raise NotImplementedError
+    def get_user(self, user_id: str) -> User | None:
+        query = """
+            SELECT * FROM users WHERE user_id = :user_id
+        """
+        params = {"user_id": user_id}
+        result = self.postgres.query(sql=query, params=params)
+
+        if result:
+            user_data_from_db = result[0]
+            return User.from_dict(user_data_from_db)
+
+        return None
 
     def has_permission_target_id(self, *args, **kwargs):
         raise NotImplementedError
