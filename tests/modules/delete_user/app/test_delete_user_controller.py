@@ -16,10 +16,8 @@ class Test_DeleteUserController:
         usecase = DeleteUserUsecase(repo=repo)
         controller = DeleteUserController(usecase=usecase)
 
-        deleted_user_id = repo.users[0].user_id;
-
         request = HttpRequest(body={
-            'user_id': deleted_user_id,
+            'user_id': "550e8400-e29b-41d4-a716-446655440000",
             'user_from_authorizer':{
                 'id': '550e8400-e29b-41d4-a716-446655440000',
                 'displayName': 'Guilherme',
@@ -30,7 +28,7 @@ class Test_DeleteUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == deleted_user_id
+        assert response.body['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
         assert response.body['message'] == "the user was deleted successfully"
     
     def test_delete_user_controller_as_admin(self):
@@ -39,10 +37,8 @@ class Test_DeleteUserController:
         usecase = DeleteUserUsecase(repo=repo)
         controller = DeleteUserController(usecase=usecase)
 
-        deleted_user_id = repo.users[0].user_id;
-
         request = HttpRequest(body={
-            'user_id': deleted_user_id,
+            'user_id': "550e8400-e29b-41d4-a716-446655440000",
             'user_from_authorizer':{
                 'id': '550e8400-e29b-41d4-a716-446655440001',
                 'displayName': 'João',
@@ -53,27 +49,23 @@ class Test_DeleteUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == deleted_user_id
+        assert response.body['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
         assert response.body['message'] == "the user was deleted successfully"
     
     def test_delete_member_user_controller_as_president(self):
         repo = UserRepositoryMock()
 
-        # Create and add president to the database
-        president = User("b19b104f-f828-44c3-902e-db91b296dc51", "Presidas", "20.00011-1@maua.br", STATE.APPROVED, ROLE.PRESIDENT, "20.00011-1", COURSE.CIC, 4, ORGANIZATION.DEV)
-        repo.create_user(president)
-
         usecase = DeleteUserUsecase(repo=repo)
         controller = DeleteUserController(usecase=usecase)
 
-        deleted_user_id = "550e8400-e29b-41d4-a716-446655440002";
+        deleted_user_id = "550e8400-e29b-41d4-a716-446655440089"
 
         request = HttpRequest(body={
             'user_id': deleted_user_id,
             'user_from_authorizer':{
-                'id': president.user_id,
-                'displayName': president.name,
-                'mail': president.email
+                'id': "e6bed58f-424a-4b62-b408-18e0a8d1f069",
+                'displayName': "Pedro",
+                'mail': "20.00789-4@maua.br"
             }
         })
 

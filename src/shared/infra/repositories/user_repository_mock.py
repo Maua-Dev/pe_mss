@@ -77,7 +77,19 @@ class UserRepositoryMock(IUserRepository):
                 active=ACTIVE.DISCONNECTED, 
                 course=COURSE.ECM, 
                 year=5, 
-                organization=ORGANIZATION.DEV, user_id="3d32ec27-09c3-41da-92e2-be106e449b6a")
+                organization=ORGANIZATION.DEV, user_id="3d32ec27-09c3-41da-92e2-be106e449b6a"),
+            User(
+                #usuário comum da dev
+                name="Ana Clara", 
+                email="20.00789-4@maua.br", 
+                ra="20.00789-4",
+                state=STATE.APPROVED, 
+                role=ROLE.USER, 
+                active=ACTIVE.ACTIVE, 
+                course=COURSE.ECM, 
+                year=5, 
+                organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440089"
+            )
         ]
         
     def get_dev_president(self) -> Optional[User]:
@@ -149,6 +161,10 @@ class UserRepositoryMock(IUserRepository):
     
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
         try:
+            # usuário pode se auto-gerenciar
+            if requester_id == target_user.user_id:
+                return True
+
             requester_user = self.get_user(user_id=requester_id)
 
             if requester_user.active != ACTIVE.ACTIVE:
@@ -178,8 +194,11 @@ class UserRepositoryMock(IUserRepository):
             raise ForbiddenAction(e.message)
         
     def has_permission_target_id(self, requester_id: str, target_id: str) -> Optional[bool]:
-        
         try:
+            # usuário pode se auto-gerenciar
+            if requester_id == target_id:
+                return True
+
             requester_user = self.get_user(user_id=requester_id)
             target_user = self.get_user(user_id=target_id)
 

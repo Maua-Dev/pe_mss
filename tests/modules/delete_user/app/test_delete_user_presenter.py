@@ -137,9 +137,9 @@ class Test_DeleteUserPresenter:
                 "authentication": None,
                 "authorizer": {
                     "user": {
-                        "id": "b19b104f-f828-44c3-902e-db91b296dc51",
-                        "displayName": "Presidas", 
-                        "mail": "20.00011-1@maua.br"
+                        "id": "e6bed58f-424a-4b62-b408-18e0a8d1f069",
+                        "displayName": "Pedro", 
+                        "mail": "20.00789-4@maua.br"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
@@ -157,7 +157,7 @@ class Test_DeleteUserPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": '{"user_id": "550e8400-e29b-41d4-a716-446655440004"}',
+            "body": '{"user_id": "550e8400-e29b-41d4-a716-446655440089"}',
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
@@ -166,5 +166,5 @@ class Test_DeleteUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['user_id'] == "550e8400-e29b-41d4-a716-446655440004"
+        assert json.loads(response["body"])['user_id'] == "550e8400-e29b-41d4-a716-446655440089"
         assert json.loads(response["body"])['message'] == "the user was deleted successfully"

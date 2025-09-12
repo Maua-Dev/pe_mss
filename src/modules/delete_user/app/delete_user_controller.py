@@ -31,28 +31,10 @@ class DeleteUserController:
                 )
             
             request_user_id = request.data['user_from_authorizer'].get('id')
-            request_user_role = self.DeleteUserUsecase.repo.get_user(request_user_id).role
             
-            if request_user_id != user_id:
-                if request_user_role == ROLE.ADM:
-                    user = self.DeleteUserUsecase(user_id=str(user_id))
-
-                    viewmodel = DeleteUserViewmodel(user=user)
-                    return OK(viewmodel.to_dict())
-
-                elif request_user_role == ROLE.PRESIDENT and self.DeleteUserUsecase.repo.get_user(request_user_id).organization == self.DeleteUserUsecase.repo.get_user(user_id).organization:
-                    user = self.DeleteUserUsecase(user_id=str(user_id))
-
-                    viewmodel = DeleteUserViewmodel(user=user)
-                    return OK(viewmodel.to_dict())
-
-
-                raise Exception("Not enough permissions to complete the request")
-            else:
-                user = self.DeleteUserUsecase(user_id=str(user_id))
-
-                viewmodel = DeleteUserViewmodel(user=user)
-                return OK(viewmodel.to_dict())
+            if self.DeleteUserUsecase.repo.has_permission_target_id(request_user_id, user_id):
+                user = self.DeleteUserUsecase(user_id)
+                return OK(body=DeleteUserViewmodel(user).to_dict())
         
         except NoItemsFound as err:
 
