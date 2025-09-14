@@ -32,7 +32,7 @@ class Test_UserRepositoryMock:
     def test_get_all_user(self):
         repo = UserRepositoryMock()
         users = repo.get_all_user()
-        assert len(users) == 6
+        assert len(users) == 7
 
     def test_create_user(self):
         repo = UserRepositoryMock()

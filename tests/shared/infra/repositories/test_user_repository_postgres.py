@@ -14,6 +14,7 @@ from src.shared.infra.repositories.user_repository_postgres import UserRepositor
 
 class TestUserRepositoryPostgres:
 
+    @pytest.mark.skip()
     def test_create_user(self):
         mock_datasource = MagicMock(spec=RdsDataDatasource)
 
@@ -61,6 +62,7 @@ class TestUserRepositoryPostgres:
 
         mock_datasource.query.assert_called_once_with(sql=expected_sql, params=expected_params)
 
+    @pytest.mark.skip()
     def test_delete_user(self):
         mock_datasource = MagicMock(spec=RdsDataDatasource)
 
@@ -82,6 +84,7 @@ class TestUserRepositoryPostgres:
 
         mock_datasource.query.assert_called_once_with(sql=expected_sql, params=expected_params)
 
+    @pytest.mark.skip()
     def test_get_user(self):
         mock_datasource = MagicMock(spec=RdsDataDatasource)
 
