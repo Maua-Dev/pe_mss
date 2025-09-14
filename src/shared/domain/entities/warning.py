@@ -1,6 +1,7 @@
 from pydantic import *
 import uuid
 from typing import *
+import datetime
 
 class Warning(BaseModel):
     
@@ -14,10 +15,14 @@ class Warning(BaseModel):
     description: str = Field(
         description="Descrição do aviso"
     )
+    expire: datetime.datetime = Field(
+        description="Data de vencimento do aviso / data limite do aviso",
+    )
     viewed: bool = Field(
         description="Bool para identificar se foi visualizado ou não"
     )
-    
-    class Config:
-        use_enum_values = False
-        extra = "forbid"
+        
+    model_config = ConfigDict(
+        use_enum_values=False,
+        extra="forbid"
+    )
