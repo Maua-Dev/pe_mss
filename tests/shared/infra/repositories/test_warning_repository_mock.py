@@ -26,9 +26,10 @@ class TestWarningRepositoryMock:
         
         created_warning = repo.create_warning(
             new_warning=new_warning,
-            target_id=target_id,
-            target_role=target_role
         )
+        
+        repo.link_to_users(warning_id=warning_id, user_ids=[target_id])
+        repo.link_to_roles(warning_id=warning_id, roles=[target_role])
         
         assert created_warning == new_warning
         

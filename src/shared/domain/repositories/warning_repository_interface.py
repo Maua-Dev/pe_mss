@@ -12,16 +12,33 @@ class IWarningRepository(ABC):
     def create_warning(self, new_warning: Warning, target_id: str, target_role: ROLE) -> Optional[Warning]:
         """ 
         Método que cria um aviso no banco de dados
-        Interage com a tabela de user_aviso
 
         Args:
             new_warning (Warning): novo aviso a ser criado, passado como entidade
-            target_id: o usuário que o aviso destina-se
-            target_role: a role do usuário que o aviso destina-se
         Returns:
             Optional[Warning]: caso o aviso não seja um duplicado, retorna o aviso
         """
         pass
+    
+    @abstractmethod
+    def link_to_users(self, warning_id: str, user_ids: list[str]) -> None:
+        """
+        Método que vincula um aviso à usuários pelo user_id
+
+        Args:
+            warning_id (str): id do aviso
+            user_ids (list[str]): ids dos usuários a linkar
+        """
+        
+    @abstractmethod
+    def link_to_roles(self, warning_id: str, roles: list[ROLE]) -> None:
+        """
+        Método que vincula um aviso à roles
+
+        Args:
+            warning_id (str): id do aviso
+            roles (list[ROLE]): roles que irão conter o aviso
+        """
     
     #updates
     

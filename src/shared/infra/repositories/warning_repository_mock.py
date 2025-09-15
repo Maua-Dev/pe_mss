@@ -72,17 +72,23 @@ class WarningRepositoryMock(IWarningRepository):
             )
         ]
         
-    def create_warning(self, new_warning: Warning, target_id: str, target_role: ROLE) -> Optional[Warning]:
-                
-        warning_id = new_warning.warning_id
-        
+    def create_warning(self, new_warning: Warning) -> Optional[Warning]:
+                        
         self.warnings.append(new_warning)
         
-        self.user_warning.append(UserWarningLink(warning_id=warning_id, user_id=target_id))
-        
-        self.role_warning.append(RoleWarningLink(warning_id=warning_id, role=target_role))
-        
         return new_warning
+    
+    def link_to_users(self, warning_id: str, user_ids: list[str]) -> None:
+        
+        for user_id in user_ids:
+            
+            self.user_warning.append(UserWarningLink(warning_id=warning_id, user_id=user_id))
+            
+    def link_to_roles(self, warning_id: str, roles: list[ROLE]):
+        
+        for role in roles:
+            
+            self.role_warning.append(RoleWarningLink(warning_id=warning_id, role=role))
     
     def update_warning(self, warning: Warning) -> Optional[Warning]:
         
