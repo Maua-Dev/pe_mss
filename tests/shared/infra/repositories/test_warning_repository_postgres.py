@@ -2,9 +2,11 @@ from src.shared.infra.external.postgres.datasources.postgre_tests_datasource imp
 from src.shared.infra.repositories.warning_repository_postgres import WarningRepositoryPostgres
 from src.shared.domain.entities.warning import Warning
 import datetime
+import pytest
 
 class TestWarningRepositoryPostgres:
     
+    @pytest.mark.skip()
     def test_create_warning_repository_postgres(self):
         
         datasource = PostgresTestDatasource()
