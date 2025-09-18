@@ -48,7 +48,7 @@ class WarningRepositoryPostgres(IWarningRepository):
             VALUES (:role_value, :warning_id)
         """
         
-        params = {"role": role_value, "warning_id": warning_id}
+        params = {"role_value": role_value, "warning_id": warning_id}
         
         self.postgres.query(sql=query, params=params)
     
