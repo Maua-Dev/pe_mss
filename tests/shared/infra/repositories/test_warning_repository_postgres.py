@@ -1,4 +1,4 @@
-from src.shared.infra.external.postgres.datasources.postgre_tests_datasource import PostgresTestDatasource
+from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import PostgresTestDatasource
 from src.shared.infra.repositories.warning_repository_postgres import WarningRepositoryPostgres
 from src.shared.domain.entities.warning import Warning
 import datetime

@@ -7,7 +7,7 @@ from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
-from src.shared.infra.external.postgres.datasources.postgre_tests_datasource import PostgresTestDatasource
+from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import PostgresTestDatasource
 from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
 from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
 

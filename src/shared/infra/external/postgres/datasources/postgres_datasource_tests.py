@@ -2,6 +2,7 @@ import psycopg2
 import psycopg2.extras
 from typing import Optional, Dict, Any, List
 import re
+from contextlib import contextmanager
 
 class PostgresTestDatasource:
     """
@@ -62,6 +63,40 @@ class PostgresTestDatasource:
             rowcount = cursor.rowcount
             self.conn.commit()
             return rowcount
+        
+    def batch_execute(self, sql: str, params_list: List[Dict[str, Any]], transaction_id=None):
+        """
+        Implementação do batch_execute usando psycopg2.extras.execute_batch.
+        """
+        if not params_list:
+            return 0
+        
+        query_psycopg2 = re.sub(r':(\w+)', r'%(\1)s', sql)
+        
+        with self.conn.cursor() as cursor:
+            psycopg2.extras.execute_batch(cursor, query_psycopg2, params_list)
+            rowcount = cursor.rowcount
+            self.conn.commit()
+            return rowcount
+        
+    @contextmanager
+    def transaction(self):
+        """
+        Fornece um contexto de transação para psycopg2.
+        O transaction_id do boto3 não é necessário aqui, pois o psycopg2 gerencia
+        a transação no próprio objeto de conexão.
+        """
+        try:
+            # psycopg2 já inicia uma transação implicitamente na primeira execução.
+            # O 'yield' passa o controle para o bloco 'with' no código que chama.
+            yield
+            # Se o bloco 'with' terminar sem erros, commita.
+            self.conn.commit()
+        except Exception as e:
+            # Se ocorrer um erro dentro do bloco 'with', desfaz tudo.
+            self.conn.rollback()
+            # Relança a exceção para que o código que a chamou saiba do erro.
+            raise e
 
     def close(self):
         """Fecha a conexão com o banco de dados."""
