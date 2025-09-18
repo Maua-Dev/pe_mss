@@ -1,19 +1,20 @@
 import psycopg2
 import os
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+from src.shared.environments import Environments
 
-DB_NAME = "mydatabase"
-DB_USER = "myuser"
-DB_PASS = "mypassword"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-
-def get_db_connection():
+def get_local_db_connection():
     """Função centralizada para obter uma conexão com o banco"""
+    envs = Environments.get_envs()
     return psycopg2.connect(
-        dbname=DB_NAME, user=DB_USER, password=DB_PASS,
-        host=DB_HOST, port=DB_PORT, client_encoding='utf-8'
+        dbname=envs.db_name,
+        user=envs.db_local_user, 
+        password=envs.db_local_pass,
+        host=envs.db_local_host, 
+        port=envs.db_local_port,
+        client_encoding='utf-8'
     )
+    
     
 def setup_user_tables(cursor):
     
@@ -71,7 +72,7 @@ def load_mock_users(cursor):
 if __name__ == '__main__':
     conn = None
     try:
-        conn = get_db_connection()
+        conn = get_local_db_connection()
         cursor = conn.cursor()
         
         setup_user_tables(cursor)
