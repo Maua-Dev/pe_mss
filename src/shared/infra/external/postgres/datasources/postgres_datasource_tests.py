@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any, List
 import re
 from contextlib import contextmanager
 
-class PostgresTestDatasource:
+class TestsRdsDatasource:
     """
     Datasource para testes de integração que se conecta a um banco PostgreSQL local.
     """

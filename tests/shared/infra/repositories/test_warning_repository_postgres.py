@@ -1,4 +1,4 @@
-from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import PostgresTestDatasource
+from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
 from src.shared.infra.repositories.warning_repository_postgres import WarningRepositoryPostgres
 from src.shared.domain.entities.warning import Warning
 from src.shared.domain.enums.role_enum import ROLE
@@ -11,7 +11,7 @@ class TestWarningRepositoryPostgres:
     @pytest.mark.skip("Can't run tests in GitHub actions")
     def test_create_warning_repository_postgres(self):
         
-        datasource = PostgresTestDatasource()
+        datasource = TestsRdsDatasource()
         
         repo = WarningRepositoryPostgres(db_datasource=datasource)
         
@@ -36,7 +36,7 @@ class TestWarningRepositoryPostgres:
         
         # this tests for get_user_warnings also
         
-        datasource = PostgresTestDatasource()
+        datasource = TestsRdsDatasource()
         
         repo = WarningRepositoryPostgres(db_datasource=datasource)
         
@@ -69,7 +69,7 @@ class TestWarningRepositoryPostgres:
         
         # this tests for get_president_roles also
         
-        datasource = PostgresTestDatasource()
+        datasource = TestsRdsDatasource()
         
         repo = WarningRepositoryPostgres(db_datasource=datasource)
         
@@ -103,7 +103,7 @@ class TestWarningRepositoryPostgres:
     @pytest.mark.skip("Can't run tests in GitHub actions")
     def test_update_warning(self):
         
-        datasource = PostgresTestDatasource()
+        datasource = TestsRdsDatasource()
         
         repo = WarningRepositoryPostgres(db_datasource=datasource)
         
@@ -128,7 +128,7 @@ class TestWarningRepositoryPostgres:
     @pytest.mark.skip("Can't run tests in GitHub actions")    
     def test_delete_warning(self):
         
-        datasource = PostgresTestDatasource()
+        datasource = TestsRdsDatasource()
         
         repo = WarningRepositoryPostgres(db_datasource=datasource)
         
@@ -170,7 +170,7 @@ class TestWarningRepositoryPostgres:
     @pytest.mark.skip("Can't run tests in GitHub actions")
     def test_get_warning(self):
         
-        datasource = PostgresTestDatasource()
+        datasource = TestsRdsDatasource()
         
         repo = WarningRepositoryPostgres(db_datasource=datasource)
         
@@ -192,7 +192,7 @@ class TestWarningRepositoryPostgres:
     @pytest.mark.skip("Can't run tests in GitHub actions")
     def test_get_all_warnings(self):
         
-        datasource = PostgresTestDatasource()
+        datasource = TestsRdsDatasource()
         
         repo = WarningRepositoryPostgres(db_datasource=datasource)
         

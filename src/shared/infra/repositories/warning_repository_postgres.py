@@ -1,11 +1,12 @@
 from src.shared.domain.entities.warning import Warning
 from src.shared.domain.repositories.warning_repository_interface import IWarningRepository
 from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
+from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
 from src.shared.domain.enums.role_enum import ROLE
 from typing import *
 
 class WarningRepositoryPostgres(IWarningRepository):
-    def __init__(self, db_datasource: RdsDataDatasource):
+    def __init__(self, db_datasource: Union[RdsDataDatasource, TestsRdsDatasource]):
         self.postgres = db_datasource
         
     def create_warning(self, new_warning: Warning) -> Optional[Warning]:
