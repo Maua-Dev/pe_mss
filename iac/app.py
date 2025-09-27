@@ -11,7 +11,7 @@ from stack.iac_stack import IacStack
 print("Starting the CDK")
 
 print("Adjusting the layer directory")
-adjust_layer_directory(shared_dir_name="shared", destination="lambda_layer_out_temp")
+adjust_layer_directory()
 print("Finished adjusting the layer directory")
 
 

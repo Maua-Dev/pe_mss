@@ -10,6 +10,8 @@ REQUIREMENTS_FILE = "requirements-app.txt"
 
 # Pega o diretório do projeto (a raiz 'reservation_api') subindo um nível a partir do script atual
 PROJECT_ROOT = Path(__file__).parent.parent 
+# O 3 parâmetro passado no join precisa corresponder exatamente a pasta ao lado de modules, geralmente a shared
+# Essa será a pasta em que as depências que nosso projeto estarão presentes.
 SHARED_CODE_SOURCE = os.path.join(PROJECT_ROOT, "src", "shared")
 
 
