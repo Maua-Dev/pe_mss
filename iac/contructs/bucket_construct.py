@@ -23,10 +23,10 @@ class BucketContruct(Construct):
 
         REMOVAL_POLICY = RemovalPolicy.RETAIN if 'prod' in self.github_ref_name else RemovalPolicy.DESTROY
 
-        self.s3_bucket_member = aws_s3.Bucket(self, "PortalEntidades_Member_Sheet_S3_Bucket",
+        self.s3_bucket_user = aws_s3.Bucket(self, "PortalEntidades_User_Bucket",
                                        versioned=True,
                                        block_public_access=aws_s3.BlockPublicAccess.BLOCK_ALL,
-                                       event_bridge_enabled=False,
+                                       event_bridge_enabled=True,
                                        cors=[aws_s3.CorsRule(
                                              allowed_methods=[
                                                  aws_s3.HttpMethods.GET, aws_s3.HttpMethods.PUT, aws_s3.HttpMethods.POST],
@@ -37,9 +37,9 @@ class BucketContruct(Construct):
                                        removal_policy=REMOVAL_POLICY
                                        )
 
-        oac = aws_cloudfront.CfnOriginAccessControl(self, "PortalEntidades_Member_Sheet_OAC",
+        oac = aws_cloudfront.CfnOriginAccessControl(self, "PortalEntidades_User_Bucket_OAC",
             origin_access_control_config=aws_cloudfront.CfnOriginAccessControl.OriginAccessControlConfigProperty(
-                name="PortalEntidadesMemberSheetOAC",
+                name="PortalEntidadesUserBucketOAC",
                 origin_access_control_origin_type="s3",
                 signing_behavior="always",
                 signing_protocol="sigv4"
@@ -48,7 +48,7 @@ class BucketContruct(Construct):
 
         self.cloudfront_distribution_member = aws_cloudfront.Distribution(
             self, 
-            "PortalEntidades_Member_Sheet_CloudFront_Distribution",
+            "PortalEntidades_User_Bucket_CloudFront_Distribution",
             default_behavior=aws_cloudfront.BehaviorOptions(
                 origin=aws_cloudfront_origins.S3Origin(
                     self.s3_bucket_member,
