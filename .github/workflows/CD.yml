@@ -60,7 +60,8 @@ jobs:
         - name: DeployWithCDK
           run: |
             cd iac
-            cdk bootstrap aws://${{ env.AWS_ACCOUNT_ID}}/${{ vars.AWS_REGION }} --trust arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/GithubActionsRole
+            cdk synth
+            cdk deploy --require-approval never 
 
           env:
               AWS_REGION: ${{ vars.AWS_REGION }}
