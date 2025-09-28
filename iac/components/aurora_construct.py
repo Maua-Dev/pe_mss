@@ -36,7 +36,6 @@ class AuroraConstruct(Construct):
                 )
             ],
             nat_gateways=1 if stage != "PROD" else 3,  # 1 NAT para dev/homolog, 3 para prod
-            removal_policy=removal
         )
 
         creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
