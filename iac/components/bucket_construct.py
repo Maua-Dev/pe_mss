@@ -8,7 +8,7 @@ from aws_cdk import (
     aws_cloudfront, aws_cloudfront_origins, RemovalPolicy
 )
 
-from components import Construct
+from constructs import Construct
 
 
 class BucketContruct(Construct):

@@ -4,7 +4,7 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_rds as rds,
 )
-from components import Construct
+from constructs import Construct
 import os
 
 class AuroraConstruct(Construct):
