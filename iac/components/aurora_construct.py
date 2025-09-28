@@ -25,7 +25,9 @@ class AuroraConstruct(Construct):
 
         self.cluster = rds.ServerlessCluster(
             self, f"AuroraSrvls-{stage}",
-            engine=rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
+            engine=rds.DatabaseClusterEngine.aurora_postgres(
+                    version=rds.AuroraPostgresEngineVersion.VER_15_6
+                ),
             default_database_name="PortalEntidades_UserTable",
             vpc=vpc,
             enable_data_api=True,                      
