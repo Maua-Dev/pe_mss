@@ -22,13 +22,15 @@ class AuroraConstruct(Construct):
         vpc = ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
 
         creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
+        
+        db_name = "PortalEntidades_UserTable"
 
         self.cluster = rds.ServerlessCluster(
             self, f"AuroraSrvls-{stage}",
             engine=rds.DatabaseClusterEngine.aurora_postgres(
                     version=rds.AuroraPostgresEngineVersion.VER_15_6
                 ),
-            default_database_name="PortalEntidades_UserTable",
+            default_database_name=db_name,
             vpc=vpc,
             enable_data_api=True,                      
             credentials=creds,
@@ -41,3 +43,5 @@ class AuroraConstruct(Construct):
         )
 
         self.secret = self.cluster.secret 
+
+        self.default_database_name = db_name
