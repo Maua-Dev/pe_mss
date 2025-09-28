@@ -7,9 +7,9 @@ from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
 # Aqui não precisamos importar subindo um diretório pois a execução acontece diretamente do diretório iac
-from constructs.aurora_construct import AuroraConstruct
-from constructs.lambda_construct import LambdaConstruct
-from constructs.bucket_construct import BucketContruct
+from components.aurora_construct import AuroraConstruct
+from components.lambda_construct import LambdaConstruct
+from components.bucket_construct import BucketContruct
 
 class IacStack(Stack):
 

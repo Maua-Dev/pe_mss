@@ -3,7 +3,7 @@ from aws_cdk import (
     aws_lambda as lambda_,
     NestedStack, Duration
 )
-from constructs import Construct
+from components import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
 
 
