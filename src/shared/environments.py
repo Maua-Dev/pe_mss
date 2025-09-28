@@ -28,6 +28,10 @@ class Environments:
     dynamo_partition_key: str
     dynamo_sort_key: str
     db_name: str
+    db_local_user: str
+    db_local_pass: str
+    db_local_host: str
+    db_local_port: str
     db_cluster_arn: str
     db_secret_arn: str
     cloud_frontget_user_presenter_distribution_domain: str
@@ -49,7 +53,11 @@ class Environments:
             self.s3_bucket_name = "portalentidadesstackd-portalentidadesbackbucket-sheet"
             self.region = "us-east-1"
             self.endpoint_url = "http://localhost:8000"
-            self.db_name = "PortalEntidades_UserTable"
+            self.db_name = os.environ.get("POSTGRES_LOCAL_DB", "mydatabase")
+            self.db_local_user = os.environ.get("POSTGRES_LOCAL_USER", "myuser")
+            self.db_local_pass = os.environ.get("POSTGRES_LOCAL_PASS", "mypassword")
+            self.db_local_host = os.environ.get("POSTGRES_LOCAL_HOST", "localhost")
+            self.db_local_port = os.environ.get("POSTGRES_LOCAL_PORT", "5432")
             self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
             self.bucket_endpoint_url = "http://localhost:9000"
 

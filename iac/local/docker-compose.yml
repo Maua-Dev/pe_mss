@@ -4,9 +4,9 @@ services:
     image: "postgres:15" 
     container_name: postgres_db_pe_mss
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydatabase
+      POSTGRES_USER: ${POSTGRES_LOCAL_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_LOCAL_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_LOCAL_DB}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8"
       LC_ALL: en_US.UTF-8
     ports:
