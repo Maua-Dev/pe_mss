@@ -19,7 +19,25 @@ class AuroraConstruct(Construct):
         else:
             stage, removal = "DEV", RemovalPolicy.DESTROY
 
-        vpc = ec2.Vpc.from_lookup(self, "DefaultVpc", is_default=True)
+        vpc = ec2.Vpc(
+            self, f"PortalEntidadesVpc-{stage}",
+            max_azs=3,
+            cidr="10.0.0.0/16",
+            subnet_configuration=[
+                ec2.SubnetConfiguration(
+                    name=f"PrivateSubnet-{stage}",
+                    subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS,
+                    cidr_mask=24
+                ),
+                ec2.SubnetConfiguration(
+                    name=f"PublicSubnet-{stage}",
+                    subnet_type=ec2.SubnetType.PUBLIC,
+                    cidr_mask=24
+                )
+            ],
+            nat_gateways=1 if stage != "PROD" else 3,  # 1 NAT para dev/homolog, 3 para prod
+            removal_policy=removal
+        )
 
         creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
         
@@ -43,5 +61,5 @@ class AuroraConstruct(Construct):
         )
 
         self.secret = self.cluster.secret 
-
         self.default_database_name = db_name
+        self.vpc = vpc
