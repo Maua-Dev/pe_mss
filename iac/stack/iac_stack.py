@@ -6,7 +6,7 @@ from aws_cdk import (
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
-from iac.contructs.aurora_construct import AuroraConstruct
+from ..contructs.aurora_construct import AuroraConstruct
 from ..contructs.lambda_construct import LambdaConstruct
 from ..contructs.bucket_construct import BucketContruct
 
