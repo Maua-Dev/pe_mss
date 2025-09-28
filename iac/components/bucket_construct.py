@@ -56,7 +56,7 @@ class BucketContruct(Construct):
             self,
             "PortalEntidades_User_Bucket_CloudFront_Distribution",
             default_behavior=aws_cloudfront.BehaviorOptions(
-                origin=aws_cloudfront_origins.S3Origin(self.s3_bucket_user),
+                origin=aws_cloudfront_origins.S3BucketOrigin(self.s3_bucket_user),
                 origin_request_policy=aws_cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
                 viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
                 response_headers_policy=aws_cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,

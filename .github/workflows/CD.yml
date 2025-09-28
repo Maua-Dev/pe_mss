@@ -60,8 +60,7 @@ jobs:
         - name: DeployWithCDK
           run: |
             cd iac
-            cdk synth
-            cdk deploy --require-approval never 
+            cdk bootstrap --trust
 
           env:
               AWS_REGION: ${{ vars.AWS_REGION }}
