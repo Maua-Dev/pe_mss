@@ -133,6 +133,15 @@ class User(abc.ABC):
         except ValueError:
             raise InvalidUserIdFormat("Invalid format for user id")
         
+    @classmethod
+    def from_dict(cls, data: dict) -> "User":
+        if 'state' in data and data['state'] is not None: data['state'] = STATE(data['state'])
+        if 'role' in data and data['role'] is not None: data['role'] = ROLE(data['role'])
+        if 'active' in data and data['active'] is not None: data['active'] = ACTIVE(data['active'])
+        if 'course' in data and data['course'] is not None: data['course'] = COURSE(data['course'])
+        if 'organization' in data and data['organization'] is not None: data['organization'] = ORGANIZATION(data['organization'])
+        return cls(**data)
+
     def to_dict(self) -> dict:
         
         return {
@@ -140,18 +149,20 @@ class User(abc.ABC):
             "name": self.name,
             "ra": self.ra,
             "email": self.email,
-            "course": self.course.value,
+            "course": self.course.value if self.course else None,
             "year": self.year,
-            "role": self.role.value,
-            "active": self.active.value,
-            "organization": self.organization.value,
-            "state": self.state.value
+            "role": self.role.value if self.role else None,
+            "active": self.active.value if self.active else None,
+            "organization": self.organization.value if self.organization else None,
+            "state": self.state.value if self.state else None
         }
 
     def __repr__(self):
-        return f"User(user_id={self.user_id}, name={self.name}, ra={self.ra}, email={self.email}, course={self.course.value}, year={self.year}, role={self.role}, active={self.active}, organization={self.organization}, state={self.state})"
+        return f"User(user_id={self.user_id}, name={self.name}, ra={self.ra}, email={self.email}, course={self.course.value if self.course else None}, year={self.year}, role={self.role.value if self.role else None}, active={self.active.value if self.active else None}, organization={self.organization.value if self.organization else None}, state={self.state.value if self.state else None})"
 
     def __eq__(self, other: "User"):
+        if not isinstance(other, User):
+            return False
         return (
             self.user_id == other.user_id,
             self.name == other.name,
