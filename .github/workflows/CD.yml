@@ -60,7 +60,9 @@ jobs:
         - name: DeployWithCDK
           run: |
             cd iac
-            cdk bootstrap --trust
+            cdk bootstrap aws://${{env.AWS_ACCOUNT_ID}}/us-east-1 \
+              --trust ${{env.AWS_ACCOUNT_ID}} \
+              --cloudformation-execution-policies 'arn:aws:iam::aws:policy/AdministratorAccess'
 
           env:
               AWS_REGION: ${{ vars.AWS_REGION }}
