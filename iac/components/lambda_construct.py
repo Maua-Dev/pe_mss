@@ -52,7 +52,7 @@ class LambdaConstruct(Construct):
             # Mais especificamente na variável BUILD_DIRECTORY
             # ./{BUILD_DIRECTORY}
             code=lambda_.Code.from_asset("./build"), 
-            compatible_runtimes=[lambda_.Runtime.PYTHON_3_9]
+            compatible_runtimes=[lambda_.Runtime.PYTHON_3_11]
         )
 
         self.update_user_function = self.create_lambda_api_gateway_integration(
