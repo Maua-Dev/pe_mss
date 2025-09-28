@@ -12,7 +12,7 @@ from constructs import Construct
 
 
 class BucketContruct(Construct):
-    s3_bucket_member: aws_s3.Bucket
+    s3_bucket_user: aws_s3.Bucket
     selfie_validation_step_function: aws_stepfunctions.StateMachine
     cloudfront_distribution_member: aws_cloudfront.Distribution
 
@@ -51,7 +51,7 @@ class BucketContruct(Construct):
             "PortalEntidades_User_Bucket_CloudFront_Distribution",
             default_behavior=aws_cloudfront.BehaviorOptions(
                 origin=aws_cloudfront_origins.S3Origin(
-                    self.s3_bucket_member,
+                    self.s3_bucket_user,
                     origin_access_control=oac),
                 origin_request_policy=aws_cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
                 viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
