@@ -42,21 +42,34 @@ class AuroraConstruct(Construct):
         
         db_name = "PortalEntidades_UserTable"
 
-        self.cluster = rds.ServerlessCluster(
+        self.cluster = rds.DatabaseCluster(
             self, f"AuroraSrvls-{stage}",
             engine=rds.DatabaseClusterEngine.aurora_postgres(
-                    version=rds.AuroraPostgresEngineVersion.VER_15_6
-                ),
+                version=rds.AuroraPostgresEngineVersion.VER_15_6
+            ),
+            writer=rds.ClusterInstance.serverless_v2(
+                "WriterInstance",
+                scale_with_writer=True,
+            ),
+            readers=[
+                rds.ClusterInstance.serverless_v2(
+                    "ReaderInstance",
+                    scale_with_writer=True,
+                )
+            ] if stage == "PROD" else [],
+            serverless_v2_min_capacity=0.5,
+            serverless_v2_max_capacity=8,
             default_database_name=db_name,
             vpc=vpc,
-            enable_data_api=True,                      
-            credentials=creds,
-            scaling=rds.ServerlessScalingOptions(
-                auto_pause=Duration.minutes(10),       
-                min_capacity=rds.AuroraCapacityUnit.ACU_2,
-                max_capacity=rds.AuroraCapacityUnit.ACU_8,
+            vpc_subnets=ec2.SubnetSelection(
+                subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS
             ),
+            credentials=creds,
             removal_policy=removal,
+            enable_data_api=True,
+            backup=rds.BackupProps(
+                retention=Duration.days(7 if stage != "PROD" else 30)
+            ),
         )
 
         self.secret = self.cluster.secret 
