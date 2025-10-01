@@ -57,8 +57,8 @@ class AuroraConstruct(Construct):
                     scale_with_writer=True,
                 )
             ] if stage == "PROD" else [],
-            serverless_v2_min_capacity=0.5,
-            serverless_v2_max_capacity=8,
+            serverless_v2_min_capacity=0,
+            serverless_v2_max_capacity=2,
             default_database_name=db_name,
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(
