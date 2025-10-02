@@ -1,9 +1,5 @@
 import json
-import os
 import pytest
-
-# Garantir que o stage de teste seja usado
-os.environ["STAGE"] = "TEST"
 
 from src.modules.update_user.app.update_user_presenter import lambda_handler
 
