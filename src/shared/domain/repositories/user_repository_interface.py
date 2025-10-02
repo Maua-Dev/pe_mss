@@ -11,7 +11,7 @@ from src.shared.domain.entities.user import User
 class IUserRepository(ABC):
 
     @abstractmethod
-    def get_user(self, user_id: int) -> Optional[User]:
+    def get_user(self, user_id: str) -> Optional[User]:
         """
         If user not found raise NoItemsFound
         """
