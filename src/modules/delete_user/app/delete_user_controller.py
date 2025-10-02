@@ -35,6 +35,10 @@ class DeleteUserController:
             if self.DeleteUserUsecase.repo.has_permission_target_id(requester_id=request_user_id, target_id=user_id):
                 user = self.DeleteUserUsecase(user_id)
                 return OK(body=DeleteUserViewmodel(user).to_dict())
+
+        except ForbiddenAction as err:
+
+            return BadRequest(body=err.message)
         
         except NoItemsFound as err:
 

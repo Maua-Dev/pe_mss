@@ -119,3 +119,24 @@ class Test_DeleteUserController:
         response = controller(request=request)
 
         assert response.status_code == 400
+
+    def test_delete_user_forbidden_action(self):
+        repo = UserRepositoryMock()
+
+        usecase = DeleteUserUsecase(repo=repo)
+        controller = DeleteUserController(usecase=usecase)
+
+        deleted_user_id = "550e8400-e29b-41d4-a716-446655440089"
+
+        request = HttpRequest(body={
+            'user_id': deleted_user_id,
+            'user_from_authorizer':{
+                'id': "3d32ec27-09c3-41da-92e2-be106e449b6a",
+                'displayName': "Lebron James",
+                'mail': "15.01234-4@maua.br"
+            }
+        })
+
+        response = controller(request=request)
+
+        assert response.status_code == 400

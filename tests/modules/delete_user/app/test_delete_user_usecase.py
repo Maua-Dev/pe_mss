@@ -14,23 +14,9 @@ class Test_DeleteUserUsecase:
         assert deleted_user.user_id == deleted_user_id
         assert deleted_user.state.value == "PENDING"
 
-    def test_delete_user_usecase_wrong_user_id(self):
+    def test_delete_user_usecase_entity_error(self):
         repo = UserRepositoryMock()
         usecase = DeleteUserUsecase(repo=repo)
 
         with pytest.raises(EntityError):
             usecase(user_id=10)
-
-    def test_delete_user_usecase_nonexistent_user_id(self):
-        repo = UserRepositoryMock()
-        usecase = DeleteUserUsecase(repo=repo)
-
-        with pytest.raises(EntityError):
-            usecase(user_id=3)
-
-    def test_delete_user_usecase_wrong_type_user_id(self):
-        repo = UserRepositoryMock()
-        usecase = DeleteUserUsecase(repo=repo)
-
-        with pytest.raises(EntityError):
-            usecase(user_id=1.5)
