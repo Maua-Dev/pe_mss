@@ -13,8 +13,8 @@ from components.bucket_construct import BucketContruct
 
 class IacStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
-        super().__init__(scope, construct_id, **kwargs)
+    def __init__(self, scope: Construct, **kwargs) -> None:
+        super().__init__(scope, **kwargs)
         
         stage = kwargs['tags']['stage']
 
@@ -45,7 +45,7 @@ class IacStack(Stack):
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
-            "DB_CLUSTER_ARN": self.aurora.cluster.cluster_arn,
+            "DB_CLUSTER_ARN": self.aCopurora.cluster.cluster_arn,
             "DB_SECRET_ARN":  self.aurora.secret.secret_arn,
             "DB_NAME": self.aurora.default_database_name,
             "REGION": self.region,
