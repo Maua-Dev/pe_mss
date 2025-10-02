@@ -13,8 +13,8 @@ from components.bucket_construct import BucketContruct
 
 class IacStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
-        super().__init__(scope, construct_id, **kwargs)
+    def __init__(self, scope: Construct, **kwargs) -> None:
+        super().__init__(scope, **kwargs)
         
         stage = kwargs['tags']['stage']
 
