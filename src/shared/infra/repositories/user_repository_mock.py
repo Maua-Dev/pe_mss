@@ -89,6 +89,18 @@ class UserRepositoryMock(IUserRepository):
                 course=COURSE.ECM, 
                 year=5, 
                 organization=ORGANIZATION.DEV, user_id="550e8400-e29b-41d4-a716-446655440089"
+             ),
+             User(
+                name="Murillo Strina",
+                email="22.00730-0@maua.br",
+                ra="22.00730-0",
+                state=STATE.PENDING,
+                role=ROLE.USER,
+                active=ACTIVE.ACTIVE,
+                course=COURSE.ECM,
+                year=4,
+                organization=ORGANIZATION.NAWAT,
+                user_id="b423780f-2045-44e1-9c0b-98352841817d"
             )
         ]
         
