@@ -81,8 +81,8 @@ class UserRepositoryMock(IUserRepository):
             User(
                 #usuário comum da dev
                 name="Ana Clara", 
-                email="20.00789-4@maua.br", 
-                ra="20.00789-4",
+                email="19.10789-4@maua.br",
+                ra="19.10789-4",
                 state=STATE.APPROVED, 
                 role=ROLE.USER, 
                 active=ACTIVE.ACTIVE, 

@@ -29,7 +29,8 @@ Next, you need to configure Postgres for your project and Docker compose. Follow
 4. Then, prompt the following command:
 
 ```bash
-    iac/local/docker-compose up -d
+    cd iac/local
+    docker-compose --env-file ../../.env up -d
 ```
 
 ## Launch PostgreSQL in Docker

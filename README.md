@@ -162,7 +162,12 @@ Clone the repository using template
 
 ### To run local set .env file
 
-    STAGE = TEST
+    STAGE=TEST
+    POSTGRES_LOCAL_USER=myuser
+    POSTGRES_LOCAL_PASSWORD=mypassword
+    POSTGRES_LOCAL_DB=mydatabase
+    POSTGRES_LOCAL_HOST=localhost
+    POSTGRES_LOCAL_PORT=5432
 
 
 ## Contributors 💰🤝💰
