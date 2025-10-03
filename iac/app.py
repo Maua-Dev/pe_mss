@@ -41,7 +41,8 @@ tags = {
 }
 
 IacStack(
-    scope=app, 
+    scope=app,
+        construct_id="IacStack",
     stack_name=stack_name, 
     env=cdk.Environment(account=aws_account_id, region=aws_region), 
     tags=tags

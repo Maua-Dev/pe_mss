@@ -13,9 +13,9 @@ from components.bucket_construct import BucketContruct
 
 class IacStack(Stack):
 
-    def __init__(self, scope: Construct, **kwargs) -> None:
-        super().__init__(scope, **kwargs)
-        
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
+
         stage = kwargs['tags']['stage']
 
         self.rest_api = RestApi(self, "PortalEntidades_RestApi",
