@@ -19,12 +19,9 @@ class UpdateUserController:
     def __call__(self, request: IRequest) -> IResponse:
         try:
             
-            required_params = ['name', 'email', 'ra', 'state', 'role', 'user_id']
-            for param in required_params:
-                if request.data.get(param) is None:
-                    raise MissingParameters(param)
+            if request.data.get('user_id') is None:
+                raise MissingParameters('user_id')
 
-            
             if type(request.data.get("name")) != str:
                 raise WrongTypeParameter("name", "str", type(request.data.get("name")).__name__)
             if type(request.data.get("email")) != str:
@@ -36,46 +33,47 @@ class UpdateUserController:
 
             
             try:
-                state = STATE[request.data.get("state")]
+                state = STATE[request.data.get("new_state")]
             except KeyError:
-                raise EntityError("state")
+                raise EntityError("new_state")
 
             try:
-                role = ROLE[request.data.get("role")]
+                role = ROLE[request.data.get("new_role")]
             except KeyError:
-                raise EntityError("role")
+                raise EntityError("new_role")
 
             
             course = None
-            if request.data.get("course") is not None:
+            if request.data.get("new_course") is not None:
                 try:
-                    course = COURSE[request.data.get("course")]
+                    course = COURSE[request.data.get("new_course")]
                 except KeyError:
-                    raise EntityError("course")
+                    raise EntityError("new_course")
 
-            year = request.data.get("year")
+            year = request.data.get("new_year")
             if year is not None and type(year) != int:
-                raise WrongTypeParameter("year", "int", type(year).__name__)
+                raise WrongTypeParameter("new_year", "int", type(year).__name__)
 
             organization = None
-            if request.data.get("organization") is not None:
+            if request.data.get("new_organization") is not None:
                 try:
-                    organization = ORGANIZATION[request.data.get("organization")]
+                    organization = ORGANIZATION[request.data.get("new_organization")]
                 except KeyError:
-                    raise EntityError("organization")
+                    raise EntityError("new_organization")
 
             
             user = self.usecase(
                 name=request.data.get("name"),
                 email=request.data.get("email"),
                 ra=request.data.get("ra"),
-                state=state,
-                role=role,
-                course=course,
-                year=year,
-                organization=organization,
+                new_state=state,
+                new_role=role,
+                new_course=course,
+                new_year=year,
+                new_organization=organization,
                 user_id=request.data.get("user_id"),
             )
+
 
             
             viewmodel = UpdateUserViewmodel(user)

@@ -15,10 +15,10 @@ class Test_UpdateUserControllerOptionalFields:
             'name': 'User Atualizado',
             'email': repo.users[0].email,
             'ra': repo.users[0].ra,
-            'state': repo.users[0].state.name,
-            'role': repo.users[0].role.name,
-            'course': 'CIC',   # opcional
-            'year': 3          # opcional
+            'new_state': repo.users[0].state.name,
+            'new_role': repo.users[0].role.name,
+            'new_course': 'CIC',   # opcional
+            'new_year': 3          # opcional
         })
 
         response = controller(request=request)
@@ -37,9 +37,9 @@ class Test_UpdateUserControllerOptionalFields:
             'name': 'Outro Nome',
             'email': repo.users[1].email,
             'ra': repo.users[1].ra,
-            'state': repo.users[1].state.name,
-            'role': repo.users[1].role.name,
-            'organization': 'DEV'  # opcional
+            'new_state': repo.users[1].state.name,
+            'new_role': repo.users[1].role.name,
+            'new_organization': 'DEV'  # opcional
         })
 
         response = controller(request=request)
@@ -57,15 +57,15 @@ class Test_UpdateUserControllerOptionalFields:
             'name': 'Teste',
             'email': repo.users[2].email,
             'ra': repo.users[2].ra,
-            'state': repo.users[2].state.name,
-            'role': repo.users[2].role.name,
-            'course': 'INVALIDO'
+            'new_state': repo.users[2].state.name,
+            'new_role': repo.users[2].role.name,
+            'new_course': 'INVALIDO'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field course is not valid"
+        assert response.body == "Field new_course is not valid"
 
     def test_update_user_invalid_year_type(self):
         repo = UserRepositoryMock()
@@ -77,15 +77,15 @@ class Test_UpdateUserControllerOptionalFields:
             'name': 'Teste',
             'email': repo.users[2].email,
             'ra': repo.users[2].ra,
-            'state': repo.users[2].state.name,
-            'role': repo.users[2].role.name,
-            'year': "terceiro"  # errado, deveria ser int
+            'new_state': repo.users[2].state.name,
+            'new_role': repo.users[2].role.name,
+            'new_year': "terceiro"  # errado, deveria ser int
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert "Field year isn't in the right type" in response.body
+        assert "Field new_year isn't in the right type" in response.body
 
     def test_update_user_invalid_organization_enum(self):
         repo = UserRepositoryMock()
@@ -97,12 +97,12 @@ class Test_UpdateUserControllerOptionalFields:
             'name': 'Teste',
             'email': repo.users[2].email,
             'ra': repo.users[2].ra,
-            'state': repo.users[2].state.name,
-            'role': repo.users[2].role.name,
-            'organization': 'INVALIDO'
+            'new_state': repo.users[2].state.name,
+            'new_role': repo.users[2].role.name,
+            'new_organization': 'INVALIDO'
         })
 
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field organization is not valid"
+        assert response.body == "Field new_organization is not valid"
