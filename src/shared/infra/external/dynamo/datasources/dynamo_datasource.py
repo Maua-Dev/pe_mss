@@ -66,7 +66,12 @@ class DynamoDatasource:
             raise Exception("Table uses composite key (Partition and Sort). Sort key must be provided.")
 
         resp = self.dynamo_table.get_item(
-            Key={self.partition_key: partition_key, self.sort_key: sort_key if sort_key else None}
+            Key={
+                self.partition_key: partition_key,
+            } if self.sort_key is None else {
+                self.partition_key: partition_key,
+                self.sort_key: sort_key
+            }
         )
         return resp
 
@@ -87,7 +92,7 @@ class DynamoDatasource:
         resp = self.dynamo_table.put_item(Item=DynamoDatasource._parse_float_to_decimal(item))
         return resp
 
-    def update_item(self, partition_key: str, sort_key: str, update_dict: dict):
+    def update_item(self, partition_key: str, update_dict: dict, sort_key: str = None):
         """
         Update an item in the table with its keys (Partition and Sort) and attributes to update
         If the attribute does not exist, it will be created. It won't change attributes not mentioned.
@@ -95,6 +100,9 @@ class DynamoDatasource:
         @param update_attributes: dict with the attributes to update
         @return: dict with the response from DynamoDB
         """
+        
+        if sort_key is None and self.sort_key is not None:
+            raise Exception("Table uses composite key (Partition and Sort). Sort key must be provided.")
 
         data_key_value_pairs = list(update_dict.items())
 
@@ -104,6 +112,8 @@ class DynamoDatasource:
 
         resp = self.dynamo_table.update_item(
             Key={
+                self.partition_key: partition_key,
+            } if self.sort_key is None else {
                 self.partition_key: partition_key,
                 self.sort_key: sort_key
             },
@@ -121,11 +131,16 @@ class DynamoDatasource:
         @param sort_key: string with the sort key (optional)
         @return: dict with the response from DynamoDB
         """
+        
+        if sort_key is None and self.sort_key is not None:
+            raise Exception("Table uses composite key (Partition and Sort). Sort key must be provided.")
 
         resp = self.dynamo_table.delete_item(
             Key={
+                self.partition_key: partition_key
+            } if self.sort_key is None else {
                 self.partition_key: partition_key,
-                self.sort_key: sort_key if sort_key else None
+                self.sort_key: sort_key
             },
             ReturnValues='ALL_OLD'
         )
