@@ -8,7 +8,7 @@ def setup_warning_table():
     envs = Environments.get_envs()
 
     table_name = "warnings"
-    endpoint = f"http://{envs.dynamo_endpoint_url}:{envs.dynamo_endpoint_port}"
+    endpoint = f"{envs.dynamo_endpoint_url}:{envs.dynamo_endpoint_port}"
     
     print(f"Setting up DynamoDB table '{table_name}' at endpoint '{endpoint}'")
     
@@ -65,6 +65,14 @@ def load_warning_mock_to_dynamo():
     mock_repo = WarningRepositoryMock()
     dynamo_repo = WarningRepositoryDynamo()
     
+    counter = 0
+    
     warnings = mock_repo.get_all_warnings()
     for warning in warnings:
         dynamo_repo.create_warning(warning)
+        counter += 1
+
+    print(f"Loaded {counter} warnings into DynamoDB.")
+
+if __name__ == "__main__":
+    load_warning_mock_to_dynamo()
