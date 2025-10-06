@@ -169,6 +169,9 @@ Clone the repository using template
     POSTGRES_LOCAL_HOST=localhost
     POSTGRES_LOCAL_PORT=5432
 
+    DYNAMO_ENDPOINT_URL=localhost
+    DYNAMO_ENDPOINT_PORT=8000
+    DYNAMO_REGION=local
 
 ## Contributors 💰🤝💰
 
