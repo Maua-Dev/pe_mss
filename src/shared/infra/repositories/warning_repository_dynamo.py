@@ -1,5 +1,7 @@
 import json
 from typing import Optional
+
+from pydantic_core import from_json
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.entities.warning import Warning
 from src.shared.domain.enums.role_enum import ROLE
@@ -29,13 +31,11 @@ class WarningRepositoryDynamo(IWarningRepository):
                                        partition_key=self.PARTITION_KEY,
                                        )
         
-    def create_warning(self, new_warning: Warning, target_org: ORGANIZATION, target_role: ROLE) -> Optional[Warning]:
-        item = {};
+    def create_warning(self, new_warning: Warning) -> Optional[Warning]:
+        item = new_warning.model_dump_json()
+        item = json.loads(item)
         item['warning_id'] = self.partition_key_format(new_warning.warning_id)
-        item['target_org'] = self.sort_key_format(target_org.value)
-        # Para evitar problemas com a conversão para JSON, convertendo datetime para isoformat
-        item['body'] = json.dumps(new_warning.model_dump() | {"expire": new_warning.expire.isoformat()})
-        item['target_role'] = target_role.value
+        item['target_org'] = self.sort_key_format(new_warning.target_org)
 
         self.dynamo.put_item(item=item, partition_key=item['warning_id'])
         
@@ -43,17 +43,19 @@ class WarningRepositoryDynamo(IWarningRepository):
 
     def get_warning(self, warning_id: str) -> Optional[Warning]:
         try:
-            item: dict = self.dynamo.get_item(partition_key=self.partition_key_format(warning_id))
-            body = json.loads(item['Item']['body'])
-            return Warning(**body)
+            item = self.dynamo.get_item(partition_key=self.partition_key_format(warning_id))
+            item['Item']['target_org'] = item['Item']['target_org'].split('#')[1]
+            warning = Warning.model_validate(item['Item'])
+            return warning
         except Exception as e:
             raise Exception(f'Warning with id {warning_id} not found.')
     
     def update_warning(self, warning_id: str, warning: Warning) -> Optional[Warning]:
-        self.get_warning(warning_id)  # Check if exists before updating
+        self.get_warning(warning_id)
         
         item = {}
-        item['body'] = json.dumps(warning.model_dump() | {"expire": warning.expire.isoformat()})
+        item['body'] = json.loads(warning.body.model_dump_json())
+
         self.dynamo.update_item(partition_key=self.partition_key_format(warning_id), update_dict=item)
         return warning
 
@@ -63,9 +65,12 @@ class WarningRepositoryDynamo(IWarningRepository):
         return existing_warning  # Return the deleted warning
 
     def get_all_warnings(self):
-        items = self.dynamo.get_all_items()
+        items = self.dynamo.get_all_items()['Items']
         warnings = []
-        for item in items.get('Items', []):
-            body = json.loads(item['body'])
-            warnings.append(Warning(**body))
+        
+        for item in items:
+            item['target_org'] = item['target_org'].split('#')[1]
+            warning = Warning.model_validate(item)
+            warnings.append(warning)
+            
         return warnings

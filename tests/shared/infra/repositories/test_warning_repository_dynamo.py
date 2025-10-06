@@ -16,10 +16,10 @@ class Test_WarningRepositoryDynamo:
 
         warning_repository = WarningRepositoryDynamo()
         warning_repository_mock = WarningRepositoryMock()
-        resp = warning_repository.create_warning(warning_repository_mock.warnings[0], ORGANIZATION.DEV, ROLE.PRESIDENT)
+        resp = warning_repository.create_warning(warning_repository_mock.warnings[0])
 
         assert resp is not None
-        assert resp.title == warning_repository_mock.warnings[0].title
+        assert resp.body.title == warning_repository_mock.warnings[0].body.title
 
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_create_warning_invalid(self):
@@ -29,7 +29,7 @@ class Test_WarningRepositoryDynamo:
         warning_repository_mock = WarningRepositoryMock()
         
         with pytest.raises(Exception) as excinfo:
-            warning_repository.create_warning(None, ORGANIZATION.DEV, ROLE.PRESIDENT)
+            warning_repository.create_warning(None)
         
         assert "object has no attribute" in str(excinfo.value)
 
@@ -39,11 +39,11 @@ class Test_WarningRepositoryDynamo:
 
         warning_repository = WarningRepositoryDynamo()
         warning_repository_mock = WarningRepositoryMock()
-        warning_repository.create_warning(warning_repository_mock.warnings[0], ORGANIZATION.DEV, ROLE.PRESIDENT)
+        warning_repository.create_warning(warning_repository_mock.warnings[0])
         resp = warning_repository.get_warning(warning_repository_mock.warnings[0].warning_id)
 
         assert resp is not None
-        assert resp.title == warning_repository_mock.warnings[0].title
+        assert resp.body.title == warning_repository_mock.warnings[0].body.title
 
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_get_warning_not_found(self):
@@ -65,9 +65,10 @@ class Test_WarningRepositoryDynamo:
         warning_repository = WarningRepositoryDynamo()
         warning_repository_mock = WarningRepositoryMock()
         resp = warning_repository.update_warning(warning_repository_mock.warnings[0].warning_id, warning_repository_mock.warnings[1])
-        assert resp is not None
-        assert resp.title == warning_repository_mock.warnings[1].title
         
+        assert resp is not None
+        assert resp.body.title == warning_repository_mock.warnings[1].body.title
+
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_update_warning_invalid(self):
         os.environ["STAGE"] = "TEST"
@@ -100,12 +101,12 @@ class Test_WarningRepositoryDynamo:
         warning_repository = WarningRepositoryDynamo()
         warning_repository_mock = WarningRepositoryMock()
 
-        warning_repository.create_warning(warning_repository_mock.warnings[1], ORGANIZATION.DEV, ROLE.PRESIDENT)
+        warning_repository.create_warning(warning_repository_mock.warnings[1])
         resp = warning_repository.delete_warning(warning_repository_mock.warnings[1].warning_id)
 
         assert resp is not None
-        assert resp.title == warning_repository_mock.warnings[1].title
-        
+        assert resp.body.title == warning_repository_mock.warnings[1].body.title
+
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_delete_warning_not_found(self):
         os.environ["STAGE"] = "TEST"
