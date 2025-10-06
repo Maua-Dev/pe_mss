@@ -61,6 +61,9 @@ class DynamoDatasource:
         @param sort_key: string with the sort key (optional)
         @return: dict with the response from DynamoDB
         """
+        
+        if sort_key is None and self.sort_key is not None:
+            raise Exception("Table uses composite key (Partition and Sort). Sort key must be provided.")
 
         resp = self.dynamo_table.get_item(
             Key={self.partition_key: partition_key, self.sort_key: sort_key if sort_key else None}
