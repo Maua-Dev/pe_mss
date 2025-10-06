@@ -1,20 +1,13 @@
 import re
 from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
 from src.modules.create_user.app.create_user_viewmodel import CreateUserViewmodel
-from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
-from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
-from src.shared.domain.entities.user import User
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
-from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
-from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest, InternalServerError, NotFound
-from src.shared.domain.enums.active_enum import ACTIVE
-from src.shared.domain.enums.role_enum import ROLE
-from src.shared.domain.enums.state_enum import STATE
-from src.shared.domain.enums.active_enum import ACTIVE
+from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
+from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest, InternalServerError, NotFound, Forbidden
 
 class CreateUserController:
     def __init__(self, usecase: CreateUserUsecase):
@@ -130,6 +123,9 @@ class CreateUserController:
 
         except EntityError as err:
             return BadRequest(body=err.message)
+        
+        except ForbiddenAction as err:
+            return Forbidden(body=err.message)
 
         except Exception as err:
             return InternalServerError(body=err.args[0])

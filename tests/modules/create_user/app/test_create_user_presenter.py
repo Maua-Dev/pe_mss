@@ -281,4 +281,4 @@ class Test_CreateUserPresenter:
        
         response = lambda_handler(event, None)
 
-        assert response["statusCode"] == 500
+        assert response["statusCode"] == 403

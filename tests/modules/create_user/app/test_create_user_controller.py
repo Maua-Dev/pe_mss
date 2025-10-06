@@ -127,7 +127,7 @@ class Test_CreateUserController:
 
         response = controller(request=request)
 
-        assert response.status_code == 500
+        assert response.status_code == 403
         assert response.body == 'President is not allowed to perform action in other organization besides he\'s'
 
     def test_create_users_from_spreadsheet_as_admin(self):
