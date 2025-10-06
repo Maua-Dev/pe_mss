@@ -9,6 +9,10 @@ from src.shared.infra.external.dynamo.datasources.dynamo_datasource import Dynam
 
 
 class WarningRepositoryDynamo(IWarningRepository):
+    PARTITION_KEY = "warning_id"
+    SORT_KEY = "organization"
+    TABLE_NAME = "warnings"
+    
     @staticmethod
     def partition_key_format(warning_id: str) -> str:
         return f"warning#{warning_id}"
@@ -18,11 +22,13 @@ class WarningRepositoryDynamo(IWarningRepository):
         return f"organization#{organization}"
 
     def __init__(self):
-        self.dynamo = DynamoDatasource(endpoint_url="http://192.168.16.104:8654",
-                                       dynamo_table_name="warnings",
-                                       region='local',
-                                       partition_key="warning_id",
-                                       sort_key="organization")
+        envs = Environments.get_envs()
+        
+        self.dynamo = DynamoDatasource(endpoint_url=f'{envs.DYNAMO_ENDPOINT_URL}:{envs.DYNAMO_ENDPOINT_PORT}',
+                                       dynamo_table_name=self.TABLE_NAME,
+                                       region=envs.DYNAMO_REGION,
+                                       partition_key=self.PARTITION_KEY,
+                                       sort_key=self.SORT_KEY)
         
     def create_warning(self, new_warning: Warning, target_org: ORGANIZATION, target_role: ROLE) -> Optional[Warning]:
         item = {};
