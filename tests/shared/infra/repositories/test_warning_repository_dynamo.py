@@ -8,7 +8,9 @@ from src.shared.infra.repositories.warning_repository_mock import WarningReposit
 
 
 class Test_WarningRepositoryDynamo:
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+    IN_GITHUB_ACTIONS = os.getenv('GITHUB_ACTIONS', 'false').lower() == 'true'
+    
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_create_warning(self):
         os.environ["STAGE"] = "TEST"
 
@@ -18,8 +20,8 @@ class Test_WarningRepositoryDynamo:
 
         assert resp is not None
         assert resp.title == warning_repository_mock.warnings[0].title
-        
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_create_warning_invalid(self):
         os.environ["STAGE"] = "TEST"
 
@@ -31,7 +33,7 @@ class Test_WarningRepositoryDynamo:
         
         assert "object has no attribute" in str(excinfo.value)
 
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_get_warning(self): 
         os.environ["STAGE"] = "TEST"
 
@@ -42,8 +44,8 @@ class Test_WarningRepositoryDynamo:
 
         assert resp is not None
         assert resp.title == warning_repository_mock.warnings[0].title
-        
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_get_warning_not_found(self):
         os.environ["STAGE"] = "TEST"
 
@@ -56,7 +58,7 @@ class Test_WarningRepositoryDynamo:
         assert "not found" in str(excinfo.value)
         
     # Update warning
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_update_warning(self):
         os.environ["STAGE"] = "TEST"
 
@@ -66,7 +68,7 @@ class Test_WarningRepositoryDynamo:
         assert resp is not None
         assert resp.title == warning_repository_mock.warnings[1].title
         
-    # @pytest.mark.skip(reason="Needs dynamoDB")    
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_update_warning_invalid(self):
         os.environ["STAGE"] = "TEST"
 
@@ -77,8 +79,8 @@ class Test_WarningRepositoryDynamo:
             warning_repository.update_warning(warning_repository_mock.warnings[0].warning_id, None)
         
         assert "object has no attribute" in str(excinfo.value)
-        
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_update_warning_not_found(self):
         os.environ["STAGE"] = "TEST"
 
@@ -91,7 +93,7 @@ class Test_WarningRepositoryDynamo:
         assert "not found" in str(excinfo.value)
         
     # Delete warning
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_delete_warning(self):
         os.environ["STAGE"] = "TEST"
 
@@ -104,7 +106,7 @@ class Test_WarningRepositoryDynamo:
         assert resp is not None
         assert resp.title == warning_repository_mock.warnings[1].title
         
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_delete_warning_not_found(self):
         os.environ["STAGE"] = "TEST"
 
@@ -113,8 +115,8 @@ class Test_WarningRepositoryDynamo:
         with pytest.raises(Exception) as excinfo:
             warning_repository.delete_warning("non-existent-id")
         assert "not found" in str(excinfo.value)
-        
-    # @pytest.mark.skip(reason="Needs dynamoDB")
+
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_get_all_warnings(self):
         os.environ["STAGE"] = "TEST"
 
