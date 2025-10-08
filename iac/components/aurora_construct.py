@@ -45,7 +45,7 @@ class AuroraConstruct(Construct):
         self.cluster = rds.DatabaseCluster(
             self, f"AuroraSrvls-{stage}",
             engine=rds.DatabaseClusterEngine.aurora_postgres(
-                version=rds.AuroraPostgresEngineVersion.VER_15_6
+                version=rds.AuroraPostgresEngineVersion.VER_16_8
             ),
             writer=rds.ClusterInstance.serverless_v2(
                 "WriterInstance",
