@@ -29,7 +29,8 @@ class IacStack(Stack):
                                     },
                                     deploy_options={
                                         "stage_name": stage.lower()
-                                    }
+                                    },
+                                    binary_media_types=["multipart/form-data"]
                                 )
 
         api_gateway_resource = self.rest_api.root.add_resource("pe-mss", default_cors_preflight_options=
