@@ -36,6 +36,8 @@ class Environments:
     db_secret_arn: str
     cloud_frontget_user_presenter_distribution_domain: str
     mss_name: str 
+    client_id: str
+    client_secret: str
 
     def _configure_local(self):
         from dotenv import load_dotenv
@@ -45,12 +47,12 @@ class Environments:
     def load_envs(self):
         if "STAGE" not in os.environ or os.environ["STAGE"] == STAGE.DOTENV.value:
             self._configure_local()
-
+    
         self.stage = STAGE[os.environ.get("STAGE")]
         self.mss_name = os.environ.get("MSS_NAME")
         
         if self.stage == STAGE.TEST:
-            self.s3_bucket_name = "portalentidadesstackd-portalentidadesbackbucket-sheet"
+            self.s3_bucket_name = "bucket-test-pe"
             self.region = "us-east-1"
             self.endpoint_url = "http://localhost:8000"
             self.db_name = os.environ.get("POSTGRES_LOCAL_DB", "mydatabase")
@@ -60,6 +62,8 @@ class Environments:
             self.db_local_port = os.environ.get("POSTGRES_LOCAL_PORT", "5432")
             self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
             self.bucket_endpoint_url = "http://localhost:9000"
+            self.client_id = "root"
+            self.client_secret = "root1234"
 
         else:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
