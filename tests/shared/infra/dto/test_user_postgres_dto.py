@@ -122,7 +122,7 @@ class Test_UserPostgresDTO:
         assert user_postgres.active == repo.users[0].active
         assert user_postgres.course == repo.users[0].course
         assert user_postgres.year == repo.users[0].year
-        assert user_postgres.organization == repo.users[0].organization
+        assert user_postgres.organization == (repo.users[0].organization.value if user_postgres.organization is not None else None)
 
 
     def test_from_postgres_to_entity(self):
@@ -186,7 +186,7 @@ class Test_UserPostgresDTO:
             'active': repo.users[0].active.value,
             'course': repo.users[0].course,
             'year': repo.users[0].year,
-            'organization': repo.users[0].organization
+            'organization': (repo.users[0].organization.value if repo.users[0].organization is not None else None)
         }
 
         assert user_postgres == expect_dict
