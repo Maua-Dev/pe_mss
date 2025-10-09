@@ -95,15 +95,8 @@ class LambdaConstruct(Construct):
             "ALLOWED_LAMBDA_ARNS", ",".join(allowed_arns)
         )
 
-        self.update_user_function = self.create_lambda_api_gateway_integration(
-            module_name="update_user",
-            method="POST",
-            mss_student_api_resource=api_gateway_resource,
-            environment_variables=environment_variables
-        )
-
         self.functions_that_need_db_access = [
-            self.update_user_function
+            self.create_user_function
         ]
         
         self.functions_that_need_s3_permissions = [
