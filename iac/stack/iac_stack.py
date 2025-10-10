@@ -10,6 +10,7 @@ from aws_cdk.aws_apigateway import RestApi, Cors
 from components.aurora_construct import AuroraConstruct
 from components.lambda_construct import LambdaConstruct
 from components.bucket_construct import BucketContruct
+from components.dynamo_construct import DynamoDBWarningConstruct
 
 class IacStack(Stack):
 
@@ -42,6 +43,7 @@ class IacStack(Stack):
 
         self.aurora = AuroraConstruct(self, "Aurora")
         self.s3_bucket = BucketContruct(self)
+        self.warning_table = DynamoDBWarningConstruct(self, "DynamoDBWarningTable")
 
         ENVIRONMENT_VARIABLES = {
             "STAGE": stage,
@@ -49,7 +51,8 @@ class IacStack(Stack):
             "DB_SECRET_ARN":  self.aurora.secret.secret_arn,
             "DB_NAME": self.aurora.default_database_name,
             "REGION": self.region,
-            "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name
+            "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name,
+            "WARNING_TABLE_NAME": self.warning_table.table.table_name
         }
 
         self.lambda_stack = LambdaConstruct(self, api_gateway_resource=api_gateway_resource,
@@ -59,5 +62,5 @@ class IacStack(Stack):
             self.aurora.cluster.grant_data_api_access(fn)
             self.aurora.secret.grant_read(fn)
             self.s3_bucket.s3_bucket_user.grant_read_write(fn)
-
+            self.warning_table.table.grant_read_write_data(fn)
         
