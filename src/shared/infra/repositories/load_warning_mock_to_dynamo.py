@@ -25,11 +25,11 @@ def setup_warning_table():
                 {
                     'AttributeName': 'warning_id',
                     'KeyType': 'HASH'
-                },
-                {
-                    'AttributeName': 'organization',
-                    'KeyType': 'RANGE'
                 }
+                # {
+                #     'AttributeName': 'target_org',
+                #     'KeyType': 'RANGE'
+                # }
             ],
             AttributeDefinitions=[
                 {
@@ -37,19 +37,49 @@ def setup_warning_table():
                     'AttributeType': 'S'
                 },
                 {
-                    'AttributeName': 'organization',
+                    'AttributeName': 'target_org',
                     'AttributeType': 'S'
                 },
                 {
-                    'AttributeName': 'role',
-                    'AttributeType': 'S'
-                },
-                {
-                    'AttributeName': 'body',
+                    'AttributeName': 'target_role',
                     'AttributeType': 'S'
                 }
             ],
             BillingMode='PAY_PER_REQUEST',
+            GlobalSecondaryIndexes=[
+                {
+                    'IndexName': 'OrganizationIndex',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'target_org',
+                            'KeyType': 'HASH'
+                        }
+                        # {
+                        #     'AttributeName': 'warning_id',
+                        #     'KeyType': 'RANGE'
+                        # }
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'ALL'
+                    }
+                },
+                {
+                    'IndexName': 'RoleIndex',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'target_role',
+                            'KeyType': 'HASH'
+                        }
+                        # {
+                        #     'AttributeName': 'warning_id',
+                        #     'KeyType': 'RANGE'
+                        # }
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'ALL'
+                    }
+                }
+            ]
         )
         
         print("Waiting for table to be created...")
