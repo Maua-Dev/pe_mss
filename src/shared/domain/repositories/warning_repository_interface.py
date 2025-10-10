@@ -96,6 +96,46 @@ class IWarningRepository(ABC):
             Optional[List[Warning]]: Uma lista de avisos caso haja avisos
         """
         pass
+    
+    @abstractmethod
+    def get_warnings_by_org(self, target_org: ORGANIZATION) -> Optional[List[Warning]]:
+        """
+        Método para pegar todos os avisos de uma organização
+
+        Args:
+            target_org (ORGANIZATION): organização alvo
+
+        Returns:
+            Optional[List[Warning]]: Uma lista de avisos caso haja avisos
+        """
+        pass
+    
+    @abstractmethod
+    def get_warnings_by_role(self, target_role: ROLE) -> Optional[List[Warning]]:
+        """
+        Método para pegar todos os avisos de uma role
+
+        Args:
+            target_role (ROLE): role alvo
+
+        Returns:
+            Optional[List[Warning]]: Uma lista de avisos caso haja avisos
+        """
+        pass
+    
+    @abstractmethod
+    def get_warnings_by_org_and_role(self, target_org: ORGANIZATION, target_role: ROLE) -> Optional[List[Warning]]:
+        """
+        Método para pegar todos os avisos de uma organização e role
+
+        Args:
+            target_org (ORGANIZATION): organização alvo
+            target_role (ROLE): role alvo
+
+        Returns:
+            Optional[List[Warning]]: Uma lista de avisos caso haja avisos
+        """
+        pass
         
     # @abstractmethod
     # def get_user_warnings(self, user_id: str) -> Optional[List[Warning]]:
