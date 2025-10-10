@@ -1,48 +1,56 @@
-# from decimal import Decimal
-# from aws_cdk import (
-#     aws_dynamodb as dynamodb, RemovalPolicy,
-# )
-# from constructs import Construct
-# import os
+import os
+from aws_cdk import (
+    RemovalPolicy,
+    aws_dynamodb as dynamodb
+)
+from constructs import Construct
 
-
-# class DynamoConstruct(Construct):
+class DynamoDBWarningConstruct(Construct):
+    """
+    CDK Construct to create the DynamoDB table for Warnings.
+    Includes separate GSIs for querying by Organization and Role.
+    """
     
-#     table: dynamodb.Table
+    table: dynamodb.Table
 
-#     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
-#         super().__init__(scope, construct_id, **kwargs)
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
+        super().__init__(scope, construct_id, **kwargs)
 
-#         self.github_ref_name = os.environ.get("GITHUB_REF_NAME")
-#         self.stack_name = os.environ.get("STACK_NAME")
-#         stage = ''
+        stage = os.environ.get("STAGE", "DEV").upper()
+
+        is_prod = (stage == "PROD")
+        removal_policy = RemovalPolicy.RETAIN if is_prod else RemovalPolicy.DESTROY
         
-#         if 'prod' in self.github_ref_name.lower():
-#             stage = 'PROD'            
-#         elif 'homolog' in self.github_ref_name.lower():
-#             stage = 'HOMOLOG'
-#         else:
-#             stage = 'DEV'
-            
-#         removal_policy = RemovalPolicy.RETAIN if stage=="PROD" else RemovalPolicy.DESTROY
-
-#         self.table = dynamodb.Table(
-#             self, "PortalEntidades_MemberTable",
-#             partition_key=dynamodb.Attribute(
-#                 name="PK",
-#                 type=dynamodb.AttributeType.STRING
-#             ),
-#             sort_key=dynamodb.Attribute(
-#                 name="SK",
-#                 type=dynamodb.AttributeType.STRING
-#             ), 
-#             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
-#             removal_policy=removal_policy,
-            
-#             table_name=f"PortalEntidadesMemberTable-{stage.upper()}",
-#             point_in_time_recovery=True if stage=="PROD" else False
-#         )
+        table_name = f"PortalEntidadesWarningTable-{stage}"
         
-    
-
-
+        self.table = dynamodb.Table(
+            self, "PortalEntidadesWarningTable",
+            table_name=table_name,
+            
+            partition_key=dynamodb.Attribute(
+                name="warning_id",
+                type=dynamodb.AttributeType.STRING
+            ),
+            global_secondary_indexes=[
+                dynamodb.GlobalSecondaryIndexProps(
+                    index_name="OrganizationIndex",
+                    partition_key=dynamodb.Attribute(
+                        name="target_org",
+                        type=dynamodb.AttributeType.STRING
+                    ),
+                    projection_type=dynamodb.ProjectionType.ALL
+                ),
+                dynamodb.GlobalSecondaryIndexProps(
+                    index_name="RoleIndex",
+                    partition_key=dynamodb.Attribute(
+                        name="target_role",
+                        type=dynamodb.AttributeType.STRING
+                    ),
+                    projection_type=dynamodb.ProjectionType.ALL
+                )
+            ],
+            
+            billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
+            removal_policy=removal_policy,
+            point_in_time_recovery=is_prod
+        )
