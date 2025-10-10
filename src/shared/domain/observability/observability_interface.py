@@ -1,6 +1,6 @@
 import os
 import time
-from aws_lambda_powertools import Logger, Tracer, Metrics
+
 from abc import ABC, abstractmethod
 
 class IObservability(ABC):

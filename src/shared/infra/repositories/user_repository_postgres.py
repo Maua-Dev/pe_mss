@@ -1,6 +1,7 @@
 from src.shared.domain.entities.user import User
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.environments import Environments
+from src.shared.infra.dto.user_postgres_dto import UserPostgresDTO
 from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
 
 
@@ -15,24 +16,27 @@ class UserRepositoryPostgres(IUserRepository):
             RETURNING *;
         """
         
-        params = {
-            "user_id": new_user.user_id,
-            "name": new_user.name,
-            "email": new_user.email,
-            "ra": new_user.ra,
-            "role": new_user.role.value if new_user.role else None,
-            "state": new_user.state.value if new_user.state else None,
-            "active": new_user.active.value if new_user.active else None,
-            "course": new_user.course.value if new_user.course else None,
-            "year": new_user.year,
-            "organization": new_user.organization.value if new_user.organization else None
-        }
+        user_dto= UserPostgresDTO.from_entity(new_user).to_postgres()
+
+        # params = {
+        #     "user_id": new_user.user_id,
+        #     "name": new_user.name,
+        #     "email": new_user.email,
+        #     "ra": new_user.ra,
+        #     "role": new_user.role.value if new_user.role else None,
+        #     "state": new_user.state.value if new_user.state else None,
+        #     "active": new_user.active.value if new_user.active else None,
+        #     "course": new_user.course.value if new_user.course else None,
+        #     "year": new_user.year,
+        #     "organization": new_user.organization.value if new_user.organization else None
+        # }
         
-        result = self.postgres.query(sql=query, params=params)
+        result = self.postgres.query(sql=query, params=user_dto)
 
         if result:
             user_data_from_db = result[0]
-            return User.from_dict(user_data_from_db)
+            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+            # return User.from_dict(user_data_from_db)
             
         return None
     
@@ -56,7 +60,8 @@ class UserRepositoryPostgres(IUserRepository):
 
         if result:
             user_data_from_db = result[0]
-            return User.from_dict(user_data_from_db)
+            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+            # return User.from_dict(user_data_from_db)
 
         return None
 

@@ -56,6 +56,13 @@ class LambdaConstruct(Construct):
             compatible_runtimes=[lambda_.Runtime.PYTHON_3_11]
         )
 
+        self.auth_user_function= self.create_lambda_api_gateway_integration(
+            module_name="auth_user",
+            method="POST",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=environment_variables
+        )
+
         self.update_user_function = self.create_lambda_api_gateway_integration(
             module_name="update_user",
             method="POST",
