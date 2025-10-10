@@ -24,9 +24,9 @@ class Environments:
     s3_bucket_name: str
     region: str
     endpoint_url: str = None
-    dynamo_table_name: str
-    dynamo_partition_key: str
-    dynamo_sort_key: str
+    dynamo_endpoint_url: str = None
+    dynamo_endpoint_port: str = None
+    dynamo_region: str = None
     db_name: str
     db_local_user: str
     db_local_pass: str
@@ -58,6 +58,9 @@ class Environments:
             self.db_local_pass = os.environ.get("POSTGRES_LOCAL_PASS", "mypassword")
             self.db_local_host = os.environ.get("POSTGRES_LOCAL_HOST", "localhost")
             self.db_local_port = os.environ.get("POSTGRES_LOCAL_PORT", "5432")
+            self.dynamo_endpoint_url = os.environ.get("DYNAMO_ENDPOINT_URL", "http://localhost")
+            self.dynamo_endpoint_port = os.environ.get("DYNAMO_ENDPOINT_PORT", "8000")
+            self.dynamo_region = os.environ.get("DYNAMO_REGION", "local")
             self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
             self.bucket_endpoint_url = "http://localhost:9000"
 

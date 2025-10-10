@@ -1,56 +1,34 @@
 
-from src.shared.domain.entities.warning import Warning
+from src.shared.domain.entities.warning import Warning, WarningBody
+from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.infra.repositories.warning_repository_mock import WarningRepositoryMock
 import datetime
 
 class TestWarningRepositoryMock:
     
-    def test_create_warning_and_custom_getters(self):
-        
-        #testa também as novas tabelas e os getters customizados
-        
+    def test_create_warning(self):
         repo = WarningRepositoryMock()
         
-        warning_id = "ab08ea56-37c3-41ef-a5db-b024cf9514ab"
-        target_id = "3e841c03-fb0a-4d3e-a726-3768bc0d6726"
-        target_role = ROLE.PRESIDENT
+        old_len = len(repo.warnings)
         
         new_warning = Warning(
-            title="Titulo teste 1",
-            description="Descrição teste 1",
-            expire=datetime.datetime.now(datetime.UTC),
-            viewed=False,
-            warning_id=warning_id
+            target_role=ROLE.PRESIDENT,
+            target_org=ORGANIZATION.METAVERSO,
+            body=WarningBody(
+                title="Titulo do alerta teste",
+                description="Descrição do alerta teste",
+                expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+            ),
+            created_at=datetime.datetime.now(datetime.timezone.utc)
         )
-        
-        created_warning = repo.create_warning(
-            new_warning=new_warning,
-        )
-        
-        repo.link_to_users(warning_id=warning_id, user_ids=[target_id])
-        repo.link_to_roles(warning_id=warning_id, roles=[target_role])
-        
+
+        created_warning = repo.create_warning(new_warning=new_warning)
+
         assert created_warning == new_warning
-        
-        #testando os getters nas tabelas diferentes
-        assert repo.get_user_warnings(target_id)[-1] == new_warning
-        assert repo.get_president_warnings()[-1] == new_warning
-        
-    def test_delete_warning(self):
-        
-        repo = WarningRepositoryMock()
-        
-        warning = repo.warnings[0]
-        warning_id = warning.warning_id
-        
-        deleted_warning = repo.delete_warning(warning_id=warning_id)
-        
-        assert deleted_warning == warning
-        assert len(repo.get_president_warnings()) == 1
+        assert len(repo.warnings) == old_len + 1
         
     def test_update_warning(self):
-        
         repo = WarningRepositoryMock()
         
         previous_warning = repo.warnings[0]
@@ -58,10 +36,14 @@ class TestWarningRepositoryMock:
         
         updated_warning = Warning(
             warning_id=warning_id,
-            title="Título atualizado",
-            description="Descrição atualizada",
-            expire=datetime.datetime.now(datetime.UTC),
-            viewed=True
+            target_role=ROLE.PRESIDENT,
+            target_org=ORGANIZATION.METAVERSO,
+            body=WarningBody(
+                title="Titulo do alerta atualizado",
+                description="Descrição do alerta atualizada",
+                expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=15)
+            ),
+            created_at=previous_warning.created_at
         )
         
         warning = repo.update_warning(warning=updated_warning)
@@ -71,13 +53,11 @@ class TestWarningRepositoryMock:
         assert repo.warnings[0] == updated_warning
         
     def test_get_all_warnings(self):
-        
         repo = WarningRepositoryMock()
         
-        assert len(repo.get_all_warnings()) == 2
+        assert len(repo.get_all_warnings()) == 3
         
     def test_get_warning(self):
-        
         repo = WarningRepositoryMock()
         
         warning = repo.warnings[0]
@@ -85,19 +65,44 @@ class TestWarningRepositoryMock:
         
         assert repo.get_warning(warning_id=id) == warning
         
-    def test_get_president_warnings(self):
-        
+    def test_get_warnings_by_org(self):
         repo = WarningRepositoryMock()
         
-        assert len(repo.get_president_warnings()) == 2
+        org = ORGANIZATION.DEV
         
-    def test_get_user_warnings(self):
-        
-        repo = WarningRepositoryMock()
-        
-        user_id = repo.user_warning[0].user_id
-        
-        warnings = repo.get_user_warnings(user_id=user_id)
+        warnings = repo.get_warnings_by_org(target_org=org)
         
         assert len(warnings) == 1
+        assert all(ORGANIZATION(w.target_org) == org for w in warnings)
+
+    def test_get_warnings_by_role(self):
+        repo = WarningRepositoryMock()
         
+        role = ROLE.PRESIDENT
+        
+        warnings = repo.get_warnings_by_role(target_role=role)
+        
+        assert len(warnings) == 3
+        assert all(ROLE(w.target_role) == role for w in warnings)
+
+    def test_get_warnings_by_org_and_role(self):
+        repo = WarningRepositoryMock()
+        
+        org = ORGANIZATION.DEV
+        role = ROLE.PRESIDENT
+        
+        warnings = repo.get_warnings_by_org_and_role(target_org=org, target_role=role)
+        
+        assert len(warnings) == 1
+        assert all(ORGANIZATION(w.target_org) == org and ROLE(w.target_role) == role for w in warnings)
+
+    def test_delete_warning(self):
+        repo = WarningRepositoryMock()
+        
+        warning = repo.warnings[0]
+        warning_id = warning.warning_id
+        
+        deleted_warning = repo.delete_warning(warning_id=warning_id)
+        
+        assert deleted_warning == warning
+        assert len(repo.warnings) == 2        
