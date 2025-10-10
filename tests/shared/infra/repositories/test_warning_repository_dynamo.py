@@ -10,6 +10,70 @@ from src.shared.infra.repositories.warning_repository_mock import WarningReposit
 class Test_WarningRepositoryDynamo:
     IN_GITHUB_ACTIONS = os.getenv('GITHUB_ACTIONS', 'false').lower() == 'true'
     
+    # def test_get_warnings_by_org_and_role(self):
+    #     os.environ["STAGE"] = "TEST"
+        
+    #     warning_repository = WarningRepositoryDynamo()
+    #     warning_mock = WarningRepositoryMock()
+    #     resp = warning_repository.get_warnings_by_org_and_role(target_org=ORGANIZATION.DEV, target_role=ROLE.PRESIDENT)
+    #     mock_resp = warning_mock.get_warnings_by_org_and_role(target_org=ORGANIZATION.DEV, target_role=ROLE.PRESIDENT)
+        
+    #     assert resp is not None
+    #     assert isinstance(resp, list)
+        
+    #     ids = [warning.warning_id for warning in resp]
+    #     mock_ids = [warning.warning_id for warning in mock_resp]
+    #     ids.sort()
+    #     mock_ids.sort()
+        
+    #     assert ids == mock_ids
+    
+    def test_get_warnings_by_org(self):
+        os.environ["STAGE"] = "TEST"
+        
+        warning_repository = WarningRepositoryDynamo()
+        warning_mock = WarningRepositoryMock()
+        resp = warning_repository.get_warnings_by_org(target_org=ORGANIZATION.DEV)
+        mock_resp = warning_mock.get_warnings_by_org(target_org=ORGANIZATION.DEV)
+        
+        assert resp is not None
+        assert isinstance(resp, list)
+        
+        ids = [warning.warning_id for warning in resp]
+        mock_ids = [warning.warning_id for warning in mock_resp]
+        ids.sort()
+        mock_ids.sort()
+        
+        assert ids == mock_ids
+    
+    def test_get_warnings_by_role(self):
+        os.environ["STAGE"] = "TEST"
+        
+        warning_repository = WarningRepositoryDynamo()
+        warning_mock = WarningRepositoryMock()
+        resp = warning_repository.get_warnings_by_role(target_role=ROLE.PRESIDENT)
+        mock_resp = warning_mock.get_warnings_by_role(target_role=ROLE.PRESIDENT)
+        
+        assert resp is not None
+        assert isinstance(resp, list)
+        
+        ids = [warning.warning_id for warning in resp]
+        mock_ids = [warning.warning_id for warning in mock_resp]
+        ids.sort()
+        mock_ids.sort()
+        
+        assert ids == mock_ids
+    
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
+    def test_get_all_warnings(self):
+        os.environ["STAGE"] = "TEST"
+
+        warning_repository = WarningRepositoryDynamo()
+        resp = warning_repository.get_all_warnings()
+        
+        assert resp is not None
+        assert isinstance(resp, list)
+    
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_create_warning(self):
         os.environ["STAGE"] = "TEST"
@@ -116,13 +180,3 @@ class Test_WarningRepositoryDynamo:
         with pytest.raises(Exception) as excinfo:
             warning_repository.delete_warning("non-existent-id")
         assert "not found" in str(excinfo.value)
-
-    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
-    def test_get_all_warnings(self):
-        os.environ["STAGE"] = "TEST"
-
-        warning_repository = WarningRepositoryDynamo()
-        resp = warning_repository.get_all_warnings()
-        
-        assert resp is not None
-        assert isinstance(resp, list)
