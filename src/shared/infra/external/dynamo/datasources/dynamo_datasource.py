@@ -180,7 +180,7 @@ class DynamoDatasource:
         )
         return resp
 
-    def query(self, key_condition_expression, **kwargs):
+    def query(self, KeyConditionExpression, **kwargs):
         """
         Query the table with the KeyConditionExpression.
         Example: KeyConditionExpression=Key('Partition').eq('partition') & Key('Sort').gte('sort')
@@ -191,7 +191,7 @@ class DynamoDatasource:
         """
 
         resp = self.dynamo_table.query(
-            KeyConditionExpression=key_condition_expression,
+            KeyConditionExpression=KeyConditionExpression,
 
             **kwargs
         )
