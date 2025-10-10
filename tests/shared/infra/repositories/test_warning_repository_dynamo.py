@@ -28,6 +28,7 @@ class Test_WarningRepositoryDynamo:
         
     #     assert ids == mock_ids
     
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_get_warnings_by_org(self):
         os.environ["STAGE"] = "TEST"
         
@@ -46,6 +47,7 @@ class Test_WarningRepositoryDynamo:
         
         assert ids == mock_ids
     
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_get_warnings_by_role(self):
         os.environ["STAGE"] = "TEST"
         
