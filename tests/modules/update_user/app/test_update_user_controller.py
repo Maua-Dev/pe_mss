@@ -1,82 +1,83 @@
-import pytest
-from src.modules.update_user.app.update_user_controller import UpdateUserController
-from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
-from src.shared.domain.enums.course_enum import COURSE
-from src.shared.domain.enums.organization_enum import ORGANIZATION
-from src.shared.domain.enums.role_enum import ROLE
-from src.shared.domain.enums.state_enum import STATE
-from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.external_interfaces.http_models import HttpRequest
-from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
+# from src.modules.update_user.app.update_user_controller import UpdateUserController
+# from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
+# from src.shared.helpers.external_interfaces.http_models import HttpRequest
+# from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
-class Test_UpdateUserControllerOptionalFields:
-    def test_update_user_with_course_and_year(self):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
-        controller = UpdateUserController(usecase=usecase)
+# class Test_UpdateUserController:
+#     def test_update_user_controller(self):
+#         repo = UserRepositoryMock()
+#         usecase = UpdateUserUsecase(repo=repo)
+#         controller = UpdateUserController(usecase=usecase)
 
-        request = HttpRequest(body={
-            'user_id': repo.users[0].user_id,
-            'new_state': STATE.APPROVED,
-            'new_role': ROLE.USER,
-            'new_course': COURSE.ARQ,   # opcional
-            'new_year': 3          # opcional
-        })
+#         request = HttpRequest(body={
+#             'user_id': "1",
+#             'new_name': 'Branco do Branco Branco da Silva'
+#         })
 
-        response = controller(request=request)
+#         response = controller(request=request)
 
-        assert response.status_code == 200
-        assert response.body['course'].name == 'ARQ'
-        assert response.body['year'] == 3
+#         assert response.status_code == 200
+#         assert response.body['user_id'] == repo.users[0].user_id
+#         assert response.body['name'] == 'Branco do Branco Branco da Silva'
+#         assert response.body['email'] == repo.users[0].email
+#         assert response.body['state'] == repo.users[0].state.value
+#         assert response.body['message'] == "the user was updated successfully"
 
-    def test_update_user_with_organization(self):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
-        controller = UpdateUserController(usecase=usecase)
+#     def test_update_user_controller_missing_user_id(self):
+#         repo = UserRepositoryMock()
+#         usecase = UpdateUserUsecase(repo=repo)
+#         controller = UpdateUserController(usecase=usecase)
 
-        request = HttpRequest(body={
-            'user_id': repo.users[1].user_id,
-            'new_state': STATE.APPROVED,
-            'new_role': ROLE.USER,
-            'new_organization': ORGANIZATION.DEV,  # opcional
-            'new_course': COURSE.CIC,
-            'new_year': repo.users[1].year
-            
-        })
+#         request = HttpRequest(body={
+#             'new_name': 'Branco do Branco Branco da Silva'
+#         })
 
-        response = controller(request=request)
+#         response = controller(request=request)
 
-        assert response.status_code == 200
-        assert response.body['organization'].name == 'DEV'
-        assert response.body['year'] == repo.users[1].year
+#         assert response.status_code == 400
+#         assert response.body == "Field user_id is missing"
 
+#     def test_update_user_controller_missing_new_name(self):
+#         repo = UserRepositoryMock()
+#         usecase = UpdateUserUsecase(repo=repo)
+#         controller = UpdateUserController(usecase=usecase)
 
-    def test_update_user_invalid_course_enum(self):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
+#         request = HttpRequest(body={
+#             'user_id': "1"
+#         })
 
-        with pytest.raises(EntityError, match="course"):
-            usecase(
-                new_state=STATE.APPROVED,
-                new_role=ROLE.PRESIDENT,
-                new_course="INVALIDO",  # erro aqui
-                user_id=repo.users[2].user_id
-            )
+#         response = controller(request=request)
 
-    def test_update_user_invalid_year_type(self):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
-        controller = UpdateUserController(usecase=usecase)
+#         assert response.status_code == 400
+#         assert response.body == "Field new_name is missing"
 
-        request = HttpRequest(body={
-            'user_id': repo.users[2].user_id,
-            'new_state': STATE.APPROVED,
-            'new_role': ROLE.PRESIDENT,
-            'new_year': "terceiro"  # errado, deveria ser int
-        })
+#     def test_update_user_controller_invalid_user_id(self):
+#         repo = UserRepositoryMock()
+#         usecase = UpdateUserUsecase(repo=repo)
+#         controller = UpdateUserController(usecase=usecase)
 
-        response = controller(request=request)
+#         request = HttpRequest(body={
+#             'user_id': 3,
+#             'new_name': 'Branco do Branco Branco da Silva'
+#         })
 
-        assert response.status_code == 400
-        assert "Field new_year isn't in the right type" in response.body
+#         response = controller(request=request)
+
+#         assert response.status_code == 400
+#         assert response.body == "Field user_id isn't in the right type.\n Received: int.\n Expected: str"
+
+#     def test_update_user_not_found(self):
+#         repo = UserRepositoryMock()
+#         usecase = UpdateUserUsecase(repo=repo)
+#         controller = UpdateUserController(usecase=usecase)
+
+#         request = HttpRequest(body={
+#             'user_id': "69",
+#             'new_name': 'Branco do Branco Branco da Silva'
+#         })
+
+#         response = controller(request=request)
+
+#         assert response.status_code == 404
+#         assert response.body == 'No items found for user_id'

@@ -1,44 +1,27 @@
 from src.shared.domain.entities.user import User
-from src.shared.domain.enums.course_enum import COURSE
-from src.shared.domain.enums.organization_enum import ORGANIZATION
-from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 
-class UpdateUserViewmodel:
 
+class UpdateUserViewmodel:
+    user_id: int
     name: str
     email: str
-    ra: str
     state: STATE
-    course: COURSE
-    year: int
-    role: ROLE
-    organization: ORGANIZATION
-    user_id: str
 
     def __init__(self, user: User):
-        
+        self.user_id = user.user_id
         self.name = user.name
         self.email = user.email
-        self.ra  = user.ra
         self.state = user.state
-        self.course = user.course
-        self.year = user.year
-        self.role = user.role
-        self.organization = user.organization
-        self.user_id = user.user_id
+        self.active = user.active
 
     def to_dict(self):
         return {
+            'user_id': self.user_id,
             'name': self.name,
             'email': self.email,
-            'ra': self.ra,
             'state': self.state.value,
-            'course': self.course,
-            'year': self.year,
-            'role': self.role,
-            'organization': self.organization,
-            'user_id': self.user_id,
+            'active': self.active.value,
             'message': "the user was updated successfully"
         }
-    
+
