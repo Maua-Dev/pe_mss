@@ -10,81 +10,107 @@ from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 
 class Test_UpdateUserUsecase:
-    def test_update_user_usecase(selfs):
+
+    def test_update_user_usecase(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-        updated_user = usecase(name="Heitor", user_id="550e8400-e29b-41d4-a716-446655440002", email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER, new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+        updated_user = usecase(
+            user_id="550e8400-e29b-41d4-a716-446655440002",
+            new_state=STATE.APPROVED,
+            new_role=ROLE.USER,
+            new_course=COURSE.CIC,
+            new_year=4,
+            new_organization=ORGANIZATION.DEV
+        )
+        assert updated_user.user_id == "550e8400-e29b-41d4-a716-446655440002"
 
-        assert updated_user.name == "Heitor"
-
-    def test_update_user_usecase_wrong_user_id(selfs):
+    def test_update_user_usecase_wrong_user_id(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-
         with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER, new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+            usecase(
+                user_id="550e8400-e29b-41d4-a716-44665544000",  # inválido
+                new_state=STATE.APPROVED,
+                new_role=ROLE.USER,
+                new_course=COURSE.CIC,
+                new_year=4,
+                new_organization=ORGANIZATION.DEV
+            )
 
-    def test_update_user_usecase_wrong_new_name(selfs):
+    def test_update_user_usecase_wrong_new_state(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-
         with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name=1, email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER,new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+            usecase(
+                user_id="550e8400-e29b-41d4-a716-446655440002",
+                new_state="APPROVED",  # string inválida, deve ser STATE
+                new_role=ROLE.USER,
+                new_course=COURSE.CIC,
+                new_year=4,
+                new_organization=ORGANIZATION.DEV
+            )
 
-    def test_update_user_usecase_wrong_new_email(selfs):
+    def test_update_user_usecase_wrong_new_role(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-
         with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email=1, ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER,new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+            usecase(
+                user_id="550e8400-e29b-41d4-a716-446655440002",
+                new_state=STATE.APPROVED,
+                new_role="USER",  # string inválida, deve ser ROLE
+                new_course=COURSE.CIC,
+                new_year=4,
+                new_organization=ORGANIZATION.DEV
+            )
 
-    def test_update_user_usecase_wrong_new_ra(selfs):
+    def test_update_user_usecase_wrong_new_course(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-
         with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email="23.00768-0", ra=1, new_state=STATE.APPROVED, new_role=ROLE.USER,new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+            usecase(
+                user_id="550e8400-e29b-41d4-a716-446655440002",
+                new_state=STATE.APPROVED,
+                new_role=ROLE.USER,
+                new_course="CIC",  # string inválida, deve ser COURSE
+                new_year=4,
+                new_organization=ORGANIZATION.DEV
+            )
 
-    def test_update_user_usecase_wrong_new_state(selfs):
+    def test_update_user_usecase_wrong_new_year(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-
         with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email="23.00768-0", ra="23.00768-0", new_state="APPROVED", new_role=ROLE.USER,new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+            usecase(
+                user_id="550e8400-e29b-41d4-a716-446655440002",
+                new_state=STATE.APPROVED,
+                new_role=ROLE.USER,
+                new_course=COURSE.CIC,
+                new_year="4",  # string inválida, deve ser int
+                new_organization=ORGANIZATION.DEV
+            )
 
-    def test_update_user_usecase_wrong_new_role(selfs):
+    def test_update_user_usecase_wrong_new_organization(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-
         with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role="USER",new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
+            usecase(
+                user_id="550e8400-e29b-41d4-a716-446655440002",
+                new_state=STATE.APPROVED,
+                new_role=ROLE.USER,
+                new_course=COURSE.CIC,
+                new_year=4,
+                new_organization="DEV"  # string inválida, deve ser ORGANIZATION
+            )
 
-    def test_update_user_usecase_wrong_new_course(selfs):
+    def test_update_user_usecase_user_not_found(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-
-        with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER,new_course="CIC", new_year=4, new_organization=ORGANIZATION.DEV)
-
-    def test_update_user_usecase_wrong_new_year(selfs):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
-
-        with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER,new_course=COURSE.CIC, new_year="4", new_organization=ORGANIZATION.DEV)
-
-    def test_update_user_usecase_wrong_new_organization(selfs):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
-
-        with pytest.raises(EntityError):
-            usecase(user_id="550e8400-e29b-41d4-a716-44665544000", name="Heitor", email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER,new_course=COURSE.CIC, new_year=4, new_organization="DEV")
-
-    def test_update_user_usecase_user_not_found(selfs):
-        repo = UserRepositoryMock()
-        usecase = UpdateUserUsecase(repo=repo)
-
         with pytest.raises(NoItemsFound):
-            usecase(user_id="550e8400-e29b-41d4-a716-446655440009", name="Heitor", email="23.00768-0", ra="23.00768-0", new_state=STATE.APPROVED, new_role=ROLE.USER,new_course=COURSE.CIC, new_year=4, new_organization=ORGANIZATION.DEV)
-
-    
+            usecase(
+                user_id="550e8400-e29b-41d4-a716-446655440009",  # não existe
+                new_state=STATE.APPROVED,
+                new_role=ROLE.USER,
+                new_course=COURSE.CIC,
+                new_year=4,
+                new_organization=ORGANIZATION.DEV
+            )

@@ -11,34 +11,27 @@ class UpdateUserUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    def __call__(self, name: str, email: str, ra: str, new_state: STATE, new_role: ROLE, new_course: COURSE=None, new_year: int=None, new_organization: ORGANIZATION=None, user_id: str=None) -> User:
+    def __call__(self, user_id: str, new_state: STATE = None, new_role: ROLE = None,
+                 new_course: COURSE = None, new_year: int = None,
+                 new_organization: ORGANIZATION = None) -> User:
 
-        if type(name) != str or name.strip() == "":
-            raise EntityError("new_name")
-        
-        if type(email) != str or email.strip() == "":
-            raise EntityError("email")
-        
-        if type(ra) != str or ra.strip() == "":
-            raise EntityError("ra")
-
-        if type(new_state) != STATE:
-            raise EntityError("state")
-        
-        if type(new_role) != ROLE:
-            raise EntityError("role")
-        
-        if type(new_course) != COURSE and new_course is not None:
-            raise EntityError("course")
-        
-        if type(new_year) != int and new_year is not None:
-            raise EntityError("year")
-        
-        if type(new_organization) != ORGANIZATION and new_organization is not None:
-            raise EntityError("entity")
-        
-        if not User.validate_id(user_id) and user_id is not None:
+        if type(user_id) != str or not User.validate_id(user_id):
             raise EntityError("user_id")
+
+        if new_state is not None and type(new_state) != STATE:
+            raise EntityError("state")
+
+        if new_role is not None and type(new_role) != ROLE:
+            raise EntityError("role")
+
+        if new_course is not None and type(new_course) != COURSE:
+            raise EntityError("course")
+
+        if new_year is not None and type(new_year) != int:
+            raise EntityError("year")
+
+        if new_organization is not None and type(new_organization) != ORGANIZATION:
+            raise EntityError("organization")
 
         updated_user = self.repo.update_user(
             user_id=user_id,

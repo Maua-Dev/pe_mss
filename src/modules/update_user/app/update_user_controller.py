@@ -12,78 +12,47 @@ from src.shared.domain.enums.state_enum import STATE
 
 
 class UpdateUserController:
-
     def __init__(self, usecase: UpdateUserUsecase):
         self.usecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            
-            if request.data.get('user_id') is None:
+            if request.data.get('user_id') is None or request.data.get('user_id') == "":
                 raise MissingParameters('user_id')
 
-            if type(request.data.get("name")) != str:
-                raise WrongTypeParameter("name", "str", type(request.data.get("name")).__name__)
-            if type(request.data.get("email")) != str:
-                raise WrongTypeParameter("email", "str", type(request.data.get("email")).__name__)
-            if type(request.data.get("ra")) != str:
-                raise WrongTypeParameter("ra", "str", type(request.data.get("ra")).__name__)
-            if type(request.data.get("user_id")) != str:
-                raise WrongTypeParameter("user_id", "str", type(request.data.get("user_id")).__name__)
+            new_state = request.data.get("new_state")
+            new_role = request.data.get("new_role")
+            new_course = request.data.get("new_course")
+            new_year = request.data.get("new_year")
+            new_organization = request.data.get("new_organization")
 
-            
-            try:
-                state = STATE[request.data.get("new_state")]
-            except KeyError:
-                raise EntityError("new_state")
+            # Apenas valida os campos que foram enviados
+            if new_state is not None and type(new_state) != STATE:
+                raise WrongTypeParameter("new_state", "STATE", type(new_state).__name__)
+            if new_role is not None and type(new_role) != ROLE:
+                raise WrongTypeParameter("new_role", "ROLE", type(new_role).__name__)
+            if new_course is not None and type(new_course) != COURSE:
+                raise WrongTypeParameter("new_course", "COURSE", type(new_course).__name__)
+            if new_year is not None and type(new_year) != int:
+                raise WrongTypeParameter("new_year", "int", type(new_year).__name__)
+            if new_organization is not None and type(new_organization) != ORGANIZATION:
+                raise WrongTypeParameter("new_organization", "ORGANIZATION", type(new_organization).__name__)
 
-            try:
-                role = ROLE[request.data.get("new_role")]
-            except KeyError:
-                raise EntityError("new_role")
-
-            
-            course = None
-            if request.data.get("new_course") is not None:
-                try:
-                    course = COURSE[request.data.get("new_course")]
-                except KeyError:
-                    raise EntityError("new_course")
-
-            year = request.data.get("new_year")
-            if year is not None and type(year) != int:
-                raise WrongTypeParameter("new_year", "int", type(year).__name__)
-
-            organization = None
-            if request.data.get("new_organization") is not None:
-                try:
-                    organization = ORGANIZATION[request.data.get("new_organization")]
-                except KeyError:
-                    raise EntityError("new_organization")
-
-            
             user = self.usecase(
-                name=request.data.get("name"),
-                email=request.data.get("email"),
-                ra=request.data.get("ra"),
-                new_state=state,
-                new_role=role,
-                new_course=course,
-                new_year=year,
-                new_organization=organization,
                 user_id=request.data.get("user_id"),
+                new_state=new_state,
+                new_role=new_role,
+                new_course=new_course,
+                new_year=new_year,
+                new_organization=new_organization,
             )
 
-
-            
             viewmodel = UpdateUserViewmodel(user)
             return OK(viewmodel.to_dict())
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
-
         except (MissingParameters, WrongTypeParameter, EntityError) as err:
             return BadRequest(body=err.message)
-
         except Exception as err:
             return InternalServerError(body=str(err))
