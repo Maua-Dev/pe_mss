@@ -93,9 +93,9 @@ class UserPostgresDTO:
             role=ROLE(user_data["role"]),
             state=STATE(user_data["state"]),
             active=ACTIVE(user_data["active"]),
-            course=COURSE(user_data["course"]) if "course" in user_data else None,
+            course=COURSE(user_data["course"]) if "course" in user_data and user_data["course"] is not None else None,
             year=user_data["year"] if "year" in user_data else None,
-            organization=ORGANIZATION(user_data["organization"]) if "organization" in user_data else None
+            organization=ORGANIZATION(user_data["organization"]) if "organization" in user_data and user_data["organization"] is not None else None
         )
     
     def to_entity(self) -> User:

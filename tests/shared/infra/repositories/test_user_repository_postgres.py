@@ -7,7 +7,9 @@ from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
+from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
 from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
 
 
@@ -15,13 +17,15 @@ class TestUserRepositoryPostgres:
 
     @pytest.mark.skip()
     def test_create_user(self):
-        mock_datasource = MagicMock(spec=RdsDataDatasource)
+        datasource= TestsRdsDatasource()
+
+        repo = UserRepositoryPostgres(db_datasource=datasource)
 
         new_user = User(
             user_id="a1b2c3d4-e5f6-7890-1234-567890abcdef",
-            name="Murillo Strina",
-            email="22.00730-0@maua.br",
-            ra="22.00730-0",
+            name="Matue",
+            email="24.00730-0@maua.br",
+            ra="24.00730-0",
             role=ROLE.USER,
             state=STATE.PENDING,
             active=ACTIVE.ACTIVE,
@@ -30,62 +34,37 @@ class TestUserRepositoryPostgres:
             organization=ORGANIZATION.NAWAT
         )
 
-        mock_datasource.query.return_value = [new_user.to_dict()]
-
-        repo = UserRepositoryPostgres(db_datasource=mock_datasource)
-
         response_user = repo.create_user(new_user)
 
-        assert response_user is not None
-        assert response_user.user_id == new_user.user_id
-        assert response_user.name == "Murillo Strina"
-
-        expected_sql = """
-            INSERT INTO users (user_id, name, email, ra, role, state, active, course, year, organization)
-            VALUES (:user_id, :name, :email, :ra, :role, :state, :active, :course, :year, :organization)
-            RETURNING *;
-        """
-        
-        expected_params = {
-            "user_id": new_user.user_id,
-            "name": new_user.name,
-            "email": new_user.email,
-            "ra": new_user.ra,
-            "role": new_user.role.value,
-            "state": new_user.state.value,
-            "active": new_user.active.value,
-            "course": new_user.course.value,
-            "year": new_user.year,
-            "organization": new_user.organization.value
-        }
-
-        mock_datasource.query.assert_called_once_with(sql=expected_sql, params=expected_params)
+        assert response_user == new_user
 
     @pytest.mark.skip()
     def test_delete_user(self):
-        mock_datasource = MagicMock(spec=RdsDataDatasource)
+        datasource= TestsRdsDatasource()
+
+        repo = UserRepositoryPostgres(db_datasource=datasource)
 
         user_id_to_delete = "550e8400-e29b-41d4-a716-446655440000"
 
-        mock_datasource.query.return_value = []
-
-        repo = UserRepositoryPostgres(db_datasource=mock_datasource)
-
         result = repo.delete_user(user_id=user_id_to_delete)
 
-        assert result is True
+        assert result == True
 
-        expected_sql = """
-            DELETE FROM users WHERE user_id = :user_id
-        """
+    @pytest.mark.skip()
+    def test_get_all_user(self):
+        datasource= TestsRdsDatasource()
         
-        expected_params = {"user_id": user_id_to_delete}
+        repo= UserRepositoryPostgres(db_datasource=datasource)
 
-        mock_datasource.query.assert_called_once_with(sql=expected_sql, params=expected_params)
+        response_all_users= repo.get_all_user()
+
+        assert len(response_all_users) == 8
 
     @pytest.mark.skip()
     def test_get_user(self):
-        mock_datasource = MagicMock(spec=RdsDataDatasource)
+        datasource= TestsRdsDatasource()
+
+        repo = UserRepositoryPostgres(db_datasource=datasource)
 
         existing_user = User(
             user_id="b423780f-2045-44e1-9c0b-98352841817d",
@@ -99,13 +78,145 @@ class TestUserRepositoryPostgres:
             year=4,
             organization=ORGANIZATION.NAWAT
         )
-        mock_datasource.query.return_value = [existing_user.to_dict()]
-        repo = UserRepositoryPostgres(db_datasource=mock_datasource)
+    
         response_user = repo.get_user(user_id=existing_user.user_id)
-        assert response_user is not None
-        assert response_user.user_id == existing_user.user_id
-        expected_sql = """
-            SELECT * FROM users WHERE user_id = :user_id
-        """
-        expected_params = {"user_id": existing_user.user_id}
-        mock_datasource.query.assert_called_once_with(sql=expected_sql, params=expected_params)
+
+        assert response_user == existing_user
+
+    @pytest.mark.skip()
+    def test_has_permission_target_user(self):
+        datasource= TestsRdsDatasource()
+
+        repo= UserRepositoryPostgres(db_datasource=datasource)
+
+        response= repo.has_permission_target_user(
+            requester_id="550e8400-e29b-41d4-a716-446655440001",
+            target_user=User(
+                name="Heitor", 
+                email="21.00453-7@maua.br", 
+                ra="21.00453-7", 
+                state=STATE.APPROVED, 
+                role=ROLE.PRESIDENT, 
+                active=ACTIVE.ACTIVE, 
+                course=COURSE.ECM, 
+                year=4, 
+                organization=ORGANIZATION.NAWAT, user_id="550e8400-e29b-41d4-a716-446655440002"
+            )
+        )
+        
+        assert response == True
+
+    @pytest.mark.skip()
+    def test_has_no_permission_if_target_user_is_a_president_tries_to_act_on_another_president(self):
+        datasource= TestsRdsDatasource()
+
+        repo= UserRepositoryPostgres(db_datasource=datasource)
+
+        with pytest.raises(ForbiddenAction):
+            repo.has_permission_target_user(
+                requester_id="e6bed58f-424a-4b62-b408-18e0a8d1f069",
+                target_user=User(
+                    name="Heitor", 
+                    email="21.00453-7@maua.br", 
+                    ra="21.00453-7", 
+                    state=STATE.APPROVED, 
+                    role=ROLE.PRESIDENT, 
+                    active=ACTIVE.ACTIVE, 
+                    course=COURSE.ECM, 
+                    year=4, 
+                    organization=ORGANIZATION.NAWAT, user_id="550e8400-e29b-41d4-a716-446655440002"
+                )
+            )
+
+    @pytest.mark.skip()
+    def test_has_permission_target_id(self):
+        datasource= TestsRdsDatasource()
+
+        repo= UserRepositoryPostgres(db_datasource=datasource)
+
+        response= repo.has_permission_target_id(
+            requester_id="550e8400-e29b-41d4-a716-446655440001",
+            target_id="550e8400-e29b-41d4-a716-446655440002"
+        )
+        
+        assert response == True
+
+    @pytest.mark.skip()
+    def test_has_no_permission_if_target_id_is_a_president_and_tries_to_act_on_another_president(self):
+        datasource= TestsRdsDatasource()
+
+        repo= UserRepositoryPostgres(db_datasource=datasource)
+
+        with pytest.raises(ForbiddenAction):
+            repo.has_permission_target_id(
+                requester_id="e6bed58f-424a-4b62-b408-18e0a8d1f069",
+                target_id="550e8400-e29b-41d4-a716-446655440002"
+            )
+
+    @pytest.mark.skip()
+    def test_update_user(self):
+        datasorce= TestsRdsDatasource()
+
+        repo = UserRepositoryPostgres(db_datasource=datasorce)
+
+        updated_user= User(
+            user_id="550e8400-e29b-41d4-a716-446655440000",
+            name="Guilherme",
+            email="25.00178-5@maua.br",
+            ra="25.00178-5",
+            role=ROLE.PRESIDENT,
+            state=STATE.APPROVED,
+            active=ACTIVE.ACTIVE,
+            course=COURSE.CIC,
+            year=2,
+            organization=ORGANIZATION.DEV
+        )
+
+        response_update_user= repo.update_user(
+            user_id="550e8400-e29b-41d4-a716-446655440000",
+            new_active= ACTIVE.ACTIVE,
+            new_state= STATE.APPROVED,
+            new_role= ROLE.PRESIDENT,
+            new_course= COURSE.CIC,
+            new_year= 2,
+            new_organization= ORGANIZATION.DEV
+        )
+
+        assert updated_user == response_update_user
+
+    @pytest.mark.skip()
+    def test_update_user_only_some_fields(self):
+        datasorce= TestsRdsDatasource()
+
+        repo = UserRepositoryPostgres(db_datasource=datasorce)
+
+        updated_user= User(
+            user_id="550e8400-e29b-41d4-a716-446655440000",
+            name="Guilherme",
+            email="25.00178-5@maua.br",
+            ra="25.00178-5",
+            role=ROLE.ADM,
+            state=STATE.APPROVED,
+            active=ACTIVE.ACTIVE,
+        )
+
+        response_update_user= repo.update_user(
+            user_id="550e8400-e29b-41d4-a716-446655440000",
+            new_state= STATE.APPROVED,
+            new_role= ROLE.ADM
+        )
+
+        assert updated_user == response_update_user
+
+    @pytest.mark.skip()
+    def test_update_user_no_user_found(self):
+        datasorce= TestsRdsDatasource()
+
+        repo = UserRepositoryPostgres(db_datasource=datasorce)
+
+        with pytest.raises(NoItemsFound):
+            repo.update_user(
+                user_id="non-existent-user-id",
+                new_state= STATE.APPROVED,
+                new_role= ROLE.ADM
+            )
