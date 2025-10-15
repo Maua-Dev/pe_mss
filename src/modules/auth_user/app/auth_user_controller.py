@@ -1,6 +1,6 @@
 import re
-from src.modules.auth_user.app.auth_user_usecase import AuthUserUsecase
-from src.modules.auth_user.app.auth_user_viewmodel import AuthUserViewmodel
+from .auth_user_usecase import AuthUserUsecase
+from .auth_user_viewmodel import AuthUserViewmodel
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.role_enum import ROLE

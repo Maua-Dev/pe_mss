@@ -1,5 +1,5 @@
-from src.modules.auth_user.app.auth_user_controller import AuthUserController
-from src.modules.auth_user.app.auth_user_usecase import AuthUserUsecase
+from .auth_user_controller import AuthUserController
+from .auth_user_usecase import AuthUserUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 
