@@ -1,5 +1,6 @@
 # import pytest
 
+import pytest
 from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound

@@ -13,7 +13,7 @@ from src.shared.domain.enums.organization_enum import ORGANIZATION
 
 class UpdateUserController:
     def __init__(self, usecase: UpdateUserUsecase):
-        self.UpdateUserUsecase = usecase
+        self.usecase = usecase  
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
@@ -26,7 +26,6 @@ class UpdateUserController:
             new_year = request.data.get("new_year")
             new_organization = request.data.get("new_organization")
 
-            # Apenas valida os campos que foram enviados
             if new_state is not None and type(new_state) != STATE:
                 raise WrongTypeParameter("new_state", "STATE", type(new_state).__name__)
             if new_role is not None and type(new_role) != ROLE:
@@ -51,10 +50,8 @@ class UpdateUserController:
             return OK(viewmodel.to_dict())
 
         except NoItemsFound as err:
-
             return NotFound(body=err.message)
         except (MissingParameters, WrongTypeParameter, EntityError) as err:
             return BadRequest(body=err.message)
         except Exception as err:
-
-            return InternalServerError(body=err.args[0])
+            return InternalServerError(body=str(err))

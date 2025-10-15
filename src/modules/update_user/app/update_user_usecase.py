@@ -1,4 +1,8 @@
 from src.shared.domain.entities.user import User
+from src.shared.domain.enums.course_enum import COURSE
+from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.enums.role_enum import ROLE
+from src.shared.domain.enums.state_enum import STATE
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.domain_errors import EntityError
 
@@ -7,9 +11,7 @@ class UpdateUserUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    def __call__(self, user_id: str, new_state: STATE = None, new_role: ROLE = None,
-                 new_course: COURSE = None, new_year: int = None,
-                 new_organization: ORGANIZATION = None) -> User:
+    def __call__(self, user_id: str, new_state: STATE = None, new_role: ROLE = None, new_course: COURSE = None, new_year: int = None, new_organization: ORGANIZATION = None) -> User:
 
         if type(user_id) != str or not User.validate_id(user_id):
             raise EntityError("user_id")
