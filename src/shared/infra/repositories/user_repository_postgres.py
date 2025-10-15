@@ -38,11 +38,13 @@ class UserRepositoryPostgres(IUserRepository):
     def delete_user(self, user_id: str) -> bool:
         query = """
             DELETE FROM users WHERE user_id = :user_id
+            RETURNING *;
         """
         params = {"user_id": user_id}
         result = self.postgres.query(sql=query, params=params)
         if result:
-            return result
+            user_data_from_db = result[0]
+            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
         
         raise NoItemsFound("There is no user with that user")
     
