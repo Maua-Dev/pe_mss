@@ -32,7 +32,8 @@ class LambdaConstruct(Construct):
         mss_student_api_resource.add_resource(
             module_name.replace("_", "-")).add_method(
                 method,
-                integration=LambdaIntegration(function)
+                integration=LambdaIntegration(function),
+                authorizer=authorizer
             )
 
         return function
