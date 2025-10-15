@@ -1,6 +1,6 @@
 import re
-from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
-from src.modules.create_user.app.create_user_viewmodel import CreateUserViewmodel
+from .create_user_usecase import CreateUserUsecase
+from .create_user_viewmodel import CreateUserViewmodel
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
