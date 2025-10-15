@@ -155,9 +155,9 @@ class TestUserRepositoryPostgres:
 
     @pytest.mark.skip()
     def test_update_user(self):
-        datasorce= TestsRdsDatasource()
+        datasource= TestsRdsDatasource()
 
-        repo = UserRepositoryPostgres(db_datasource=datasorce)
+        repo = UserRepositoryPostgres(db_datasource=datasource)
 
         updated_user= User(
             user_id="550e8400-e29b-41d4-a716-446655440000",
@@ -186,9 +186,9 @@ class TestUserRepositoryPostgres:
 
     @pytest.mark.skip()
     def test_update_user_only_some_fields(self):
-        datasorce= TestsRdsDatasource()
+        datasource= TestsRdsDatasource()
 
-        repo = UserRepositoryPostgres(db_datasource=datasorce)
+        repo = UserRepositoryPostgres(db_datasource=datasource)
 
         updated_user= User(
             user_id="550e8400-e29b-41d4-a716-446655440000",
@@ -210,9 +210,9 @@ class TestUserRepositoryPostgres:
 
     @pytest.mark.skip()
     def test_update_user_no_user_found(self):
-        datasorce= TestsRdsDatasource()
+        datasource= TestsRdsDatasource()
 
-        repo = UserRepositoryPostgres(db_datasource=datasorce)
+        repo = UserRepositoryPostgres(db_datasource=datasource)
 
         with pytest.raises(NoItemsFound):
             repo.update_user(

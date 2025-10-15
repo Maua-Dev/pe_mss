@@ -59,7 +59,7 @@ class UserRepositoryPostgres(IUserRepository):
                 users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
             return users_list
             
-        raise NoItemsFound("There is no user in the data base")
+        raise NoItemsFound("There is no user in the database")
 
     def get_user(self, user_id: str) -> User | None:
         query = """
