@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.course_enum import COURSE
@@ -10,10 +10,10 @@ from src.shared.environments import Environments
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.dto.user_postgres_dto import UserPostgresDTO
 from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
-
+from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
 
 class UserRepositoryPostgres(IUserRepository):
-    def __init__(self, db_datasource):
+    def __init__(self, db_datasource: RdsDataDatasource | TestsRdsDatasource):
         self.postgres = db_datasource
 
     def create_user(self, new_user: User) -> User | None:

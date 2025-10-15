@@ -1,5 +1,4 @@
 
-from unittest.mock import MagicMock
 import pytest
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.active_enum import ACTIVE
@@ -8,7 +7,6 @@ from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
-from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
 from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
 from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
 
