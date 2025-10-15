@@ -36,6 +36,7 @@ class Environments:
     db_secret_arn: str
     cloud_frontget_user_presenter_distribution_domain: str
     mss_name: str 
+    graph_microsoft_endpoint: str
 
     def _configure_local(self):
         from dotenv import load_dotenv
@@ -63,6 +64,7 @@ class Environments:
             self.dynamo_region = os.environ.get("DYNAMO_REGION", "local")
             self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
             self.bucket_endpoint_url = "http://localhost:9000"
+            self.graph_microsoft_endpoint = "https://graph.microsoft.com"
 
         else:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
@@ -72,6 +74,7 @@ class Environments:
             self.db_secret_arn = os.environ.get("DB_SECRET_ARN")
             self.db_name = os.environ.get("DB_NAME")
             self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
+            self.graph_microsoft_endpoint = os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
 
     @staticmethod
     def get_user_repo() -> IUserRepository:
