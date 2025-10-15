@@ -40,12 +40,12 @@ class TestsRdsDatasource:
         Executa uma query e retorna os resultados como uma lista de dicionários.
         """
         query_psycopg2, params_tuple = self._translate_query(sql, params)
-       
+        
         with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
             cursor.execute(query_psycopg2, params_tuple)
             
             results = []
-            if "RETURNING" in sql.upper() or sql.upper().strip().startswith("SELECT"):
+            if cursor.description:
                 results = [dict(row) for row in cursor.fetchall()]
             
             self.conn.commit()

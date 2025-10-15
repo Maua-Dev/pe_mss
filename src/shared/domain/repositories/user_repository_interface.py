@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -38,7 +39,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def update_user(self, user_id: str, new_state: STATE=None, new_role: ROLE=None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None) -> Optional[User]:
+    def update_user(self, user_id: str, new_state: STATE=None, new_role: ROLE=None, new_active: ACTIVE=None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None) -> Optional[User]:
         """
         If user not found raise NoItemsFound
         """
