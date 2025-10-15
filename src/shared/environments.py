@@ -82,6 +82,7 @@ class Environments:
             from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
             return UserRepositoryMock
         elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
+            from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
             # from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
             # from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
             return UserRepositoryMock
