@@ -1,0 +1,106 @@
+import base64
+import io
+import pandas as pd
+
+from src.modules.create_user.app.create_user_controller import CreateUserController
+from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
+from src.shared.clients.s3_client import S3Client
+from src.shared.domain.entities.user import User
+from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.helpers.external_interfaces.http_models import HttpRequest
+from src.shared.domain.enums.role_enum import ROLE
+
+class UploadUsersUsecase:
+    def __init__(self, repo: IUserRepository):
+        self.repo = repo
+        self.create_user_usecase = CreateUserUsecase(repo)
+        self.create_user_controller = CreateUserController(self.create_user_usecase)
+        self.s3_client = S3Client("bucket-test-pe")
+
+    def __call__(self, file_base64: str, requester_user_id: User) -> list[User]:
+
+        if type(file_base64) != str:
+            raise EntityError("file_base64")
+        
+        if type(requester_user_id) != str:
+            raise EntityError("requester_user_id")
+
+        requester_user = self.repo.get_user(user_id=requester_user_id)
+        if requester_user.role != ROLE.PRESIDENT:
+            raise PermissionError("Only users with PRESIDENT role can upload users.")
+
+        file_bytes = base64.b64decode(file_base64)
+        df = pd.read_excel(io.BytesIO(file_bytes))
+        
+        # WARNING: Validar as colunas
+        expected_columns = ['name', 'email', 'role', 'organization', 'state']
+        if not all(column in df.columns for column in expected_columns):
+            raise EntityError("Invalid file format. Expected columns: " + ", ".join(expected_columns))
+        
+        uploaded_user = []
+        for _, row in df.iterrows():
+            user_data = {
+                'name': row['name'],
+                'email': row['email'],
+                'organization': row['organization'],
+                'role': row['role'],
+                'state': row['state']
+            }
+            
+            uploaded_user.append(user_data)
+            
+        request = HttpRequest(body={
+            'user_from_authorizer': {
+                'id': requester_user.user_id,
+                'displayName': requester_user.name,
+                'mail': requester_user.email,
+            },
+            'new_user': [
+                dict(user_data) for user_data in uploaded_user
+            ]
+        })
+        
+        response = self.create_user_controller(request=request)
+        
+        if response.status_code != 200:
+            raise EntityError("Error uploading users: " + response.body)
+        
+        # Adicionar na planilha da org
+        org_spreadsheet, error = self.s3_client.retreive_planilha_org(org=requester_user.organization)
+        if error.get("error"):
+            # Caso não exista, criar
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='auto') as writer:
+                df.to_excel(writer, index=False)
+            output.seek(0)
+            self.s3_client.upload_planilha_org_excel(org=requester_user.organization, file_content=output.getvalue())
+        else:
+            existing_df = pd.read_excel(io.BytesIO(org_spreadsheet))
+            combined_df = pd.concat([existing_df, df], ignore_index=True)
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='auto') as writer:
+                combined_df.to_excel(writer, index=False)
+            output.seek(0)
+            self.s3_client.upload_planilha_org_excel(org=requester_user.organization, file_content=output.getvalue())
+            
+        # Adicionar na planilha geral
+        general_spreadsheet, error = self.s3_client.retreive_planilha_geral()
+
+        if error.get("error"):
+            # Caso não exista, criar a planilha xlsx a partir do dataframe
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='auto') as writer:
+                df.to_excel(writer, index=False)
+            output.seek(0)
+            self.s3_client.upload_planilha_geral_excel(file_content=output.getvalue())
+        else:
+            existing_df = pd.read_excel(io.BytesIO(general_spreadsheet))
+            combined_df = pd.concat([existing_df, df], ignore_index=True)
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='auto') as writer:
+                combined_df.to_excel(writer, index=False)
+            output.seek(0)
+            self.s3_client.upload_planilha_geral_excel(file_content=output.getvalue())
+        
+        return list(response.body)

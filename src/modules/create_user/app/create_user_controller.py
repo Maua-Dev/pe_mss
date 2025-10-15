@@ -21,7 +21,6 @@ class CreateUserController:
             requester_user = request.data.get('user_from_authorizer')
             
             if requester_user:
-                
                 requester_user_id = request.data.get('user_from_authorizer').get('id')
                 requester_user_role = self.create_user_usecase.repo.get_user(user_id=requester_user_id).role
 
