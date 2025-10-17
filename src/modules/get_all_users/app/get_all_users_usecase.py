@@ -23,9 +23,9 @@ class GetAllUsersUsecase:
         users = self.userrepo.get_all_user()
 
         if organization is not None:
-            users = self.userrepo.get_all_users_by_organization(organization)
+            users = [u for u in users if u.organization == organization]
 
         if state is not None:
-            users = self.userrepo.get_all_users_by_state(state)
+            users = [u for u in users if u.state == state]
 
         return users

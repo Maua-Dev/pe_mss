@@ -26,20 +26,6 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_all_users_by_organization(self, organization: ORGANIZATION) -> Optional[List[Optional[User]]]:
-        """
-        If no users found raise NoItemsFound
-        """
-        pass
-
-    @abstractmethod
-    def get_all_users_by_state(self, state: STATE) -> Optional[List[Optional[User]]]:
-        """
-        If no users found raise NoItemsFound
-        """
-        pass
-
-    @abstractmethod
     def create_user(self, new_user: User) -> Optional[User]:
         """        
         Creates a new user and returns it

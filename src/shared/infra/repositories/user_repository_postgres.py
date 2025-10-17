@@ -63,35 +63,37 @@ class UserRepositoryPostgres(IUserRepository):
             
         raise NoItemsFound("There is no user in the database")
     
-    def get_all_users_by_organization(self, organization: ORGANIZATION):
-        query= """
-            SELECT * FROM users WHERE organization = :organization
-        """
-        params= {"organization": organization.value}
-        result= self.postgres.query(sql=query, params=params)
+    # Essas funções foram comentadas pois o filtro é feito na camada de usecase, mas podem ser utilizadas futuramente
+    # caso o processamento precise ser feito na camada de repositório por algum motivo de performance
+    # def get_all_users_by_organization(self, organization: ORGANIZATION):
+    #     query= """
+    #         SELECT * FROM users WHERE organization = :organization
+    #     """
+    #     params= {"organization": organization.value}
+    #     result= self.postgres.query(sql=query, params=params)
 
-        if result:
-            users_list= []
-            for user_data in result:
-                users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
-            return users_list
+    #     if result:
+    #         users_list= []
+    #         for user_data in result:
+    #             users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
+    #         return users_list
             
-        raise NoItemsFound(f"There is no user in the database with that organization {organization.name}")
+    #     raise NoItemsFound(f"There is no user in the database with that organization {organization.name}")
     
-    def get_all_users_by_state(self, state: STATE):
-        query= """
-            SELECT * FROM users WHERE state = :state
-        """
-        params= {"state": state.value}
-        result= self.postgres.query(sql=query, params=params)
+    # def get_all_users_by_state(self, state: STATE):
+    #     query= """
+    #         SELECT * FROM users WHERE state = :state
+    #     """
+    #     params= {"state": state.value}
+    #     result= self.postgres.query(sql=query, params=params)
 
-        if result:
-            users_list= []
-            for user_data in result:
-                users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
-            return users_list
+    #     if result:
+    #         users_list= []
+    #         for user_data in result:
+    #             users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
+    #         return users_list
             
-        raise NoItemsFound(f"There is no user in the database with that state {state.name}")
+    #     raise NoItemsFound(f"There is no user in the database with that state {state.name}")
 
     def get_user(self, user_id: str) -> User | None:
         query = """
