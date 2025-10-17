@@ -1,3 +1,4 @@
+from urllib import response
 from src.modules.get_all_users.app.get_all_users_controller import GetAllUsersController
 from src.modules.get_all_users.app.get_all_users_usecase import GetAllUsersUsecase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
@@ -22,30 +23,29 @@ class TestGetAllUsersController:
 
         response = controller(request=request)
 
+        expected_users = [
+            {
+                'user_id': u.user_id,
+                'name': u.name,
+                'email': u.email,
+                'state': (u.state.value if u.state is not None else None),
+                'role': (u.role.value if u.role is not None else None),
+                'active': (u.active.value if u.active is not None else None),
+                'ra': u.ra,
+                'course': (u.course.value if u.course is not None else None),
+                'year': u.year,
+                'organization': (u.organization.value if u.organization is not None else None),
+            } 
+            for u in sorted(userrepo.get_all_user(), key=lambda x: x.name.casefold())
+]
         expected_dict = {
-            'users': [
-                {
-                    'name': user.name,
-                    'email': user.email,
-                    'ra': user.ra,
-                    'state': user.state,
-                    'role': user.role,
-                    'active': user.active,
-                    'course': user.course,
-                    'year': user.year,
-                    'organization': user.organization,
-                    'user_id': user.user_id
-                } for user in userrepo.get_all_user()
-            ],
+            'users': expected_users,
             'message': 'the users were retrieved'
         }
-
         assert response.status_code == 200
-        assert type(response.body) == list
-        assert len(response.body[0]['users']) == 8
-        assert all([type(user) == dict for user in response.body[0]['users']])
-        assert response.body[0]['message'] == 'the users were retrieved'
-        assert response.body[0] == expected_dict
+        assert isinstance(response.body, dict)
+        assert len(response.body['users']) == len(expected_users)
+        assert response.body == expected_dict
 
     def test_get_all_users_controller_missing_user_from_authorizer(self):
         userrepo = UserRepositoryMock()

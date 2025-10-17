@@ -22,13 +22,13 @@ class UserViewModel:
             self.user_id = user.user_id
             self.name = user.name
             self.email = user.email
-            self.state = user.state
-            self.role = user.role
-            self.active = user.active
+            self.state = user.state.value if user.state is not None else None
+            self.role = user.role.value if user.role is not None else None
+            self.active = user.active.value if user.active is not None else None
             self.ra = user.ra
-            self.course = user.course
+            self.course = user.course.value if user.course is not None else None
             self.year = user.year
-            self.organization = user.organization
+            self.organization = user.organization.value if user.organization is not None else None
 
         def to_dict(self):
             data = {

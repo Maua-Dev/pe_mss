@@ -47,9 +47,9 @@ class GetAllUsersController:
             organization = request.data.get('organization', None)
             state = request.data.get('state', None)
             users = self.usecase(user_id=requester_user_id, organization=organization, state=state)
-            viewmodels = [GetAllUsersViewModel(users=users).to_dict()]
+            viewmodel = GetAllUsersViewModel(users=users).to_dict()
             
-            return OK(viewmodels)
+            return OK(viewmodel)
         
         except MissingParameters as err:
             return BadRequest(body=err.message)

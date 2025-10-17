@@ -1,5 +1,6 @@
-from src.modules.get_all_users.app.get_all_users_controller import GetAllUsersController
-from src.modules.get_all_users.app.get_all_users_usecase import GetAllUsersUsecase
+import json
+from .get_all_users_controller import GetAllUsersController
+from .get_all_users_usecase import GetAllUsersUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 
