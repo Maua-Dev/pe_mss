@@ -1,6 +1,8 @@
 import base64
 import io
 import pandas as pd
+import urllib3
+import os
 
 from src.modules.create_user.app.create_user_controller import CreateUserController
 from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
@@ -14,9 +16,8 @@ from src.shared.domain.enums.role_enum import ROLE
 class UploadUsersUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
-        self.create_user_usecase = CreateUserUsecase(repo)
-        self.create_user_controller = CreateUserController(self.create_user_usecase)
         self.s3_client = S3Client("bucket-test-pe")
+        self.http_client = urllib3.PoolManager()
 
     def __call__(self, file_base64: str, requester_user_id: User) -> list[User]:
 
@@ -60,10 +61,10 @@ class UploadUsersUsecase:
                 dict(user_data) for user_data in uploaded_user
             ]
         })
-        
-        response = self.create_user_controller(request=request)
-        
-        if response.status_code != 200:
+
+        response = self.http_client.request("POST", os.environ.get("CREATE_USER_ENDPOINT"), body=request.data, headers={"Content-Type": "application/json"})
+
+        if response.status != 200:
             raise EntityError("Error uploading users: " + response.body)
         
         # Adicionar na planilha da org
@@ -103,4 +104,4 @@ class UploadUsersUsecase:
             output.seek(0)
             self.s3_client.upload_planilha_geral_excel(file_content=output.getvalue())
         
-        return list(response.body)
+        return list(response.json().get("data"))

@@ -17,13 +17,14 @@ class CreateUserController:
         try:
             
             #nao é necessario validar as entradas requester user pois isso o authorizer vai cuidar
+            requester_user = request.data.get('user_from_authorizer');
             
-            requester_user = request.data.get('user_from_authorizer')
+            if requester_user is None:
+                raise MissingParameters('user_from_authorizer')
             
-            if requester_user:
-                requester_user_id = request.data.get('user_from_authorizer').get('id')
-                requester_user_role = self.create_user_usecase.repo.get_user(user_id=requester_user_id).role
-
+            requester_user_id = requester_user.get('id')
+            requester_user_role = self.create_user_usecase.repo.get_user(user_id=requester_user_id).role
+            
             if request.data.get('new_user') is None:
                 raise MissingParameters('new_user')
             
