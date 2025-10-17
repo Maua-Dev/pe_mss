@@ -28,4 +28,5 @@ class GetAllUsersUsecase:
         if state is not None:
             users = [u for u in users if u.state == state]
 
+        users.sort(key=lambda u: u.name.casefold())
         return users
