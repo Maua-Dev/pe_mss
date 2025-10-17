@@ -101,7 +101,23 @@ class User(abc.ABC):
         regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
         return bool(re.fullmatch(regex, email))
-
+    
+    @staticmethod
+    def validate_role_admin_and_president(role: ROLE) -> bool:
+        if role == None:
+            return False
+        if type(role) != ROLE:
+            return False
+        return (role == ROLE.ADM or role == ROLE.PRESIDENT)
+    
+    @staticmethod
+    def validate_active(active: ACTIVE) -> bool:
+        if active == None:
+            return False
+        if type(active) != ACTIVE:
+            return False
+        return (active == ACTIVE.ACTIVE)
+    
     @staticmethod
     def validate_ra(ra: str) -> bool:
         if ra is None:
