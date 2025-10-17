@@ -21,7 +21,22 @@ class IUserRepository(ABC):
     @abstractmethod
     def get_all_user(self) -> Optional[List[Optional[User]]]:
         """
-        If no users found raise NoItemsFound"""
+        If no users found raise NoItemsFound
+        """
+        pass
+
+    @abstractmethod
+    def get_all_users_by_organization(self, organization: ORGANIZATION) -> Optional[List[Optional[User]]]:
+        """
+        If no users found raise NoItemsFound
+        """
+        pass
+
+    @abstractmethod
+    def get_all_users_by_state(self, state: STATE) -> Optional[List[Optional[User]]]:
+        """
+        If no users found raise NoItemsFound
+        """
         pass
 
     @abstractmethod

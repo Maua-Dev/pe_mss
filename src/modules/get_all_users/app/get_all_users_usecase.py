@@ -6,7 +6,7 @@ from src.shared.domain.repositories.user_repository_interface import IUserReposi
 from src.shared.helpers.errors.usecase_errors import NoItemsFound, UserNotAllowed
 
 
-class GetAllUsersUseCase:
+class GetAllUsersUsecase:
     def __init__(self, userrepo: IUserRepository):
         self.userrepo = userrepo
 
@@ -20,12 +20,12 @@ class GetAllUsersUseCase:
         if not is_active:
             raise UserNotAllowed()
 
-        users = self.userrepo.get_all_users()
+        users = self.userrepo.get_all_user()
 
         if organization is not None:
-            users = [u for u in users if u.organization == organization]
+            users = self.userrepo.get_all_users_by_organization(organization)
 
         if state is not None:
-            users = [u for u in users if u.state == state]
+            users = self.userrepo.get_all_users_by_state(state)
 
         return users

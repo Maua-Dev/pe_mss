@@ -133,6 +133,18 @@ class UserRepositoryMock(IUserRepository):
             raise NoItemsFound("No users found")
         return self.users
     
+    def get_all_users_by_organization(self, organization: ORGANIZATION) -> Optional[List[User]]:
+        users = [u for u in self.users if u.organization == organization]
+        if not users:
+            raise NoItemsFound(f"No users found in organization {organization}")
+        return users
+    
+    def get_all_users_by_state(self, state: STATE) -> Optional[List[User]]:
+        users = [u for u in self.users if u.state == state]
+        if not users:
+            raise NoItemsFound(f"No users found with state {state}")
+        return users
+    
     def create_user(self, new_user: User) -> Optional[User]:
         self.users.append(new_user)
         return new_user
