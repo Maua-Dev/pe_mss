@@ -59,10 +59,7 @@ class AuthUserController:
                     user_id= request.data['user_from_authorizer'].get('id'),
                     name= request.data['user_from_authorizer'].get('displayName'),
                     email= request.data['user_from_authorizer'].get('mail'),
-                    state= STATE.PENDING,
                     role= ROLE.USER,
-                    active= ACTIVE.ACTIVE,
-                    organization= None,
                     ra= request.data['user_from_authorizer'].get('mail').split('@')[0]
                 )
                 
@@ -72,11 +69,8 @@ class AuthUserController:
                     user_id= request.data['user_from_authorizer'].get('id'),
                     name= request.data['user_from_authorizer'].get('displayName'),
                     email= request.data['user_from_authorizer'].get('mail'),
-                    state= STATE.PENDING,
-                    active= ACTIVE.ACTIVE,
                     role= ROLE.USER,
-                    organization= None,
-                    ra= None
+                    ra= "00.00000-0" #RA DEFAULT PARA USUÁRIOS SEM RA
                 )
 
             user_and_number=self.AuthUserUsecase(user=new_user)

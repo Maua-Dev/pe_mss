@@ -15,7 +15,8 @@ class Test_AuthUserUsecase:
         posible_new_user= User(
             user_id="550e8400-e29b-41d4-a716-446655440000",
             name="Guilherme",
-            email="25.00178-5@maua.br", 
+            email="25.00178-5@maua.br",
+            ra="25.00178-5", 
             state=STATE.PENDING, 
             role=ROLE.USER,
             active=ACTIVE.ACTIVE # Adicionado
@@ -34,6 +35,7 @@ class Test_AuthUserUsecase:
             user_id="550e8400-e29b-41d4-a716-446655440010",
             name="José",
             email="20.00158-5@maua.br", 
+            ra="25.00178-5", 
             state=STATE.PENDING, 
             role=ROLE.USER,
             active=ACTIVE.ACTIVE # Adicionado
