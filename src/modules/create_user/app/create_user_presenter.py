@@ -12,27 +12,23 @@ controller = CreateUserController(usecase)
 def lambda_handler(event, context):
     httpRequest = LambdaHttpRequest(data=event)
 
-    # pega a string JSON
     user_graph_info_raw = (
         event.get("requestContext", {})
              .get("authorizer", {})
-             .get("user_graph_info")
+             .get("user")
     )
 
     user_info = None
     if isinstance(user_graph_info_raw, str):
         try:
-            # transforma a string JSON em dict
             user_info = json.loads(user_graph_info_raw)
         except json.JSONDecodeError:
             user_info = None
     elif isinstance(user_graph_info_raw, dict):
         user_info = user_graph_info_raw
 
-    # salva no request
     httpRequest.data["user_from_authorizer"] = user_info
 
-    # log opcional
     print("Decoded user:", user_info)
 
     response = controller(httpRequest)
