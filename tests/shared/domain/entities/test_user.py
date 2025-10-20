@@ -37,9 +37,8 @@ class Test_User:
             User(name="VITOR", email="25.0178-5maua.br", ra="25.00178-5", state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active=ACTIVE.ACTIVE, organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
 
     def test_user_ra_is_none(self):
-        # o ra vai poder ser None caso o email nao contenha um ra visivel, como por exemplo email de professores
-        # e muito provavelmente o email do Godoy
-        User(name="VITOR", email="dev@maua.br",ra=None, state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active=ACTIVE.ACTIVE, organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
+        with pytest.raises(EntityError):
+            User(name="VITOR", email="dev@maua.br",ra=None, state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active=ACTIVE.ACTIVE, organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
 
     def test_user_ra_is_not_str(self):
         with pytest.raises(EntityError):
@@ -104,7 +103,6 @@ class Test_User:
             User(name="VITOR", email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active="ACTIVE", organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
 
     def test_user_user_active_is_none(self):
-        with pytest.raises(EntityError):
-            User(name="VITOR", email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active=None, organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
+        User(name="VITOR", email="25.00178-5@maua.br", ra="25.00178-5", state=STATE.APPROVED, course=COURSE.CIC, year=1, role=ROLE.USER, active=None, organization=ORGANIZATION.DEV, user_id=f"{uuid.uuid4()}")
 
     
