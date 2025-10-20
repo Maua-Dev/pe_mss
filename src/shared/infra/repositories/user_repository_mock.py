@@ -239,3 +239,27 @@ class UserRepositoryMock(IUserRepository):
             raise NoItemsFound(requester_id)
         except ForbiddenAction as e:
             raise ForbiddenAction(e.message)
+
+    def get_users(self,
+                  name: Optional[str] = None,
+                  ra: Optional[str] = None,
+                  state: Optional[STATE] = None,
+                  role: Optional[ROLE] = None,
+                  active: Optional[ACTIVE] = None,
+                  course: Optional[COURSE] = None,
+                  year: Optional[int] = None,
+                  organization: Optional[ORGANIZATION] = None
+                  ):
+        filters = locals().copy()
+        filters.pop("self")
+        
+        filters = {k: v for k, v in filters.items() if v is not None}
+        
+        users = []
+
+        for user in self.users:
+            user_dict = user.__dict__
+            if all(user_dict.get(key) == value for key, value in filters.items()):
+                users.append(user)
+
+        return users

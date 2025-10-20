@@ -3,7 +3,7 @@ from src.modules.get_all_users.app.get_all_users_usecase import GetAllUsersUseca
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.state_enum import STATE
-from src.shared.helpers.errors.usecase_errors import NoItemsFound, UserNotAllowed
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 class Test_GetAllUsersUsecase:
@@ -69,5 +69,5 @@ class Test_GetAllUsersUsecase:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        with pytest.raises(UserNotAllowed):
+        with pytest.raises(ForbiddenAction):
             users = usecase(user_id="3d32ec27-09c3-41da-92e2-be106e449b6a")

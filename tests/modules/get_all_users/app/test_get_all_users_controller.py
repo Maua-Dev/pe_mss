@@ -13,7 +13,6 @@ class TestGetAllUsersController:
         controller = GetAllUsersController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': "550e8400-e29b-41d4-a716-446655440001",
             'user_from_authorizer':{
                 'id': "550e8400-e29b-41d4-a716-446655440001",
                 'displayName': "Guilherme",
@@ -36,7 +35,7 @@ class TestGetAllUsersController:
                 'year': u.year,
                 'organization': (u.organization.value if u.organization is not None else None),
             } 
-            for u in sorted(userrepo.get_all_user(), key=lambda x: x.name.casefold())
+            for u in sorted(userrepo.get_users(), key=lambda x: x.name.casefold())
 ]
         expected_dict = {
             'users': expected_users,
@@ -53,7 +52,6 @@ class TestGetAllUsersController:
         controller = GetAllUsersController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': "550e8400-e29b-41d4-a716-446655440001"
         })
 
         response = controller(request=request)
@@ -67,7 +65,6 @@ class TestGetAllUsersController:
         controller = GetAllUsersController(usecase=usecase)
 
         request = HttpRequest(body={
-            'user_id': "550e8400-e29b-41d4-a716-446655440001",
             'user_from_authorizer':{
                 'id': 12345,
                 'displayName': "Guilherme",
