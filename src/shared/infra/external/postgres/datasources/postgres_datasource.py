@@ -121,7 +121,7 @@ class RdsDataDatasource:
         self,
         sql: str,
         params: Optional[Dict[str, Any]] = None,
-        transaction_id: Optional[str] = None,
+        transaction_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Executa uma consulta SQL de leitura (ex: SELECT) e retorna os resultados.
