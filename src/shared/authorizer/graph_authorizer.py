@@ -46,7 +46,7 @@ def lambda_handler(event, context):
 
         # 4. Se a chamada foi bem-sucedida, gerar uma política de permissão (Allow)
         # O contexto pode ser usado para passar dados do usuário para a função de backend
-        context_data = {"user_graph_info": json.dumps(user_data)}
+        context_data = {"user": json.dumps(user_data)}
         policy = generate_policy(principal_id, "Allow", method_arn, context_data)
 
         print(policy)
