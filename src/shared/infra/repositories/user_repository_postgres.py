@@ -11,6 +11,7 @@ from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFou
 from src.shared.infra.dto.user_postgres_dto import UserPostgresDTO
 from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource, RdsDataError
 from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
+from src.shared.helpers.errors.usecase_errors import DuplicatedItem
 import logging
 
 logger = logging.getLogger()
@@ -54,7 +55,18 @@ class UserRepositoryPostgres(IUserRepository):
             return None
 
         except RdsDataError as e:
-            logger.error(f"Falha na transação ao criar usuário: {e}")
+            original_error = e.__cause__
+            original_error_message = ""
+
+            if original_error and hasattr(original_error, 'response'):
+                original_error_message = original_error.response.get('Error', {}).get('Message', '')
+
+            if "duplicate key value violates unique constraint" in original_error_message:
+
+                raise DuplicatedItem("Item duplicado.")
+
+            # Se não for um erro de duplicidade, apenas logue e retorne None (ou relance 'e')
+            logger.error(f"Falha na transação ao criar usuário: {e} | Mensagem Original: {original_error_message}")
             return None
     
     def delete_user(self, user_id: str) -> User:
