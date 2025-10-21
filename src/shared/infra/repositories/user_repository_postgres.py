@@ -51,23 +51,16 @@ class UserRepositoryPostgres(IUserRepository):
                 if result:
                     user_data_from_db = result[0]
                     return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
-            
-            return None
+
+            raise Exception("Erro ao criar usuário.")
 
         except RdsDataError as e:
-            original_error = e.__cause__
-            original_error_message = ""
 
-            if original_error and hasattr(original_error, 'response'):
-                original_error_message = original_error.response.get('Error', {}).get('Message', '')
-
-            if "duplicate key value violates unique constraint" in original_error_message:
+            if "duplicate key value violates unique constraint" in str(e):
 
                 raise DuplicatedItem("Item duplicado.")
 
-            # Se não for um erro de duplicidade, apenas logue e retorne None (ou relance 'e')
-            logger.error(f"Falha na transação ao criar usuário: {e} | Mensagem Original: {original_error_message}")
-            return None
+            raise Exception("Erro ao criar usuário.")
     
     def delete_user(self, user_id: str) -> User:
         query = """
