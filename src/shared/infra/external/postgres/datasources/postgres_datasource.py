@@ -110,9 +110,11 @@ class RdsDataDatasource:
         for record in records:
             row = {}
             for i, field in enumerate(record):
-                # Extrai o valor do primeiro (e único) campo dentro do 'field' dict
-                # Ex: de {'stringValue': 'valor'} para 'valor'
-                value = next(iter(field.values()), None)
+                if 'isNull' in field:
+                    value = None
+                else:
+                    value = next(iter(field.values()), None)
+                    
                 row[columns[i]] = value
             result.append(row)
         return result
