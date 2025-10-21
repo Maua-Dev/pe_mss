@@ -108,6 +108,69 @@ class UserRepositoryPostgres(IUserRepository):
             # return User.from_dict(user_data_from_db)
 
         return None
+
+    def get_users(self,
+                  name: Optional[str] = None,
+                  ra: Optional[str] = None,
+                  state: Optional[STATE] = None,
+                  role: Optional[ROLE] = None,
+                  active: Optional[ACTIVE] = None,
+                  course: Optional[COURSE] = None,
+                  year: Optional[int] = None,
+                  organization: Optional[ORGANIZATION] = None
+                  ):
+        base_query= "SELECT * FROM users"
+        conditions = []
+        params = {}
+
+        if name is not None:
+            conditions.append("name = :name")
+            params["name"] = name
+
+        if ra is not None:
+            conditions.append("ra = :ra")
+            params["ra"] = ra
+        
+        if state is not None:
+            conditions.append("state = :state")
+            params["state"] = state.value
+        
+        if role is not None:
+            conditions.append("role = :role")
+            params["role"] = role.value
+
+        if active is not None:
+            conditions.append("active = :active")
+            params["active"] = active.value
+
+        if course is not None:
+            conditions.append("course = :course")
+            params["course"] = course.value
+        
+        if year is not None:
+            conditions.append("year = :year")
+            params["year"] = year
+        
+        if organization is not None:
+            conditions.append("organization = :organization")
+            params["organization"] = organization.value
+
+        if conditions:
+            where_clause = " WHERE " + " AND ".join(conditions)
+            query = base_query + where_clause
+        else:
+            query = base_query
+
+        result = self.postgres.query(sql=query, params=params if params else None)
+
+        if not result:
+            return []
+        
+        users_list= []
+        for user_data in result:
+            users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
+
+        return users_list
         
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
         if requester_id == target_user.user_id:

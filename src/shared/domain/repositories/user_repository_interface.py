@@ -26,6 +26,23 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
+    def get_users(self,
+                  name: Optional[str] = None,
+                  ra: Optional[str] = None,
+                  state: Optional[STATE] = None,
+                  role: Optional[ROLE] = None,
+                  active: Optional[ACTIVE] = None,
+                  course: Optional[COURSE] = None,
+                  year: Optional[int] = None,
+                  organization: Optional[ORGANIZATION] = None
+                  ):
+        """
+        Returns a list of users that match the given filters
+        If no filters are provided, returns all users
+        """
+        pass
+
+    @abstractmethod
     def create_user(self, new_user: User) -> Optional[User]:
         """        
         Creates a new user and returns it
