@@ -6,8 +6,8 @@ from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
-from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest, InternalServerError, NotFound, Forbidden
+from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction, DuplicatedItem
+from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest, InternalServerError, NotFound, Forbidden, Conflict
 
 class CreateUserController:
     def __init__(self, usecase: CreateUserUsecase):
@@ -114,6 +114,9 @@ class CreateUserController:
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
+        
+        except DuplicatedItem as err:
+            return Conflict(body=err.message)
 
         except MissingParameters as err:
             return BadRequest(body=err.message)

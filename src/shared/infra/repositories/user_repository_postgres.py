@@ -58,7 +58,7 @@ class UserRepositoryPostgres(IUserRepository):
 
             if "duplicate key value violates unique constraint" in str(e):
 
-                raise DuplicatedItem("Item duplicado.")
+                raise DuplicatedItem("email, id or ra")
 
             raise Exception("Erro ao criar usuário.")
     
