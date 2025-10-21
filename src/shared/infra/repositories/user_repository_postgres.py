@@ -49,7 +49,7 @@ class UserRepositoryPostgres(IUserRepository):
 
                 if result:
                     user_data_from_db = result[0]
-                    return result
+                    return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
             
             return None
 

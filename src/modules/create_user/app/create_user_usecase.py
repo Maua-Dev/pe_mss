@@ -38,7 +38,6 @@ class CreateUserUsecase:
                     raise e
                 
                 new_user = self.repo.create_user(new_user=user)
-                print(new_user)
                 return new_user
             
             case ROLE.PRESIDENT:
