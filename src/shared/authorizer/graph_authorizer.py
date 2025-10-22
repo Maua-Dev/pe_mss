@@ -14,6 +14,10 @@ def lambda_handler(event, context):
     Permite o acesso se a API retornar sucesso (200 OK), caso contrário, nega.
     """
     
+    print(event)
+    
+    print(ALLOWED)
+    
     arn_caller = event.get("requestContext", {}).get("identity", {}).get("callerArn")
     
     if arn_caller in ALLOWED:
