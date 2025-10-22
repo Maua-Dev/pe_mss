@@ -4,8 +4,6 @@ import pandas as pd
 import urllib3
 import os
 
-from src.modules.create_user.app.create_user_controller import CreateUserController
-from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
 from src.shared.clients.s3_client import S3Client
 from src.shared.domain.entities.user import User
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
@@ -16,7 +14,12 @@ from src.shared.domain.enums.role_enum import ROLE
 class UploadUsersUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
-        self.s3_client = S3Client("bucket-test-pe")
+        
+        if os.environ.get("STAGE") == "TEST":
+            self.s3_client = S3Client("bucket-test-pe")
+        else:
+            self.s3_client = S3Client(os.environ.get("S3_BUCKET_NAME"))
+            
         self.http_client = urllib3.PoolManager()
 
     def __call__(self, file_base64: str, requester_user_id: User) -> list[User]:
