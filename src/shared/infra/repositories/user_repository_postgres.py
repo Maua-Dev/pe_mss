@@ -210,6 +210,19 @@ class UserRepositoryPostgres(IUserRepository):
             users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
 
         return users_list
+    def get_user_by_email(self, email: str) -> User | None:
+        query = """
+            SELECT * FROM users WHERE email = :email
+        """
+        params = {"email": email}
+        result = self.postgres.query(sql=query, params=params)
+
+        if result:
+            user_data_from_db = result[0]
+            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+            # return User.from_dict(user_data_from_db)
+
+        return None
         
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
         if requester_id == target_user.user_id:
