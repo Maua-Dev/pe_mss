@@ -112,7 +112,8 @@ class LambdaConstruct(Construct):
         self.functions_that_need_db_access = [
             self.auth_user_function,
             self.create_user_function,
-            self.delete_user_function
+            self.delete_user_function,
+            self.upload_users_function
         ]
         
         self.functions_that_need_s3_permissions = [
