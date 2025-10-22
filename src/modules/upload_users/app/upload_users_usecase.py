@@ -66,7 +66,7 @@ class UploadUsersUsecase:
             body=request.data, 
             headers={
                 "Content-Type": "application/json",
-                "Authorization": f"Bearer {auth_token}"
+                "Authorization": f"{auth_token}" #Already has Bearer prefix
             }
         )
 
