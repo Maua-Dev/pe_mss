@@ -125,8 +125,8 @@ class TestAuthUserPresenter:
         assert json.loads(response["body"])['name'] == 'Aurélio'
         assert json.loads(response["body"])['email'] == '23.00342-5@maua.br'
         assert json.loads(response["body"])['ra'] == '23.00342-5'
-        assert json.loads(response["body"])['state'] == 'PENDING'
+        assert json.loads(response["body"])['state'] == None
         assert json.loads(response["body"])['role'] == 'USER'
-        assert json.loads(response["body"])['active'] == 'ACTIVE'
+        assert json.loads(response["body"])['active'] == None
         assert json.loads(response["body"])['organization'] == None
         assert json.loads(response["body"])['message'] == 'the user was created successfully'

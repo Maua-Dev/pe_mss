@@ -1,48 +1,92 @@
-from src.shared.domain.entities.warning import Warning
+from src.shared.domain.entities.warning import Warning, WarningBody
 from pydantic import ValidationError
 import datetime
 import pytest
 
+from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.enums.role_enum import ROLE
+
 class TestWarning:
     
     def test_warning(self):
-        
-        now = datetime.datetime.now(datetime.UTC)
-        
         warning = Warning(
-            title="Titulo do Aviso",
-            description="Descrição do Aviso!",
-            expire=now, # agora no tempo UTC
-            viewed=False
+            target_role=ROLE.PRESIDENT,
+            target_org=ORGANIZATION.DEV,
+            body=WarningBody(
+                title="Titulo do Aviso!",
+                description="Descrição do Aviso!",
+                expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+            ),
+            created_at=datetime.datetime.now(datetime.timezone.utc)
         )
         
-        assert warning.title == "Titulo do Aviso"
-        assert warning.description == "Descrição do Aviso!"
-        assert warning.expire == now
-        assert warning.viewed == False
+        assert warning.warning_id is not None
+        assert ROLE(warning.target_role) == ROLE.PRESIDENT
+        assert ORGANIZATION(warning.target_org) == ORGANIZATION.DEV
+        assert warning.body.title == "Titulo do Aviso!"
+        assert warning.body.description == "Descrição do Aviso!"
+        assert warning.body.expire > datetime.datetime.now(datetime.timezone.utc)
+        assert warning.created_at <= datetime.datetime.now(datetime.timezone.utc)
         
     def test_warning_wrong_type_title(self):
-        
         with pytest.raises(ValidationError) as exc_info:
-            
-            now = datetime.datetime.now(datetime.UTC)
-            
-            warning = Warning(
-                title=123,
-                description="Descrição do Aviso!",
-                expire=now, # agora no tempo UTC
-                viewed=False
+            Warning(
+                target_role=ROLE.PRESIDENT,
+                target_org=ORGANIZATION.DEV,
+                body=WarningBody(
+                    title=123,  # Tipo errado
+                    description="Descrição do Aviso!",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc)
             )
             
-        errors = exc_info.value.errors()
+        assert "should be a valid string" in str(exc_info.value)
         
-        assert len(errors) == 1
+    def test_warning_missing_field(self):
+        with pytest.raises(ValidationError) as exc_info:
+            Warning(
+                target_role=ROLE.PRESIDENT,
+                target_org=ORGANIZATION.DEV,
+                body=WarningBody(
+                    # title ausente
+                    description="Descrição do Aviso!",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc)
+            )
+            
+        assert "Field required" in str(exc_info.value)
         
-        error_locations = {err['loc'][0] for err in errors}
+    def test_warning_extra_field(self):
+        with pytest.raises(ValidationError) as exc_info:
+            Warning(
+                target_role=ROLE.PRESIDENT,
+                target_org=ORGANIZATION.DEV,
+                body=WarningBody(
+                    title="Titulo do Aviso!",
+                    description="Descrição do Aviso!",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc),
+                extra_field="This field is not defined"  # Campo extra não definido
+            )
+            
+        assert "Extra inputs are not permitted" in str(exc_info.value)
         
-        assert 'title' in error_locations
-        
-        title_error_message = next((err for err in errors if err['loc'][0] == 'title'), None)
-        
-        assert title_error_message.get("msg", None) == "Input should be a valid string"
+    def test_warning_invalid_enum(self):
+        with pytest.raises(ValidationError) as exc_info:
+            Warning(
+                target_role="INVALID_ROLE",  # Valor inválido
+                target_org=ORGANIZATION.DEV,
+                body=WarningBody(
+                    title="Titulo do Aviso!",
+                    description="Descrição do Aviso!",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc)
+            )
+            
+        assert "Input should be 'ADM', 'USER' or 'PRESIDENT'" in str(exc_info.value)
+
         

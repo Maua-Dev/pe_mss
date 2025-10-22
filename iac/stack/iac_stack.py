@@ -10,6 +10,7 @@ from aws_cdk.aws_apigateway import RestApi, Cors
 from components.aurora_construct import AuroraConstruct
 from components.lambda_construct import LambdaConstruct
 from components.bucket_construct import BucketContruct
+import os
 
 class IacStack(Stack):
 
@@ -49,7 +50,8 @@ class IacStack(Stack):
             "DB_SECRET_ARN":  self.aurora.secret.secret_arn,
             "DB_NAME": self.aurora.default_database_name,
             "REGION": self.region,
-            "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name
+            "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name,
+            "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
         }
 
         self.lambda_stack = LambdaConstruct(self, api_gateway_resource=api_gateway_resource,

@@ -24,9 +24,9 @@ class Environments:
     s3_bucket_name: str
     region: str
     endpoint_url: str = None
-    dynamo_table_name: str
-    dynamo_partition_key: str
-    dynamo_sort_key: str
+    dynamo_endpoint_url: str = None
+    dynamo_endpoint_port: str = None
+    dynamo_region: str = None
     db_name: str
     db_local_user: str
     db_local_pass: str
@@ -38,6 +38,7 @@ class Environments:
     mss_name: str 
     client_id: str
     client_secret: str
+    graph_microsoft_endpoint: str
 
     def _configure_local(self):
         from dotenv import load_dotenv
@@ -60,10 +61,14 @@ class Environments:
             self.db_local_pass = os.environ.get("POSTGRES_LOCAL_PASS", "mypassword")
             self.db_local_host = os.environ.get("POSTGRES_LOCAL_HOST", "localhost")
             self.db_local_port = os.environ.get("POSTGRES_LOCAL_PORT", "5432")
+            self.dynamo_endpoint_url = os.environ.get("DYNAMO_ENDPOINT_URL", "http://localhost")
+            self.dynamo_endpoint_port = os.environ.get("DYNAMO_ENDPOINT_PORT", "8000")
+            self.dynamo_region = os.environ.get("DYNAMO_REGION", "local")
             self.cloud_front_distribution_domain = "https://d3q9q9q9q9q9q9.cloudfront.net"
             self.bucket_endpoint_url = "http://localhost:9000"
             self.client_id = "root"
             self.client_secret = "root1234"
+            self.graph_microsoft_endpoint = "https://graph.microsoft.com"
 
         else:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
@@ -73,13 +78,15 @@ class Environments:
             self.db_secret_arn = os.environ.get("DB_SECRET_ARN")
             self.db_name = os.environ.get("DB_NAME")
             self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
+            self.graph_microsoft_endpoint = os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
 
     @staticmethod
     def get_user_repo() -> IUserRepository:
         if Environments.get_envs().stage == STAGE.TEST:
             from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
-            return UserRepositoryMock
+            return UserRepositoryMock()
         elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
+            from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
             from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
             from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
             return UserRepositoryPostgres(db_datasource=RdsDataDatasource())

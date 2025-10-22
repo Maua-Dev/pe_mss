@@ -32,7 +32,8 @@ class LambdaConstruct(Construct):
         mss_student_api_resource.add_resource(
             module_name.replace("_", "-")).add_method(
                 method,
-                integration=LambdaIntegration(function)
+                integration=LambdaIntegration(function),
+                authorizer=authorizer
             )
 
         return function
@@ -43,9 +44,6 @@ class LambdaConstruct(Construct):
         api_gateway_resource: Resource, 
         environment_variables: dict
     ) -> None:
-        
-        #qdo for fazer o ultimo item voce vai precisar instanciar o authorizer e passar na criacao da lambda
-        #pega um exemplo do reservation_api, la tem um authorizer nesse mesmo arquivo
         
         super().__init__(scope, "PortalEntidades_Lambdas")
         
