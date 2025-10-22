@@ -45,7 +45,15 @@ def adjust_layer_directory():
         # Instala os pacotes diretamente na pasta 'build/python'
         # Isso permite que a Lambda importe as bibliotecas de forma padrão (ex: import requests)
         subprocess.check_call(
-            ["pip", "install", "-r", requirements_path, "-t", PYTHON_TOP_LEVEL_DIR, "--no-cache-dir"]
+            [
+                "pip", "install",
+                "-r", requirements_path,
+                "-t", PYTHON_TOP_LEVEL_DIR,
+                "--no-cache-dir",
+                "--platform", "manylinux2014_x86_64",
+                "--python-version", "3.11",
+                "--only-binary=:all:"
+            ]
         )
     else:
         # Apenas um aviso caso o arquivo não seja encontrado
