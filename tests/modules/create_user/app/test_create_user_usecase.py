@@ -79,3 +79,35 @@ class Test_CreateUserUsecase:
         assert created_users[1].email == '21.00100-2@maua.br'
         assert created_users[1].organization == ORGANIZATION.NAWAT
         assert created_users[1].role == ROLE.USER
+
+    def test_create_user_already_exists_usecase(self):
+        repo = UserRepositoryMock()
+        usecase = CreateUserUsecase(repo=repo)
+        
+        created_user = usecase(user_data={
+            'new_user': {
+                'name': 'Maria',
+                'email': '21.00100-2@maua.br',
+                'organization': ORGANIZATION.DEV,
+                'role': ROLE.USER
+            },
+        }, case=ROLE.ADM,
+            requester_id='550e8400-e29b-41d4-a716-446655440001')
+        
+        assert created_user.name == 'Maria'
+        assert created_user.email == '21.00100-2@maua.br'
+        assert created_user.organization == ORGANIZATION.DEV
+        assert created_user.role == ROLE.USER
+
+        with pytest.raises(Exception) as e_info:
+            usecase(user_data={
+                'new_user': {
+                    'name': 'Maria',
+                    'email': '21.00100-2@maua.br',
+                    'organization': ORGANIZATION.DEV,
+                    'role': ROLE.USER
+                },
+            }, case=ROLE.ADM,
+                requester_id='550e8400-e29b-41d4-a716-446655440001')
+
+        assert str(e_info.value) == f"User with this email already exists."

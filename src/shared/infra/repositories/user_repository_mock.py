@@ -127,6 +127,12 @@ class UserRepositoryMock(IUserRepository):
             if user.user_id == user_id:
                 return user
         raise NoItemsFound(user_id)
+
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        for user in self.users:
+            if user.email == email:
+                return user
+        raise NoItemsFound(email)
     
     def get_all_user(self) -> Optional[List[User]]:
         if not self.users:

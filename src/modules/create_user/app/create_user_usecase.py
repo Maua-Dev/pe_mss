@@ -16,12 +16,23 @@ class CreateUserUsecase:
 
     def __call__(self, user_data: dict, case, requester_id) -> IUserRepository.create_user:
         new_user_data: dict = user_data.get('new_user');
-    
+        user_exists = False;
+
+        # Check if user already exists
+        try:
+            existing_user = self.repo.get_user_by_email(new_user_data.get('email'))
+            if existing_user:
+                user_exists = True
+        except Exception as e:
+            pass
+
+        if user_exists:
+            raise Exception("User with this email already exists.")
+
         match case:
             case ROLE.ADM:
                 # nome, email, organization; role
                 try:
-
                     user = User(
                         user_id=f"{uuid.uuid4()}",
                         name=new_user_data.get('name'),
