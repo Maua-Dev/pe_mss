@@ -22,7 +22,7 @@ class UploadUsersUsecase:
             
         self.http_client = urllib3.PoolManager()
 
-    def __call__(self, file_base64: str, requester_user_id: User) -> list[User]:
+    def __call__(self, file_base64: str, requester_user_id: User, auth_token: str) -> list[User]:
 
         if type(file_base64) != str:
             raise EntityError("file_base64")
@@ -55,17 +55,20 @@ class UploadUsersUsecase:
             uploaded_user.append(user_data)
             
         request = HttpRequest(body={
-            'user_from_authorizer': {
-                'id': requester_user.user_id,
-                'displayName': requester_user.name,
-                'mail': requester_user.email,
-            },
             'new_user': [
                 dict(user_data) for user_data in uploaded_user
             ]
         })
 
-        response = self.http_client.request("POST", os.environ.get("CREATE_USER_ENDPOINT"), body=request.data, headers={"Content-Type": "application/json"})
+        response = self.http_client.request(
+            "POST", 
+            os.environ.get("CREATE_USER_ENDPOINT"), 
+            body=request.data, 
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {auth_token}"
+            }
+        )
 
         if response.status != 200:
             raise EntityError("Error uploading users: " + response.body)

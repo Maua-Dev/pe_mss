@@ -18,6 +18,9 @@ def lambda_handler(event, context):
              .get("authorizer", {})
              .get("user")
     )
+    
+    headers = event.get('headers', {})
+    auth_token = headers.get('authorization') or headers.get('Authorization')
 
     user_info = None
     if isinstance(user_graph_info_raw, str):
@@ -29,6 +32,8 @@ def lambda_handler(event, context):
         user_info = user_graph_info_raw
 
     httpRequest.data["user_from_authorizer"] = user_info
+    
+    httpRequest.data["auth_token"] = auth_token
 
     print("Decoded user:", user_info)
 
