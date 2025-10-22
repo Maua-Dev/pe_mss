@@ -70,3 +70,4 @@ jobs:
               GITHUB_REF_NAME: ${{ github.ref_name }}
               MSS_NAME: ${{ github.event.repository.name }}
               GRAPH_MICROSOFT_ENDPOINT: ${{ vars.GRAPH_MICROSOFT_ENDPOINT }}
+              CREATE_USER_ENDPOINT: ${{ secrets.CREATE_USER_ENDPOINT }}
