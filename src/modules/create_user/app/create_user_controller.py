@@ -15,40 +15,16 @@ class CreateUserController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            if request.data.get('user_from_authorizer') is None:
+            
+            #nao é necessario validar as entradas requester user pois isso o authorizer vai cuidar
+            requester_user = request.data.get('user_from_authorizer');
+            
+            if requester_user is None:
                 raise MissingParameters('user_from_authorizer')
-
-            if request.data.get('user_from_authorizer').get('id') is None:
-                raise MissingParameters('id')
-            if request.data.get('user_from_authorizer').get('displayName') is None:
-                raise MissingParameters('displayName')
-            if request.data.get('user_from_authorizer').get('mail') is None:
-                raise MissingParameters('mail')
             
-            if type(request.data.get('user_from_authorizer').get('id')) != str:
-                raise WrongTypeParameter(
-                    fieldName="id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('id').__class__.__name__
-                )
-            
-            if type(request.data.get('user_from_authorizer').get('displayName')) != str:
-                raise WrongTypeParameter(
-                    fieldName="displayName",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('displayName').__class__.__name__
-                )
-            
-            if type(request.data.get('user_from_authorizer').get('mail')) != str:
-                raise WrongTypeParameter(
-                    fieldName="mail",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('mail').__class__.__name__
-                )
-
-            requester_user_id = request.data.get('user_from_authorizer').get('id')
+            requester_user_id = requester_user.get('id')
             requester_user_role = self.create_user_usecase.repo.get_user(user_id=requester_user_id).role
-
+            
             if request.data.get('new_user') is None:
                 raise MissingParameters('new_user')
             

@@ -2,7 +2,7 @@ import os
 from aws_cdk import (
     aws_lambda as lambda_,
     NestedStack, Duration,
-    aws_apigateway as apigw,
+    aws_apigateway as apigw
 )
 from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
@@ -71,16 +71,16 @@ class LambdaConstruct(Construct):
             code=lambda_.Code.from_asset("./build"),
             compatible_runtimes=[lambda_.Runtime.PYTHON_3_11]
         )
-
-        self.auth_user_function= self.create_lambda_api_gateway_integration(
-            module_name="auth_user",
+        
+        self.upload_users_function = self.create_lambda_api_gateway_integration(
+            module_name="upload_users",
             method="POST",
             mss_student_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
             authorizer=token_authorizer_lambda
         )
-
-        self.create_user_function= self.create_lambda_api_gateway_integration(
+        
+        self.create_user_function = self.create_lambda_api_gateway_integration(
             module_name="create_user",
             method="POST",
             mss_student_api_resource=api_gateway_resource,
@@ -88,19 +88,15 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
         
-        self.delete_user_function= self.create_lambda_api_gateway_integration(
-            module_name="delete_user",
-            method="DELETE",
-            mss_student_api_resource=api_gateway_resource,
-            environment_variables=environment_variables,
-            authorizer=token_authorizer_lambda
+        allowed_arns = [self.create_user_function.function_arn]
+        authorizer_lambda.add_environment(
+            "ALLOWED_LAMBDA_ARNS", ",".join(allowed_arns)
         )
 
         self.functions_that_need_db_access = [
-            self.auth_user_function,
-            self.create_user_function,
-            self.delete_user_function
+            self.create_user_function
         ]
         
         self.functions_that_need_s3_permissions = [
+            self.upload_users_function
         ]
