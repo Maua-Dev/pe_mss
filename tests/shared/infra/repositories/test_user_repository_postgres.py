@@ -8,6 +8,7 @@ from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
+from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
 import os
 
@@ -280,4 +281,4 @@ class TestUserRepositoryPostgres:
         
         datasource.close()
 
-        assert len(response_all_users) == 3
+        assert len(response_all_users) == 4

@@ -61,33 +61,15 @@ class GetUserViewModel:
 class GetAllUsersViewModel:
     users: List[UserViewModel]
 
-    def __init__(self, users: List[User], requester_role: Optional[Any] = None, requester_id: Optional[str] = None):
+    def __init__(self, users: List[User], requester_role: ROLE, requester_id: Optional[str] = None):
         self.users = []
 
-        def _role_to_name(r: Optional[Any]) -> Optional[str]:
-            if r is None:
-                return None
-            try:
-                if isinstance(r, ROLE):
-                    return r.name.upper()
-            except Exception:
-                pass
-            try:
-                return str(r).upper()
-            except Exception:
-                return None
-
-        requester_role_name = _role_to_name(requester_role)
-
-        full_view_roles = {
-            "ADMIN", "ADMINISTRATOR", "ADMINISTRADOR",
-            "PRESIDENTE", "PRESIDENT", "PRESIDENT_ADMIN"
-        }
+        requester_role_name = requester_role
 
         for user in users:
             if requester_role_name is None:
                 show_user_id = True
-            elif requester_role_name in full_view_roles:
+            elif requester_role_name in [ROLE.ADM, ROLE.PRESIDENT]:
                 show_user_id = True
             else:
                 show_user_id = (user.user_id == requester_id)

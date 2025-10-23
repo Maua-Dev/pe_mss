@@ -23,16 +23,18 @@ class GetAllUsersUsecase:
                   course: Optional[COURSE] = None,
                   year: Optional[int] = None,
                   organization: Optional[ORGANIZATION] = None,
-                  ) -> list:
+                  ) -> list | int:
         
         user = self.userrepo.get_user(user_id)
         if user is None:
             raise NoItemsFound(user_id)
         
-        is_active = User.validate_active(user.active)
+        is_active = True if user.active == ACTIVE.ACTIVE else False
 
         if not is_active:
             raise ForbiddenAction("Inactive users cannot perform this action.")
+        
+        requester_role = user.role
 
         users = self.userrepo.get_users(
             name = name if name else None,
@@ -50,4 +52,4 @@ class GetAllUsersUsecase:
         
         users = sorted(users, key=lambda x: x.name.casefold())
         
-        return users
+        return users, requester_role

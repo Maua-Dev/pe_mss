@@ -45,8 +45,6 @@ class GetAllUsersController:
                 )
 
             requester_user_id = request.data.get('user_from_authorizer').get('id')
-            raw_role = request.data.get('user_from_authorizer').get('role', None)
-            requester_role = raw_role
             name = request.data.get('name', None)
             ra = request.data.get('ra', None)   
             state = request.data.get('state', None)
@@ -56,7 +54,7 @@ class GetAllUsersController:
             year = request.data.get('year', None)
             organization = request.data.get('organization', None)
 
-            users = self.usecase(user_id=requester_user_id, name=name, ra=ra, state=state, role=role, active=active, course=course, year=year, organization=organization)
+            users, requester_role = self.usecase(user_id=requester_user_id, name=name, ra=ra, state=state, role=role, active=active, course=course, year=year, organization=organization)
             viewmodel = GetAllUsersViewModel(users=users, requester_role=requester_role, requester_id=requester_user_id).to_dict()
             
             return OK(viewmodel)

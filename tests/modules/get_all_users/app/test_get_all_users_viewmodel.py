@@ -10,9 +10,9 @@ class Test_GetAllUsersViewmodel:
     def test_get_all_users_viewmodel(self):
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
-        users = usecase(user_id="550e8400-e29b-41d4-a716-446655440001")
+        users, role = usecase(user_id="550e8400-e29b-41d4-a716-446655440001")
 
-        viewmodel = GetAllUsersViewModel(users=users).to_dict()
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role).to_dict()
         expected = {
             'users': [
                 {
@@ -37,9 +37,9 @@ class Test_GetAllUsersViewmodel:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase(user_id="550e8400-e29b-41d4-a716-446655440002", organization=ORGANIZATION.DEV)
+        users, role = usecase(user_id="550e8400-e29b-41d4-a716-446655440002", organization=ORGANIZATION.DEV)
 
-        viewmodel = GetAllUsersViewModel(users=users).to_dict()
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role).to_dict()
         expected = {
             'users': [
                 {
@@ -64,9 +64,9 @@ class Test_GetAllUsersViewmodel:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase(user_id="550e8400-e29b-41d4-a716-446655440001", state=STATE.APPROVED)
+        users, role = usecase(user_id="550e8400-e29b-41d4-a716-446655440001", state=STATE.APPROVED)
 
-        viewmodel = GetAllUsersViewModel(users=users).to_dict()
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role).to_dict()
         expected = {
             'users': [
                 {
@@ -91,17 +91,17 @@ class Test_GetAllUsersViewmodel:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase(
+        users, role = usecase(
             user_id="b423780f-2045-44e1-9c0b-98352841817d",
             organization=ORGANIZATION.NAWAT,
             state=STATE.APPROVED
         )
 
-        viewmodel = GetAllUsersViewModel(users=users).to_dict()
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role, requester_id="b423780f-2045-44e1-9c0b-98352841817d").to_dict()
         expected = {
             'users': [
                 {
-                    'user_id': u.user_id,
+                    'user_id': u.user_id if u.user_id == "b423780f-2045-44e1-9c0b-98352841817d" else None,
                     'name': u.name,
                     'email': u.email,
                     'state': (u.state.value if u.state is not None else None),

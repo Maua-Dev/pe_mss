@@ -2,6 +2,7 @@ import pytest
 from src.modules.get_all_users.app.get_all_users_usecase import GetAllUsersUsecase
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
@@ -11,7 +12,8 @@ class Test_GetAllUsersUsecase:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase("550e8400-e29b-41d4-a716-446655440001")
+        users, role = usecase("550e8400-e29b-41d4-a716-446655440001")
+        assert role == ROLE.ADM
         assert type(users) == list
         assert len(users) == 8
         assert all([type(user) == User for user in users])
@@ -21,7 +23,8 @@ class Test_GetAllUsersUsecase:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase("550e8400-e29b-41d4-a716-446655440001", organization=ORGANIZATION.DEV)
+        users, role = usecase("550e8400-e29b-41d4-a716-446655440001", organization=ORGANIZATION.DEV)
+        assert role == ROLE.ADM
         assert type(users) == list
         assert len(users) == 4
         assert all([type(user) == User for user in users])
@@ -31,7 +34,8 @@ class Test_GetAllUsersUsecase:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase("550e8400-e29b-41d4-a716-446655440001", organization=ORGANIZATION.NAWAT)
+        users, role = usecase("550e8400-e29b-41d4-a716-446655440001", organization=ORGANIZATION.NAWAT)
+        assert role == ROLE.ADM
         assert type(users) == list
         assert len(users) == 2
         assert all([type(user) == User for user in users])
@@ -41,7 +45,8 @@ class Test_GetAllUsersUsecase:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase("550e8400-e29b-41d4-a716-446655440001", state=STATE.APPROVED)
+        users, role = usecase("550e8400-e29b-41d4-a716-446655440001", state=STATE.APPROVED)
+        assert role == ROLE.ADM
         assert type(users) == list
         assert len(users) == 4
         assert all([type(user) == User for user in users])
@@ -51,7 +56,8 @@ class Test_GetAllUsersUsecase:
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-        users = usecase("550e8400-e29b-41d4-a716-446655440001", organization=ORGANIZATION.DEV, state=STATE.APPROVED)
+        users, role = usecase("550e8400-e29b-41d4-a716-446655440001", organization=ORGANIZATION.DEV, state=STATE.APPROVED)
+        assert role == ROLE.ADM
         assert type(users) == list
         assert len(users) == 3
         assert all([type(user) == User for user in users])
