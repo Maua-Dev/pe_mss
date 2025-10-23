@@ -46,14 +46,7 @@ class GetAllUsersController:
 
             requester_user_id = request.data.get('user_from_authorizer').get('id')
             raw_role = request.data.get('user_from_authorizer').get('role', None)
-            try:
-                requester_role = ROLE[raw_role.upper()] if raw_role is not None else ROLE.USER
-            except Exception:
-                try:
-                    requester_role = ROLE[raw_role.upper()] if isinstance(raw_role, str) else ROLE.USER
-                except Exception:
-                    requester_role = ROLE.USER
-                    
+            requester_role = raw_role
             name = request.data.get('name', None)
             ra = request.data.get('ra', None)   
             state = request.data.get('state', None)

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.course_enum import COURSE
@@ -61,15 +61,33 @@ class GetUserViewModel:
 class GetAllUsersViewModel:
     users: List[UserViewModel]
 
-    def __init__(self, users: List[User], requester_role: ROLE, requester_id: Optional[str]):
-        """
-        users: lista de entidades User retornadas pelo usecase
-        requester_role: ROLE (enum) do usuário que fez a requisição
-        requester_id: id (str) do usuário que fez a requisição
-        """
+    def __init__(self, users: List[User], requester_role: Optional[Any] = None, requester_id: Optional[str] = None):
         self.users = []
+
+        def _role_to_name(r: Optional[Any]) -> Optional[str]:
+            if r is None:
+                return None
+            try:
+                if isinstance(r, ROLE):
+                    return r.name.upper()
+            except Exception:
+                pass
+            try:
+                return str(r).upper()
+            except Exception:
+                return None
+
+        requester_role_name = _role_to_name(requester_role)
+
+        full_view_roles = {
+            "ADMIN", "ADMINISTRATOR", "ADMINISTRADOR",
+            "PRESIDENTE", "PRESIDENT", "PRESIDENT_ADMIN"
+        }
+
         for user in users:
-            if requester_role in [ROLE.PRESIDENTE, ROLE.ADMIN]:
+            if requester_role_name is None:
+                show_user_id = True
+            elif requester_role_name in full_view_roles:
                 show_user_id = True
             else:
                 show_user_id = (user.user_id == requester_id)
