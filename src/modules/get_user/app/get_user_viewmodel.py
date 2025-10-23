@@ -37,12 +37,12 @@ class GetUserViewModel:
                 'name': self.name,
                 'email': self.email,
                 'ra': self.ra,
-                'role': self.role.value,
-                'state': self.state.value,
-                'course': self.course.value,
+                'role': self.role.value if self.role else None,
+                'state': self.state.value if self.state else None,
+                'course': self.course.value if self.course else None,
                 'year': self.year,
-                'active': self.active.value,
-                'organization': self.organization.value,
+                'active': self.active.value if self.active else None,
+                'organization': self.organization.value if self.organization else None,
             },
             "message": "the user was retrieved"
         }
