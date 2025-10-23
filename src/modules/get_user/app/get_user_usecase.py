@@ -1,8 +1,8 @@
-from tkinter import ACTIVE
 from src.shared.domain.entities.user import User
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import ForbiddenAction, UnregisteredUser
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 
 
 class GetUserUsecase:
@@ -17,7 +17,7 @@ class GetUserUsecase:
         user = self.user_repo.get_user(user_id = user_id)
 
         if user == None:
-            raise UnregisteredUser()
+            raise NoItemsFound(user_id)
         
         is_active = True if user.active == ACTIVE.ACTIVE else False
 
