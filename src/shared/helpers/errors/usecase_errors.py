@@ -11,3 +11,7 @@ class DuplicatedItem(BaseError):
 class ForbiddenAction(BaseError):
     def __init__(self, message: str):
         super().__init__(message=message)
+
+class UnregisteredUser(BaseError):
+    def __init__(self):
+        super().__init__(f'That user is not registered')
