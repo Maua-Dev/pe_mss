@@ -87,7 +87,6 @@ class Test_GetAllUsersViewmodel:
 
         assert viewmodel == expected
 
-
     def test_get_all_users_viewmodel_nawat_approved(self):
         userrepo = UserRepositoryMock()
         usecase = GetAllUsersUsecase(userrepo=userrepo)

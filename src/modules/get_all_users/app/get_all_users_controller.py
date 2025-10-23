@@ -1,4 +1,5 @@
 from src.modules.get_all_users.app.get_all_users_viewmodel import GetAllUsersViewModel
+from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
@@ -44,10 +45,26 @@ class GetAllUsersController:
                 )
 
             requester_user_id = request.data.get('user_from_authorizer').get('id')
-            organization = request.data.get('organization', None)
+            raw_role = request.data.get('user_from_authorizer').get('role', None)
+            try:
+                requester_role = ROLE[raw_role.upper()] if raw_role is not None else ROLE.USER
+            except Exception:
+                try:
+                    requester_role = ROLE[raw_role.upper()] if isinstance(raw_role, str) else ROLE.USER
+                except Exception:
+                    requester_role = ROLE.USER
+                    
+            name = request.data.get('name', None)
+            ra = request.data.get('ra', None)   
             state = request.data.get('state', None)
-            users = self.usecase(user_id=requester_user_id, organization=organization, state=state)
-            viewmodel = GetAllUsersViewModel(users=users).to_dict()
+            role = request.data.get('role', None)
+            active = request.data.get('active', None)
+            course = request.data.get('course', None)
+            year = request.data.get('year', None)
+            organization = request.data.get('organization', None)
+
+            users = self.usecase(user_id=requester_user_id, name=name, ra=ra, state=state, role=role, active=active, course=course, year=year, organization=organization)
+            viewmodel = GetAllUsersViewModel(users=users, requester_role=requester_role, requester_id=requester_user_id).to_dict()
             
             return OK(viewmodel)
         
