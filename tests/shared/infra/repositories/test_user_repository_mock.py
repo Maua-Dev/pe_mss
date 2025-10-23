@@ -305,3 +305,37 @@ class Test_UserRepositoryMock:
         )
         assert response_admin_on_user == True
             
+    def test_get_users(self):
+        repo = UserRepositoryMock()
+        users = repo.get_users()
+        assert len(users) == 8
+
+    def test_get_users_approved_from_dev(self):
+        repo = UserRepositoryMock()
+        users = repo.get_users(organization=ORGANIZATION.DEV, state=STATE.APPROVED)
+        assert len(users) == 3
+        for user in users:
+            assert user.organization == ORGANIZATION.DEV
+            assert user.state == STATE.APPROVED
+
+    def test_get_users_pending_from_nawat(self):
+        repo = UserRepositoryMock()
+        users = repo.get_users(organization=ORGANIZATION.NAWAT, state=STATE.PENDING)
+        assert len(users) == 1
+        for user in users:
+            assert user.organization == ORGANIZATION.NAWAT
+            assert user.state == STATE.PENDING
+
+    def test_get_users_cic_course(self):
+        repo = UserRepositoryMock()
+        users = repo.get_users(course = COURSE.CIC)
+        assert len(users) == 1
+        for user in users:
+            assert user.course == COURSE.CIC
+
+    def test_get_users_fourth_grade(self):
+        repo = UserRepositoryMock()
+        users = repo.get_users(year = 4)
+        assert len(users) == 3
+        for user in users:
+            assert user.year == 4
