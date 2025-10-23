@@ -8,6 +8,7 @@ from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
+from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
 import os
 
@@ -254,3 +255,30 @@ class TestUserRepositoryPostgres:
         datasource.close()
 
         assert new_user == result
+
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
+    def test_get_users(self):
+        datasource= TestsRdsDatasource()
+        
+        repo= UserRepositoryPostgres(db_datasource=datasource)
+
+        response_all_users= repo.get_users()
+        
+        datasource.close()
+
+        assert len(response_all_users) == 8
+
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
+    def test_get_users_approved_from_dev(self):
+        datasource= TestsRdsDatasource()
+        
+        repo= UserRepositoryPostgres(db_datasource=datasource)
+
+        response_all_users= repo.get_users(
+            state=STATE.APPROVED,
+            organization=ORGANIZATION.DEV
+        )
+        
+        datasource.close()
+
+        assert len(response_all_users) == 4
