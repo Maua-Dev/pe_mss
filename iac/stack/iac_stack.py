@@ -51,7 +51,8 @@ class IacStack(Stack):
             "DB_NAME": self.aurora.default_database_name,
             "REGION": self.region,
             "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name,
-            "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
+            "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT"),
+            "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT")
         }
 
         self.lambda_stack = LambdaConstruct(self, api_gateway_resource=api_gateway_resource,

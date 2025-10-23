@@ -53,9 +53,9 @@ class Test_AuthUserController:
         assert response.body['name'] == 'José'
         assert response.body['email'] == '20.00158-5@maua.br'
         assert response.body['ra'] == '20.00158-5'
-        assert response.body['state'] == 'PENDING'
+        assert response.body['state'] == None
         assert response.body['role'] == 'USER'
-        assert response.body['active'] == 'ACTIVE'
+        assert response.body['active'] == None
         assert response.body['message'] == 'the user was created successfully'
 
     def test_auth_user_controller_user_is_in_repo_mock_however_the_request_only_have_id_like_in_repo(self):

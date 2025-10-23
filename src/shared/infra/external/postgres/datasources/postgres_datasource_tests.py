@@ -1,12 +1,16 @@
 import psycopg2
 import psycopg2.extras
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Generator
 import re
 from contextlib import contextmanager
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TestsRdsDatasource:
     """
-    Datasource para testes de integração que se conecta a um banco PostgreSQL local.
+    Datasource para testes de integração que mimetiza o comportamento da
+    RdsDataDatasource, conectando-se a um banco PostgreSQL local.
     """
     def __init__(self):
         self.connection_params = {
@@ -17,91 +21,134 @@ class TestsRdsDatasource:
             "port": "5432"
         }
         self.conn = psycopg2.connect(**self.connection_params)
-        
-    def _translate_query(self, sql, params):
+        self._in_transaction = False
+
+    @staticmethod
+    def _translate_query(sql: str) -> str:
         """ 
-        Traduz a query de :key para %(key)s e garante que os parâmetros
-        estejam na ordem correta para execução.
-        Necessário pois o psycopg2 fala uma língua diferente do rds aurora!
+        Traduz a query do formato :key para o formato %(key)s, que o psycopg2
+        entende para parâmetros nomeados.
         """
-        # Usa uma expressão regular para encontrar todos os :placeholders
-        param_keys = re.findall(r':(\w+)', sql)
-        
-        # Substitui cada :placeholder por %s
-        query_psycopg2 = re.sub(r':(\w+)', '%s', sql)
-        
-        # Cria uma tupla de valores na ordem exata em que aparecem na query
-        params_tuple = tuple(params[key] for key in param_keys)
-        
-        return query_psycopg2, params_tuple
+        return re.sub(r':(\w+)', r'%(\1)s', sql)
 
-    def query(self, sql: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def query(
+        self, 
+        sql: str, 
+        params: Optional[Dict[str, Any]] = None, 
+        transaction_id: Optional[str] = None 
+    ) -> List[Dict[str, Any]]:
         """
-        Executa uma query e retorna os resultados como uma lista de dicionários.
+        Executa uma query e retorna os resultados. O commit só é realizado
+        se não estiver dentro de um bloco de transação explícito.
         """
-        query_psycopg2, params_tuple = self._translate_query(sql, params)
+        if params is None:
+            params = {}
         
-        with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
-            cursor.execute(query_psycopg2, params_tuple)
-            
-            results = []
-            if cursor.description:
-                results = [dict(row) for row in cursor.fetchall()]
-            
-            self.conn.commit()
-            return results
+        query_psycopg2 = self._translate_query(sql)
+        
+        try:
+            with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+                cursor.execute(query_psycopg2, params)
+                
+                results = []
+                if cursor.description:
+                    results = [dict(row) for row in cursor.fetchall()]
+                
+                if not self._in_transaction:
+                    self.conn.commit()
+                
+                return results
+        except Exception as e:
+            if not self._in_transaction:
+                self.conn.rollback()
+            logger.error(f"Erro ao executar query de teste: {e}")
+            raise
 
-    def execute(self, sql: str, params: Optional[Dict[str, Any]] = None) -> int:
+    def execute(
+        self, 
+        sql: str, 
+        params: Optional[Dict[str, Any]] = None,
+        transaction_id: Optional[str] = None
+    ) -> int:
         """
-        Executa um comando e retorna o número de linhas afetadas.
+        Executa um comando (INSERT, UPDATE, DELETE) e retorna o número de linhas afetadas.
         """
+        if params is None:
+            params = {}
+
+        query_psycopg2 = self._translate_query(sql)
         
-        query_psycopg2, params_tuple = self._translate_query(sql, params)
-        
-        with self.conn.cursor() as cursor:
-            cursor.execute(query_psycopg2, params_tuple)
-            rowcount = cursor.rowcount
-            self.conn.commit()
-            return rowcount
-        
-    def batch_execute(self, sql: str, params_list: List[Dict[str, Any]], transaction_id=None):
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute(query_psycopg2, params)
+                rowcount = cursor.rowcount
+                
+                if not self._in_transaction:
+                    self.conn.commit()
+                    
+                return rowcount
+        except Exception as e:
+            if not self._in_transaction:
+                self.conn.rollback()
+            logger.error(f"Erro ao executar statement de teste: {e}")
+            raise
+
+    def batch_execute(
+        self, 
+        sql: str, 
+        params_list: List[Dict[str, Any]], 
+        transaction_id: Optional[str] = None
+    ) -> int:
         """
-        Implementação do batch_execute usando psycopg2.extras.execute_batch.
+        Executa um comando em lote.
         """
         if not params_list:
             return 0
         
-        query_psycopg2 = re.sub(r':(\w+)', r'%(\1)s', sql)
+        query_psycopg2 = self._translate_query(sql)
         
-        with self.conn.cursor() as cursor:
-            psycopg2.extras.execute_batch(cursor, query_psycopg2, params_list)
-            rowcount = cursor.rowcount
-            self.conn.commit()
-            return rowcount
-        
-    @contextmanager
-    def transaction(self):
-        """
-        Fornece um contexto de transação para psycopg2.
-        O transaction_id do boto3 não é necessário aqui, pois o psycopg2 gerencia
-        a transação no próprio objeto de conexão.
-        """
         try:
-            # psycopg2 já inicia uma transação implicitamente na primeira execução.
-            # O 'yield' passa o controle para o bloco 'with' no código que chama.
-            yield
-            # Se o bloco 'with' terminar sem erros, commita.
-            self.conn.commit()
+            with self.conn.cursor() as cursor:
+                psycopg2.extras.execute_batch(cursor, query_psycopg2, params_list)
+                rowcount = cursor.rowcount
+
+                if not self._in_transaction:
+                    self.conn.commit()
+
+                return rowcount
         except Exception as e:
-            # Se ocorrer um erro dentro do bloco 'with', desfaz tudo.
+            if not self._in_transaction:
+                self.conn.rollback()
+            logger.error(f"Erro ao executar batch de teste: {e}")
+            raise
+
+    @contextmanager
+    def transaction(self) -> Generator[str, None, None]:
+        """
+        Fornece um contexto de transação que mimetiza a RdsDataDatasource.
+        Gerencia o estado da transação, o commit e o rollback.
+        """
+        if self._in_transaction:
+            raise Exception("Transações aninhadas não são suportadas neste mock.")
+
+        self._in_transaction = True
+        logger.debug("Transação de teste iniciada.")
+        try:
+            yield "mock_transaction_id"
+            self.conn.commit()
+            logger.debug("Transação de teste commitada.")
+        except Exception as e:
             self.conn.rollback()
-            # Relança a exceção para que o código que a chamou saiba do erro.
+            logger.error(f"Transação de teste revertida (rollback) devido a erro: {e}")
             raise e
+        finally:
+            self._in_transaction = False
 
     def close(self):
         """Fecha a conexão com o banco de dados."""
-        if self.conn:
+        if self.conn and not self.conn.closed:
             self.conn.close()
+            logger.info("Conexão de teste com o banco de dados fechada.")
 
     def __del__(self):
         self.close()

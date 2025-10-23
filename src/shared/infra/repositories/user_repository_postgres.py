@@ -9,44 +9,83 @@ from src.shared.domain.repositories.user_repository_interface import IUserReposi
 from src.shared.environments import Environments
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.dto.user_postgres_dto import UserPostgresDTO
-from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
+from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource, RdsDataError
 from src.shared.infra.external.postgres.datasources.postgres_datasource_tests import TestsRdsDatasource
+from src.shared.helpers.errors.usecase_errors import DuplicatedItem
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 class UserRepositoryPostgres(IUserRepository):
     def __init__(self, db_datasource: RdsDataDatasource | TestsRdsDatasource):
         self.postgres = db_datasource
 
     def create_user(self, new_user: User) -> User | None:
+        """
+        Cria um novo usuário no banco de dados dentro de uma transação segura.
+
+        Args:
+            new_user (User): A entidade de usuário a ser criada.
+
+        Returns:
+            User | None: A entidade do usuário criado com os dados retornados 
+                         do banco, ou None se a criação falhar.
+        """
         query = """
             INSERT INTO users (user_id, name, email, ra, role, state, active, course, year, organization)
             VALUES (:user_id, :name, :email, :ra, :role, :state, :active, :course, :year, :organization)
             RETURNING *;
         """
         
-        user_dto= UserPostgresDTO.from_entity(new_user).to_postgres()
+        user_dto = UserPostgresDTO.from_entity(new_user).to_postgres()
 
-        
-        result = self.postgres.query(sql=query, params=user_dto)
+        try:
+            with self.postgres.transaction() as tx_id:
+                result = self.postgres.query(
+                    sql=query,
+                    params=user_dto, 
+                    transaction_id=tx_id
+                )
 
-        if result:
-            user_data_from_db = result[0]
-            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
-            # return User.from_dict(user_data_from_db)
-            
-        return None
+                if result:
+                    user_data_from_db = result[0]
+                    return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+
+            raise Exception("Erro ao criar usuário.")
+
+        except RdsDataError as e:
+
+            if "duplicate key value violates unique constraint" in str(e):
+
+                raise DuplicatedItem("email, id or ra")
+
+            raise Exception("Erro ao criar usuário.")
     
-    def delete_user(self, user_id: str) -> bool:
+    def delete_user(self, user_id: str) -> User:
         query = """
             DELETE FROM users WHERE user_id = :user_id
             RETURNING *;
         """
         params = {"user_id": user_id}
-        result = self.postgres.query(sql=query, params=params)
-        if result:
-            user_data_from_db = result[0]
-            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
-        
-        raise NoItemsFound("There is no user with that user")
+
+        try:
+            with self.postgres.transaction() as tx_id:
+                result = self.postgres.query(
+                    sql=query, 
+                    params=params, 
+                    transaction_id=tx_id
+                )
+            
+            if result:
+                user_data_from_db = result[0]
+                return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+            
+            raise NoItemsFound("There is no user with that user id")
+
+        except RdsDataError as e:
+            logger.error(f"Falha na transação ao deletar usuário {user_id}: {e}")
+            raise
     
 
     def get_all_user(self):
@@ -265,7 +304,16 @@ class UserRepositoryPostgres(IUserRepository):
         
         return True   
 
-    def update_user(self, user_id: str, new_state: STATE=None, new_role: ROLE=None, new_active: ACTIVE=None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None) -> Optional[User]:
+    def update_user(
+        self, 
+        user_id: str, 
+        new_state: STATE=None, 
+        new_role: ROLE=None, 
+        new_active: ACTIVE=None, 
+        new_course: COURSE=None, 
+        new_year: int=None,  
+        new_organization: ORGANIZATION=None
+    ) -> User:
         query= """
             UPDATE users 
             SET 
@@ -289,12 +337,22 @@ class UserRepositoryPostgres(IUserRepository):
             "new_organization": new_organization.value if new_organization is not None else None
         }
 
-        result = self.postgres.query(sql=query, params=params)
+        try:
+            with self.postgres.transaction() as tx_id:
+                result = self.postgres.query(
+                    sql=query, 
+                    params=params,
+                    transaction_id=tx_id
+                )
 
-        if result:
-            user_data_from_db = result[0]
-            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
-            
-        raise NoItemsFound("No user was found with that user id")
+            if result:
+                user_data_from_db = result[0]
+                return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+                
+            raise NoItemsFound("No user was found with that user id")
+
+        except RdsDataError as e:
+            logger.error(f"Falha na transação ao atualizar usuário {user_id}: {e}")
+            raise
 
     

@@ -1,16 +1,15 @@
-import json
-from .auth_user_controller import AuthUserController
-from .auth_user_usecase import AuthUserUsecase
+from .upload_users_controller import UploadUsersController
+from .upload_users_usecase import UploadUsersUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
+import json
 
 repo = Environments.get_user_repo()
-usecase = AuthUserUsecase(repo)
-controller = AuthUserController(usecase)
+usecase = UploadUsersUsecase(repo)
+controller = UploadUsersController(usecase)
 
 
 def lambda_handler(event, context):
-    httpRequest = LambdaHttpRequest(data=event)
 
     httpRequest = LambdaHttpRequest(data=event)
 
@@ -19,6 +18,9 @@ def lambda_handler(event, context):
              .get("authorizer", {})
              .get("user")
     )
+    
+    headers = event.get('headers', {})
+    auth_token = headers.get('authorization') or headers.get('Authorization')
 
     user_info = None
     if isinstance(user_graph_info_raw, str):
@@ -30,6 +32,8 @@ def lambda_handler(event, context):
         user_info = user_graph_info_raw
 
     httpRequest.data["user_from_authorizer"] = user_info
+    
+    httpRequest.data["auth_token"] = auth_token
 
     print("Decoded user:", user_info)
 

@@ -26,7 +26,7 @@ class AuroraConstruct(Construct):
             subnet_configuration=[
                 ec2.SubnetConfiguration(
                     name=f"PrivateSubnet-{stage}",
-                    subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS,
+                    subnet_type=ec2.SubnetType.PRIVATE_ISOLATED,
                     cidr_mask=24
                 ),
                 ec2.SubnetConfiguration(
@@ -35,8 +35,20 @@ class AuroraConstruct(Construct):
                     cidr_mask=24
                 )
             ],
-            nat_gateways=1 if stage != "PROD" else 3,  # 1 NAT para dev/homolog, 3 para prod
+            nat_gateways=0
         )
+        
+        vpc.add_interface_endpoint(
+            f"SecretsManagerEndpoint-{stage}",
+            service=ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER
+        )
+        
+        vpc.add_interface_endpoint(
+            f"RdsDataEndpoint-{stage}",
+            service=ec2.InterfaceVpcEndpointAwsService.RDS_DATA
+        )
+        
+        
 
         creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
         
@@ -62,7 +74,7 @@ class AuroraConstruct(Construct):
             default_database_name=db_name,
             vpc=vpc,
             vpc_subnets=ec2.SubnetSelection(
-                subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS
+                subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
             ),
             credentials=creds,
             removal_policy=removal,

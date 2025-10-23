@@ -49,7 +49,7 @@ class CreateUserUsecase:
                             email=new_user_data.get('email'),
                             role=ROLE.USER,
                             organization=ORGANIZATION(new_user_data.get('organization')),
-                            course=COURSE(new_user_data.get('course')),
+                            course=COURSE(new_user_data.get('course')) if new_user_data.get('course') else None,
                             year=new_user_data.get('year'),
                             active=ACTIVE.ACTIVE,
                             state=STATE(new_user_data.get('state')) if new_user_data.get('state') else STATE.PENDING,

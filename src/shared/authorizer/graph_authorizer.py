@@ -6,11 +6,36 @@ import urllib3
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+ALLOWED = os.getenv("ALLOWED_LAMBDA_ARNS", "").split(",")
+
 def lambda_handler(event, context):
     """
     Autoriza o usuário validando seu token diretamente contra a API do Microsoft Graph.
     Permite o acesso se a API retornar sucesso (200 OK), caso contrário, nega.
     """
+    
+    print(event)
+    
+    print(ALLOWED)
+    
+    arn_caller = event.get("requestContext", {}).get("identity", {}).get("callerArn")
+    
+    if arn_caller in ALLOWED:
+        # permitir sem token caso o arn corresponda com allowed
+        return {
+            "principalId": "lambda-access",
+            "policyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": "execute-api:Invoke",
+                        "Effect": "Allow",
+                        "Resource": event["methodArn"]
+                    }
+                ]
+            }
+        }
+    
     logger.info("Iniciando processo de autorização via Microsoft Graph.")
 
     # É essencial ter o method_arn para gerar a política, mesmo em caso de falha.
@@ -41,6 +66,8 @@ def lambda_handler(event, context):
         # O contexto pode ser usado para passar dados do usuário para a função de backend
         context_data = {"user": json.dumps(user_data)}
         policy = generate_policy(principal_id, "Allow", method_arn, context_data)
+
+        print(policy)
         
         return policy
 
