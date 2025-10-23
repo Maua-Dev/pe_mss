@@ -1,5 +1,5 @@
-from src.modules.get_all_users.app.get_all_users_usecase import GetAllUsersUsecase
-from src.modules.get_all_users.app.get_all_users_viewmodel import GetUserViewModel
+from .get_user_usecase import GetUserUsecase
+from .get_user_viewmodel import GetUserViewModel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
@@ -8,7 +8,7 @@ from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest
 
 class GetUserController:
 
-    def __init__(self, usecase: GetAllUsersUsecase):
+    def __init__(self, usecase: GetUserUsecase):
         self.usecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
