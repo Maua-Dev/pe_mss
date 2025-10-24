@@ -8,7 +8,7 @@ from src.shared.domain.enums.state_enum import STATE
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
-
+from src.shared.domain.enums.active_enum import ACTIVE
 
 class Test_UpdateUserController:
     def test_update_user_controller(self):
@@ -21,7 +21,8 @@ class Test_UpdateUserController:
             'new_state': STATE.APPROVED,
             'new_role': ROLE.USER,
             'new_course': COURSE.ARQ,   # opcional
-            'new_year': 3          # opcional
+            'new_year': 3,          # opcional
+            'new_active': ACTIVE.ACTIVE  # opcional
         })
 
         response = controller(request=request)

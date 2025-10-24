@@ -23,6 +23,7 @@ class Test_UpadateUserViewmodel:
             'year': 4,
             'role': ROLE.USER,
             'organization': ORGANIZATION.DEV,
+            'active': ACTIVE.ACTIVE.value,
             'user_id': "550e8400-e29b-41d4-a716-446655440001",
 
             'message': "the user was updated successfully"

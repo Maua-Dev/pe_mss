@@ -1,4 +1,5 @@
 from src.shared.domain.entities.user import User
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -14,6 +15,7 @@ class UpdateUserViewmodel:
     year: int
     role: ROLE
     organization: ORGANIZATION
+    active: ACTIVE
     user_id: str
 
     def __init__(self, user: User):
@@ -26,6 +28,7 @@ class UpdateUserViewmodel:
         self.year = user.year
         self.role = user.role
         self.organization = user.organization
+        self.active = user.active
         self.user_id = user.user_id
 
     def to_dict(self):
@@ -38,6 +41,7 @@ class UpdateUserViewmodel:
             'year': self.year,
             'role': self.role,
             'organization': self.organization,
+            'active': self.active.value,
             'user_id': self.user_id,
             'message': "the user was updated successfully"
         }

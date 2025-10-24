@@ -3,7 +3,7 @@ from src.modules.update_user.app.update_user_presenter import lambda_handler
 
 class TestUpdateUserPresenter:
 
-    def test_update_user_success(self):
+    def test_update_user_fail(self):
         event = {
             "version": "2.0",
             "routeKey": "$default",

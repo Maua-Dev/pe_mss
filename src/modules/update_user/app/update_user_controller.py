@@ -1,3 +1,4 @@
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
 from .update_user_usecase import UpdateUserUsecase
 from .update_user_viewmodel import UpdateUserViewmodel
@@ -25,6 +26,11 @@ class UpdateUserController:
             new_course = request.data.get("new_course")
             new_year = request.data.get("new_year")
             new_organization = request.data.get("new_organization")
+            new_active = request.data.get("new_active")
+
+            # 🧩 Conversão de string para Enum antes da checagem de tipo
+            if isinstance(new_active, str):
+                new_active = ACTIVE[new_active]
 
             if new_state is not None and type(new_state) != STATE:
                 raise WrongTypeParameter("new_state", "STATE", type(new_state).__name__)
@@ -36,6 +42,8 @@ class UpdateUserController:
                 raise WrongTypeParameter("new_year", "int", type(new_year).__name__)
             if new_organization is not None and type(new_organization) != ORGANIZATION:
                 raise WrongTypeParameter("new_organization", "ORGANIZATION", type(new_organization).__name__)
+            if new_active is not None and type(new_active) != ACTIVE:
+                raise WrongTypeParameter("new_active", "ACTIVE", type(new_active).__name__)
 
             user = self.usecase(
                 user_id=request.data.get("user_id"),
@@ -44,6 +52,7 @@ class UpdateUserController:
                 new_course=new_course,
                 new_year=new_year,
                 new_organization=new_organization,
+                new_active=new_active
             )
 
             viewmodel = UpdateUserViewmodel(user)

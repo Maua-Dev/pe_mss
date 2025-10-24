@@ -1,5 +1,5 @@
-from src.modules.update_user.app.update_user_controller import UpdateUserController
-from src.modules.update_user.app.update_user_usecase import UpdateUserUsecase
+from .update_user_controller import UpdateUserController
+from .update_user_usecase import UpdateUserUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 
