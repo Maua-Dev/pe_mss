@@ -53,17 +53,15 @@ class UploadUsersUsecase:
             }
             
             uploaded_user.append(user_data)
-            
-        request = HttpRequest(body={
-            'new_user': [
-                dict(user_data) for user_data in uploaded_user
-            ]
-        })
 
         response = self.http_client.request(
             "POST", 
             os.environ.get("CREATE_USER_ENDPOINT"), 
-            body=request.data, 
+            body={
+                'new_user': [
+                    dict(user_data) for user_data in uploaded_user
+                ]
+            }, 
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"{auth_token}" #Already has Bearer prefix
