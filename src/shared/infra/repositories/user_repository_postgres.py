@@ -367,5 +367,37 @@ class UserRepositoryPostgres(IUserRepository):
         except RdsDataError as e:
             logger.error(f"Falha na transação ao atualizar usuário {user_id}: {e}")
             raise
+        
+    def reallocate_id(self, user_id: str, email: str) -> User:
+        query= """
+            UPDATE users 
+            SET 
+                user_id= :new_user_id
+            WHERE email = :email
+            RETURNING *
+        """
+
+        params= {
+            "new_user_id": user_id,
+            "email": email
+        }
+
+        try:
+            with self.postgres.transaction() as tx_id:
+                result = self.postgres.query(
+                    sql=query, 
+                    params=params,
+                    transaction_id=tx_id
+                )
+
+            if result:
+                user_data_from_db = result[0]
+                return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+                
+            raise NoItemsFound("No user was found with that email")
+
+        except RdsDataError as e:
+            logger.error(f"Falha na transação ao realocar ID do usuário com email {email}: {e}")
+            raise
 
     

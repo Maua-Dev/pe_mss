@@ -75,13 +75,13 @@ class Test_AuthUserController:
 
         assert response.status_code == 200
         assert response.body["user"]['user_id'] == '550e8400-e29b-41d4-a716-446655440000'
-        assert response.body["user"]['name'] == 'Guilherme'
-        assert response.body["user"]['email'] == '25.00178-5@maua.br'
-        assert response.body["user"]['ra'] == '25.00178-5'
-        assert response.body["user"]['state'] == 'PENDING'
+        assert response.body["user"]['name'] == 'Aurélio'
+        assert response.body["user"]['email'] == '24.00564-5@maua.br'
+        assert response.body["user"]['ra'] == '24.00564-5'
+        assert response.body["user"]['state'] == None
         assert response.body["user"]['role'] == 'USER'
-        assert response.body["user"]['active'] == 'ACTIVE'
-        assert response.body["message"] == 'the user was retrieved successfully'
+        assert response.body["user"]['active'] == None
+        assert response.body["message"] == 'the user was created successfully'
 
     def test_auth_user_controller_id_is_missing(self):
         repo = UserRepositoryMock()

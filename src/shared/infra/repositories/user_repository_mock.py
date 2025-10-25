@@ -269,3 +269,11 @@ class UserRepositoryMock(IUserRepository):
                 users.append(user)
 
         return users
+    
+    def reallocate_id(self, user_id, email):
+        
+        for user in self.users:
+            if user.email == email:
+                user.user_id = user_id
+                return user
+        raise NoItemsFound(email)

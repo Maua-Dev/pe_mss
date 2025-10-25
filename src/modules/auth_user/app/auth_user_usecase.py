@@ -10,10 +10,18 @@ class AuthUserUsecase:
         self.repo = repo
 
     def __call__(self, user: User) -> Tuple[User, int]:
+        
         try:
-            get_user= self.repo.get_user(user_id=user.user_id)
-            if type(get_user) == User:
-                return (get_user, 0)
+            
+            matched_user = self.repo.get_user_by_email(email=user.email)
+        
+            if matched_user:
+                
+                if matched_user.user_id != user.user_id:
+                    # Reallocate user ID to match token ID
+                    updated_user = self.repo.reallocate_id(user_id=user.user_id, email=user.email)
+                    return (updated_user, 0)
+                return (matched_user, 0)
             
         except NoItemsFound:
             created_user= self.repo.create_user(new_user=user)

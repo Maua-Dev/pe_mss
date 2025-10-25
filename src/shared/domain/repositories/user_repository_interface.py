@@ -98,3 +98,10 @@ class IUserRepository(ABC):
         Else will raise ForbiddenError or NoItemsFound
         '''
         pass
+    
+    @abstractmethod
+    def reallocate_id(self, user_id: str, email: str) -> Optional[User]:
+        """
+        Changes the user_id of a user to the matching token id
+        """
+        pass
