@@ -56,7 +56,7 @@ class Test_DeleteUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
+        assert json.loads(response["body"])["user"]['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
         assert json.loads(response["body"])['message'] == "the user was deleted successfully"
 
     def test_delete_user_as_self(self):
@@ -111,7 +111,7 @@ class Test_DeleteUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['user_id'] == "550e8400-e29b-41d4-a716-446655440002"
+        assert json.loads(response["body"])["user"]['user_id'] == "550e8400-e29b-41d4-a716-446655440002"
         assert json.loads(response["body"])['message'] == "the user was deleted successfully"
     
     def test_delete_member_user_as_president(self):
@@ -166,5 +166,5 @@ class Test_DeleteUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['user_id'] == "550e8400-e29b-41d4-a716-446655440089"
+        assert json.loads(response["body"])["user"]['user_id'] == "550e8400-e29b-41d4-a716-446655440089"
         assert json.loads(response["body"])['message'] == "the user was deleted successfully"

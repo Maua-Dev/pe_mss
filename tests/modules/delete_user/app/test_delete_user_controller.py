@@ -28,7 +28,7 @@ class Test_DeleteUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
+        assert response.body["user"]['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
         assert response.body['message'] == "the user was deleted successfully"
     
     def test_delete_user_controller_as_admin(self):
@@ -49,7 +49,7 @@ class Test_DeleteUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
+        assert response.body["user"]['user_id'] == "550e8400-e29b-41d4-a716-446655440000"
         assert response.body['message'] == "the user was deleted successfully"
     
     def test_delete_member_user_controller_as_president(self):
@@ -72,7 +72,7 @@ class Test_DeleteUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == deleted_user_id
+        assert response.body["user"]['user_id'] == deleted_user_id
         assert response.body['message'] == "the user was deleted successfully"
 
     def test_delete_user_controller_missing_user_from_authorizer(self):

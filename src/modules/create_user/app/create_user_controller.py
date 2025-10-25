@@ -17,7 +17,7 @@ class CreateUserController:
         try:
             
             #nao é necessario validar as entradas requester user pois isso o authorizer vai cuidar
-            requester_user = request.data.get('user_from_authorizer');
+            requester_user = request.data.get('user_from_authorizer')
             
             if requester_user is None:
                 raise MissingParameters('user_from_authorizer')
@@ -30,8 +30,8 @@ class CreateUserController:
             
             if type(request.data.get('new_user')) == list:
                 users = self.create_user_usecase(user_data=request.data, case="planilha", requester_id=requester_user_id)
-                viewmodels = [CreateUserViewmodel(user=user).to_dict() for user in users]
-                return OK(viewmodels)
+                viewmodel = CreateUserViewmodel(user=users)
+                return OK(viewmodel.to_dict())
 
             new_user_data = request.data.get('new_user')
 

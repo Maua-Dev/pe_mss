@@ -56,14 +56,14 @@ class Test_CreateUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['user_id'] is not None
-        assert json.loads(response["body"])['name'] == "Maria"
-        assert json.loads(response["body"])['email'] == "21.00100-2@maua.br"
-        assert json.loads(response["body"])['organization'] == "DEV"
-        assert json.loads(response["body"])['role'] == "USER"
-        assert json.loads(response["body"])['active'] == "ACTIVE"
-        assert json.loads(response["body"])['state'] == "PENDING"
-        assert json.loads(response["body"])['ra'] == "21.00100-2"
+        assert json.loads(response["body"])["user"]['user_id'] is not None
+        assert json.loads(response["body"])["user"]['name'] == "Maria"
+        assert json.loads(response["body"])["user"]['email'] == "21.00100-2@maua.br"
+        assert json.loads(response["body"])["user"]['organization'] == "DEV"
+        assert json.loads(response["body"])["user"]['role'] == "USER"
+        assert json.loads(response["body"])["user"]['active'] == "ACTIVE"
+        assert json.loads(response["body"])["user"]['state'] == "PENDING"
+        assert json.loads(response["body"])["user"]['ra'] == "21.00100-2"
 
     def test_create_user_presenter_without_user_from_authorizer(self):
         event = {
@@ -221,14 +221,14 @@ class Test_CreateUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['user_id'] is not None
-        assert json.loads(response["body"])['name'] == "Maria"
-        assert json.loads(response["body"])['email'] == "21.00100-4@maua.br"
-        assert json.loads(response["body"])['organization'] == "NAWAT"
-        assert json.loads(response["body"])['role'] == "USER"
-        assert json.loads(response["body"])['active'] == "ACTIVE"
-        assert json.loads(response["body"])['state'] == "PENDING"
-        assert json.loads(response["body"])['ra'] == "21.00100-4"
+        assert json.loads(response["body"])["user"]['user_id'] is not None
+        assert json.loads(response["body"])["user"]['name'] == "Maria"
+        assert json.loads(response["body"])["user"]['email'] == "21.00100-4@maua.br"
+        assert json.loads(response["body"])["user"]['organization'] == "NAWAT"
+        assert json.loads(response["body"])["user"]['role'] == "USER"
+        assert json.loads(response["body"])["user"]['active'] == "ACTIVE"
+        assert json.loads(response["body"])["user"]['state'] == "PENDING"
+        assert json.loads(response["body"])["user"]['ra'] == "21.00100-4"
 
     def test_create_user_presenter_as_unauthorized_president(self):
         event = {

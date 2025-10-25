@@ -54,14 +54,14 @@ class TestAuthUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])["name"] == 'Guilherme'
-        assert json.loads(response["body"])['email'] == '25.00178-5@maua.br'
-        assert json.loads(response["body"])['ra'] == '25.00178-5'
-        assert json.loads(response["body"])['state'] == 'PENDING'
-        assert json.loads(response["body"])['role'] == 'USER'
-        assert json.loads(response["body"])['active'] == 'ACTIVE'
-        assert json.loads(response["body"])['organization'] == None
-        assert json.loads(response["body"])['message'] == 'the user was retrieved successfully'
+        assert json.loads(response["body"])["user"]["name"] == 'Guilherme'
+        assert json.loads(response["body"])["user"]["email"] == '25.00178-5@maua.br'
+        assert json.loads(response["body"])["user"]["ra"] == '25.00178-5'
+        assert json.loads(response["body"])["user"]["state"] == 'PENDING'
+        assert json.loads(response["body"])["user"]["role"] == 'USER'
+        assert json.loads(response["body"])["user"]["active"] == 'ACTIVE'
+        assert json.loads(response["body"])["user"]["organization"] == None
+        assert json.loads(response["body"])["message"] == 'the user was retrieved successfully'
 
     def test_auth_user_and_user_is_not_in_repo_mock(self):
         event = {
@@ -122,11 +122,11 @@ class TestAuthUserPresenter:
         response = lambda_handler(event, None)
 
         assert response["statusCode"] == 200
-        assert json.loads(response["body"])['name'] == 'Aurélio'
-        assert json.loads(response["body"])['email'] == '23.00342-5@maua.br'
-        assert json.loads(response["body"])['ra'] == '23.00342-5'
-        assert json.loads(response["body"])['state'] == None
-        assert json.loads(response["body"])['role'] == 'USER'
-        assert json.loads(response["body"])['active'] == None
-        assert json.loads(response["body"])['organization'] == None
-        assert json.loads(response["body"])['message'] == 'the user was created successfully'
+        assert json.loads(response["body"])["user"]["name"] == 'Aurélio'
+        assert json.loads(response["body"])["user"]["email"] == '23.00342-5@maua.br'
+        assert json.loads(response["body"])["user"]["ra"] == '23.00342-5'
+        assert json.loads(response["body"])["user"]["state"] == None
+        assert json.loads(response["body"])["user"]["role"] == 'USER'
+        assert json.loads(response["body"])["user"]["active"] == None
+        assert json.loads(response["body"])["user"]["organization"] == None
+        assert json.loads(response["body"])["message"] == 'the user was created successfully'
