@@ -17,14 +17,14 @@ class GetAllUsersController:
                 raise MissingParameters('user_from_authorizer')
 
             requester_user_id = request.data.get('user_from_authorizer').get('id')
-            name = request.data.get('name', None)
-            ra = request.data.get('ra', None)   
-            state = request.data.get('state', None)
-            role = request.data.get('role', None)
-            active = request.data.get('active', None)
-            course = request.data.get('course', None)
-            year = request.data.get('year', None)
-            organization = request.data.get('organization', None)
+            name = request.data.get('name', None) if request.data.get('name', None) != "" else None
+            ra = request.data.get('ra', None) if request.data.get('ra', None) != "" else None
+            state = request.data.get('state', None) if request.data.get('state', None) != "" else None
+            role = request.data.get('role', None) if request.data.get('role', None) != "" else None
+            active = request.data.get('active', None) if request.data.get('active', None) != "" else None
+            course = request.data.get('course', None) if request.data.get('course', None) != "" else None
+            year = request.data.get('year', None) if request.data.get('year', None) != "" else None
+            organization = request.data.get('organization', None) if request.data.get('organization', None) != "" else None
             
             if name and not isinstance(name, str):
                 raise WrongTypeParameter("name", "str", type(name).__name__)
@@ -38,8 +38,15 @@ class GetAllUsersController:
                 raise WrongTypeParameter("active", "str", type(active).__name__)
             if course and not isinstance(course, str):
                 raise WrongTypeParameter("course", "str", type(course).__name__)
-            if year and not isinstance(year, int):
-                raise WrongTypeParameter("year", "int", type(year).__name__)
+            
+            if year is not None:
+                if year.find('.') != -1:
+                    raise WrongTypeParameter("year", "int", "float")
+                try:
+                    year = int(year)
+                except (ValueError, TypeError):
+                    raise WrongTypeParameter("year", "int", type(year).__name__)
+
             if organization and not isinstance(organization, str):
                 raise WrongTypeParameter("organization", "str", type(organization).__name__)
 
