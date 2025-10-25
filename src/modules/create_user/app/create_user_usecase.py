@@ -15,8 +15,8 @@ class CreateUserUsecase:
         self.repo = repo
 
     def __call__(self, user_data: dict, case, requester_id) -> IUserRepository.create_user:
-        new_user_data: dict = user_data.get('new_user');
-        user_exists = False;
+        new_user_data: dict = user_data.get('new_user')
+        user_exists = False
 
         # Check if user already exists
         try:
