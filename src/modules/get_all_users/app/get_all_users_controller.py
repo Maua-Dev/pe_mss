@@ -17,15 +17,32 @@ class GetAllUsersController:
                 raise MissingParameters('user_from_authorizer')
 
             requester_user_id = request.data.get('user_from_authorizer').get('id')
-            name = request.data.get('name', None) if request.data.get('name', None) != "" else None
-            ra = request.data.get('ra', None) if request.data.get('ra', None) != "" else None
-            state = request.data.get('state', None) if request.data.get('state', None) != "" else None
-            role = request.data.get('role', None) if request.data.get('role', None) != "" else None
-            active = request.data.get('active', None) if request.data.get('active', None) != "" else None
-            course = request.data.get('course', None) if request.data.get('course', None) != "" else None
-            year = request.data.get('year', None) if request.data.get('year', None) != "" else None
-            organization = request.data.get('organization', None) if request.data.get('organization', None) != "" else None
+            name = request.data.get('name', None)
+            ra = request.data.get('ra', None)
+            state = request.data.get('state', None)
+            role = request.data.get('role', None)
+            active = request.data.get('active', None)
+            course = request.data.get('course', None)
+            year = request.data.get('year', None)
+            organization = request.data.get('organization', None)
             
+            if name == '' or name == "":
+                name = None
+            if ra == '' or ra == "":
+                ra = None
+            if state == '' or state == "":
+                state = None
+            if role == '' or role == "":
+                role = None
+            if active == '' or active == "":
+                active = None
+            if course == '' or course == "":
+                course = None
+            if year == '' or year == "":
+                year = None
+            if organization == '' or organization == "":
+                organization = None
+
             if name and not isinstance(name, str):
                 raise WrongTypeParameter("name", "str", type(name).__name__)
             if ra and not isinstance(ra, str):
