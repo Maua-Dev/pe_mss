@@ -16,34 +16,6 @@ class GetAllUsersController:
             if request.data.get('user_from_authorizer') is None:
                 raise MissingParameters('user_from_authorizer')
 
-            if request.data.get('user_from_authorizer').get('id') is None:
-                raise MissingParameters('id')
-            if request.data.get('user_from_authorizer').get('displayName') is None:
-                raise MissingParameters('displayName')
-            if request.data.get('user_from_authorizer').get('mail') is None:
-                raise MissingParameters('mail')
-            
-            if type(request.data.get('user_from_authorizer').get('id')) != str:
-                raise WrongTypeParameter(
-                    fieldName="id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('id').__class__.__name__
-                )
-            
-            if type(request.data.get('user_from_authorizer').get('displayName')) != str:
-                raise WrongTypeParameter(
-                    fieldName="displayName",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('displayName').__class__.__name__
-                )
-            
-            if type(request.data.get('user_from_authorizer').get('mail')) != str:
-                raise WrongTypeParameter(
-                    fieldName="mail",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('mail').__class__.__name__
-                )
-
             requester_user_id = request.data.get('user_from_authorizer').get('id')
             name = request.data.get('name', None)
             ra = request.data.get('ra', None)   
@@ -53,6 +25,23 @@ class GetAllUsersController:
             course = request.data.get('course', None)
             year = request.data.get('year', None)
             organization = request.data.get('organization', None)
+            
+            if name and not isinstance(name, str):
+                raise WrongTypeParameter("name", "str", type(name).__name__)
+            if ra and not isinstance(ra, str):
+                raise WrongTypeParameter("ra", "str", type(ra).__name__)
+            if state and not isinstance(state, str):
+                raise WrongTypeParameter("state", "str", type(state).__name__)
+            if role and not isinstance(role, str):
+                raise WrongTypeParameter("role", "str", type(role).__name__)
+            if active and not isinstance(active, str):
+                raise WrongTypeParameter("active", "str", type(active).__name__)
+            if course and not isinstance(course, str):
+                raise WrongTypeParameter("course", "str", type(course).__name__)
+            if year and not isinstance(year, int):
+                raise WrongTypeParameter("year", "int", type(year).__name__)
+            if organization and not isinstance(organization, str):
+                raise WrongTypeParameter("organization", "str", type(organization).__name__)
 
             users, requester_role = self.usecase(user_id=requester_user_id, name=name, ra=ra, state=state, role=role, active=active, course=course, year=year, organization=organization)
             viewmodel = GetAllUsersViewModel(users=users, requester_role=requester_role, requester_id=requester_user_id).to_dict()

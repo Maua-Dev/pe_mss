@@ -11,10 +11,10 @@ class UserViewModel:
     user_id: Optional[str]
     name: str
     email: str
-    state: Optional[STATE]
-    role: Optional[ROLE]
-    active: Optional[ACTIVE]
-    ra: Optional[str] = None
+    ra: str
+    role: ROLE
+    active: Optional[ACTIVE] = None
+    state: Optional[STATE] = None
     course: Optional[COURSE] = None
     year: Optional[int] = None
     organization: Optional[ORGANIZATION] = None
@@ -23,16 +23,16 @@ class UserViewModel:
         self.user_id = user.user_id if show_user_id else None
         self.name = user.name
         self.email = user.email
-        self.state = user.state.value if user.state is not None else None
+        self.ra = user.ra
         self.role = user.role.value if user.role is not None else None
         self.active = user.active.value if user.active is not None else None
-        self.ra = user.ra
+        self.state = user.state.value if user.state is not None else None
         self.course = user.course.value if user.course is not None else None
-        self.year = user.year
+        self.year = user.year if user.year is not None else None
         self.organization = user.organization.value if user.organization is not None else None
 
     def to_dict(self):
-        return {
+        data = {
             "user_id": self.user_id,
             "name": self.name,
             "email": self.email,
@@ -44,7 +44,11 @@ class UserViewModel:
             "year": self.year,
             "organization": self.organization
         }
-
+        
+        if data["user_id"] is None:
+            del data["user_id"]
+            
+        return data
 
 class GetUserViewModel:
     user: UserViewModel

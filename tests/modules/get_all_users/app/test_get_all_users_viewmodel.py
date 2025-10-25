@@ -101,7 +101,11 @@ class Test_GetAllUsersViewmodel:
         expected = {
             'users': [
                 {
-                    'user_id': u.user_id if u.user_id == "b423780f-2045-44e1-9c0b-98352841817d" else None,
+                    **(
+                        {'user_id': u.user_id}
+                        if u.user_id == "b423780f-2045-44e1-9c0b-98352841817d"
+                        else {}
+                    ),
                     'name': u.name,
                     'email': u.email,
                     'state': (u.state.value if u.state is not None else None),

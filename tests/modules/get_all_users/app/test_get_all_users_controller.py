@@ -58,23 +58,3 @@ class TestGetAllUsersController:
 
         assert response.status_code == 400
         assert response.body == 'Field user_from_authorizer is missing'
-
-    def test_get_all_users_controller_wrong_type_parameter(self):
-        userrepo = UserRepositoryMock()
-        usecase = GetAllUsersUsecase(userrepo=userrepo)
-        controller = GetAllUsersController(usecase=usecase)
-
-        request = HttpRequest(body={
-            'user_from_authorizer':{
-                'id': 12345,
-                'displayName': "Guilherme",
-                'mail': "25.00178-5@maua.br"
-            }
-        })
-
-        response = controller(request=request)
-
-        assert response.status_code == 400
-        assert "Field id isn't in the right type" in response.body
-        assert "Received: int" in response.body
-        assert "Expected: str" in response.body
