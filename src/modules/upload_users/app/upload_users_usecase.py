@@ -3,6 +3,7 @@ import io
 import pandas as pd
 import urllib3
 import os
+import json
 
 from src.shared.clients.s3_client import S3Client
 from src.shared.domain.entities.user import User
@@ -53,15 +54,19 @@ class UploadUsersUsecase:
             }
             
             uploaded_user.append(user_data)
+            
+        payload = {
+            'new_user': [
+                dict(user_data) for user_data in uploaded_user
+            ]
+        }
+        
+        json_body = json.dumps(payload).encode('utf-8')
 
         response = self.http_client.request(
             "POST", 
             os.environ.get("CREATE_USER_ENDPOINT"), 
-            body={
-                'new_user': [
-                    dict(user_data) for user_data in uploaded_user
-                ]
-            }, 
+            body=json_body,
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"{auth_token}" #Already has Bearer prefix
@@ -69,7 +74,13 @@ class UploadUsersUsecase:
         )
 
         if response.status != 200:
-            raise EntityError("Error uploading users: " + response.body)
+            error_data = response.data.decode('utf-8')
+            raise EntityError(f"Error uploading users: {error_data}")
+        
+        try:
+            response_data = json.loads(response.data.decode('utf-8'))
+        except json.JSONDecodeError:
+            raise EntityError("Failed to decode JSON response from create_user endpoint.")
         
         # Adicionar na planilha da org
         org_spreadsheet, error = self.s3_client.retreive_planilha_org(org=requester_user.organization)
@@ -108,4 +119,12 @@ class UploadUsersUsecase:
             output.seek(0)
             self.s3_client.upload_planilha_geral_excel(file_content=output.getvalue())
         
-        return list(response.json().get("data"))
+        if isinstance(response_data, list):
+            return response_data
+        
+        elif isinstance(response_data, dict):
+            return list(response_data.get("data"))
+        
+        else:
+            # Lidar com qualquer outro formato inesperado
+            raise EntityError(f"Unexpected response format from API: {type(response_data)}")

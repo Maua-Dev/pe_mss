@@ -118,7 +118,7 @@ class S3Client:
             print(f"Um erro inesperado ocorreu: {e}")
             return None, {"error": str(e)}
             
-    def retreive_planilha_org(self, org: str) -> dict:
+    def retreive_planilha_org(self, org: str) -> tuple[bytes | None, dict]:
         
         key = self.formata_caminho(org=org, file_type=self.excel_extension)
         
