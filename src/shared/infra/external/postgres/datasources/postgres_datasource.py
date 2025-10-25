@@ -137,10 +137,12 @@ class RdsDataDatasource:
         for attempt in range(1, max_retries + 1):
             try:
                 return func(*args, **kwargs)
-
+            
             except (self.client.exceptions.InternalServerErrorException,
-                    self.client.exceptions.ServiceUnavailableError) as e:
-                logger.warning(f"Erro transitório de servidor (tentativa {attempt}/{max_retries}): {e}")
+                    self.client.exceptions.ServiceUnavailableError,
+                    self.client.exceptions.DatabaseResumingException,
+                    self.client.exceptions.DatabaseUnavailableException) as e:
+                logger.warning(f"Erro transitório (servidor/estado DB) (tentativa {attempt}/{max_retries}): {e}")
                 last_exception = e
 
             except self.client.exceptions.BadRequestException as e:
