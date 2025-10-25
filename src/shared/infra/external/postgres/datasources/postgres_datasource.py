@@ -150,10 +150,6 @@ class RdsDataDatasource:
                     last_exception = e
                 else:
                     raise e
-
-            except self.client.exceptions.TooManyRequestsException as e:
-                logger.warning(f"Throttling detectado (tentativa {attempt}/{max_retries})...")
-                last_exception = e
             
             except botocore.exceptions.EndpointConnectionError as e:
                 logger.warning(f"Conexão indisponível (tentativa {attempt}/{max_retries}): {e}")
