@@ -7,12 +7,22 @@ from src.shared.domain.enums.state_enum import STATE
 
 class Test_DeleteUserViewmodel:
     def test_delete_user_viewmodel(self):
-        user = User(user_id="632bd20f-ba30-41b1-904a-7df68f0daa70", name="Test", email="test@maua.br", state=STATE.PENDING, role=ROLE.USER, active=ACTIVE.ACTIVE)
+        user = User(user_id="632bd20f-ba30-41b1-904a-7df68f0daa70", name="Test", email="test@maua.br", state=STATE.PENDING, role=ROLE.USER, active=ACTIVE.ACTIVE, ra="00.00000-0")
 
         delete_user_viewmodel = DeleteUserViewmodel(user)
 
         expected = {
-            'user_id': "632bd20f-ba30-41b1-904a-7df68f0daa70",
+            "user": {
+                'user_id': "632bd20f-ba30-41b1-904a-7df68f0daa70",
+                'name': "Test",
+                'email': "test@maua.br",
+                'ra': "00.00000-0",
+                'state': STATE.PENDING.value,
+                'role': ROLE.USER.value,
+                'active': ACTIVE.ACTIVE.value,
+                'course': None,
+                'organization': None,
+            },
             'message': "the user was deleted successfully"
         }
 

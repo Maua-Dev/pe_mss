@@ -1,13 +1,13 @@
 import re
-from src.modules.create_user.app.create_user_usecase import CreateUserUsecase
-from src.modules.create_user.app.create_user_viewmodel import CreateUserViewmodel
+from .create_user_usecase import CreateUserUsecase
+from .create_user_viewmodel import CreateUserViewmodel
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
-from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest, InternalServerError, NotFound, Forbidden
+from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction, DuplicatedItem
+from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest, InternalServerError, NotFound, Forbidden, Conflict
 
 class CreateUserController:
     def __init__(self, usecase: CreateUserUsecase):
@@ -15,47 +15,23 @@ class CreateUserController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            if request.data.get('user_from_authorizer') is None:
+            
+            #nao é necessario validar as entradas requester user pois isso o authorizer vai cuidar
+            requester_user = request.data.get('user_from_authorizer')
+            
+            if requester_user is None:
                 raise MissingParameters('user_from_authorizer')
-
-            if request.data.get('user_from_authorizer').get('id') is None:
-                raise MissingParameters('id')
-            if request.data.get('user_from_authorizer').get('displayName') is None:
-                raise MissingParameters('displayName')
-            if request.data.get('user_from_authorizer').get('mail') is None:
-                raise MissingParameters('mail')
             
-            if type(request.data.get('user_from_authorizer').get('id')) != str:
-                raise WrongTypeParameter(
-                    fieldName="id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('id').__class__.__name__
-                )
-            
-            if type(request.data.get('user_from_authorizer').get('displayName')) != str:
-                raise WrongTypeParameter(
-                    fieldName="displayName",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('displayName').__class__.__name__
-                )
-            
-            if type(request.data.get('user_from_authorizer').get('mail')) != str:
-                raise WrongTypeParameter(
-                    fieldName="mail",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_from_authorizer').get('mail').__class__.__name__
-                )
-
-            requester_user_id = request.data.get('user_from_authorizer').get('id')
+            requester_user_id = requester_user.get('id')
             requester_user_role = self.create_user_usecase.repo.get_user(user_id=requester_user_id).role
-
+            
             if request.data.get('new_user') is None:
                 raise MissingParameters('new_user')
             
             if type(request.data.get('new_user')) == list:
                 users = self.create_user_usecase(user_data=request.data, case="planilha", requester_id=requester_user_id)
-                viewmodels = [CreateUserViewmodel(user=user).to_dict() for user in users]
-                return OK(viewmodels)
+                viewmodel = CreateUserViewmodel(user=users)
+                return OK(viewmodel.to_dict())
 
             new_user_data = request.data.get('new_user')
 
@@ -114,6 +90,9 @@ class CreateUserController:
 
         except NoItemsFound as err:
             return NotFound(body=err.message)
+        
+        except DuplicatedItem as err:
+            return Conflict(body=err.message)
 
         except MissingParameters as err:
             return BadRequest(body=err.message)

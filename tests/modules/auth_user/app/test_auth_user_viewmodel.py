@@ -25,15 +25,17 @@ class Test_AuthUserViewmodel:
         registerd_user= AuthUserViewmodel(user=user, case_number=case_number)
 
         expected= {
-            'user_id': '550e8400-e29b-41d4-a716-446655440000',
-            'name': 'Guilherme',
-            'email': '25.00178-5@maua.br',
-            'ra': '25.00178-5',
-            'state': 'PENDING',
-            'role': 'USER',
-            'active': 'ACTIVE',
-            'organization': None,
-            'course': None,
+            'user': {
+                'user_id': '550e8400-e29b-41d4-a716-446655440000',
+                'name': 'Guilherme',
+                'email': '25.00178-5@maua.br',
+                'ra': '25.00178-5',
+                'state': 'PENDING',
+                'role': 'USER',
+                'active': 'ACTIVE',
+                'organization': None,
+                'course': None,
+            },
             'message': 'the user was retrieved successfully',
         }
         
@@ -58,16 +60,18 @@ class Test_AuthUserViewmodel:
         registerd_user= AuthUserViewmodel(user=user, case_number=case_number)
 
         expected= {
-            'user_id': '550e8400-e29b-41d4-a716-446655440010',
-            'name': 'José',
-            'email': '20.00158-5@maua.br',
-            'ra': '20.00158-5',
-            'state': 'PENDING',
-            'role': 'USER',
-            'active': 'FREEZED',
-            'organization': None,
+            'user': {
+                'user_id': '550e8400-e29b-41d4-a716-446655440010',
+                'name': 'José',
+                'email': '20.00158-5@maua.br',
+                'ra': '20.00158-5',
+                'state': 'PENDING',
+                'role': 'USER',
+                'active': 'FREEZED',
+                'organization': None,
+                'course': None
+            },
             'message': 'the user was created successfully',
-            'course': None
         }
 
         assert registerd_user.to_dict() == expected

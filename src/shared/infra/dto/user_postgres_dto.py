@@ -7,16 +7,16 @@ from src.shared.domain.enums.state_enum import STATE
 
 
 class UserPostgresDTO:
-    user_id: str
-    name: str
-    email: str
-    ra: str
-    state: STATE
-    course: COURSE
-    year: int
-    role: ROLE
-    active: ACTIVE
-    organization: ORGANIZATION
+    user_id: str   #req
+    name: str      #req
+    email: str     #req
+    ra: str        #req
+    role: ROLE     #req
+    state: STATE   #not req
+    course: COURSE #not req
+    year: int      #not req
+    active: ACTIVE #not req
+    organization: ORGANIZATION #not req
 
 
     def __init__(
@@ -25,12 +25,12 @@ class UserPostgresDTO:
             name: str,
             email: str,
             ra: str,
-            state: STATE,
-            course: COURSE,
-            year: int,
             role: ROLE,
-            active: ACTIVE,
-            organization: ORGANIZATION
+            state: STATE | None,
+            course: COURSE | None,
+            year: int | None,
+            active: ACTIVE | None,
+            organization: ORGANIZATION | None
     ):
         self.user_id= user_id
         self.name= name
@@ -70,10 +70,10 @@ class UserPostgresDTO:
             "user_id": self.user_id,
             "name": self.name,
             "email": self.email,
-            "ra": self.ra if self.ra else None,
+            "ra": self.ra,
             "role": self.role.value,
-            "state": self.state.value,
-            "active": self.active.value,
+            "state": self.state.value if self.state else None,
+            "active": self.active.value if self.active else None,
             "course": self.course.value if self.course else None,
             "year": self.year if self.year else None,
             "organization": self.organization.value if self.organization else None
@@ -86,16 +86,16 @@ class UserPostgresDTO:
         @param user_data: dict from Postgres
         """
         return UserPostgresDTO(
-            user_id=user_data["user_id"],
-            name=user_data["name"],
-            email=user_data["email"],
-            ra=user_data["ra"] if "ra" in user_data else None,
-            role=ROLE(user_data["role"]),
-            state=STATE(user_data["state"]),
-            active=ACTIVE(user_data["active"]),
-            course=COURSE(user_data["course"]) if "course" in user_data else None,
-            year=user_data["year"] if "year" in user_data else None,
-            organization=ORGANIZATION(user_data["organization"]) if "organization" in user_data else None
+            user_id=user_data.get("user_id"),
+            name=user_data.get("name"),
+            email=user_data.get("email"),
+            ra=user_data.get("ra"),
+            role=ROLE(user_data.get("role")),
+            state=STATE(user_data.get("state")) if user_data.get("state") is not None else None,
+            active=ACTIVE(user_data.get("active")) if user_data.get("active") is not None else None,
+            course=COURSE(user_data.get("course")) if user_data.get("course") is not None else None,
+            year=user_data.get("year") if user_data.get("year") is not None else None,
+            organization=ORGANIZATION(user_data.get("organization")) if user_data.get("organization") is not None else None
         )
     
     def to_entity(self) -> User:

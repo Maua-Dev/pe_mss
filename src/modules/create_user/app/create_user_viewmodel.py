@@ -5,42 +5,35 @@ from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.active_enum import ACTIVE
 
-class CreateUserViewmodel:
-    user_id: str
-    name: str
-    email: str
-    state: STATE
-    role: ROLE
-    ra: str
-    case_number: int
-    active: ACTIVE
-    course: COURSE
-    organization: ORGANIZATION
 
-    def __init__(self, user: User):
-        self.user_id= user.user_id
-        self.name= user.name
-        self.email= user.email
-        self.ra= user.ra
-        self.state= user.state
-        self.role= user.role
-        self.active= user.active
-        self.organization= user.organization
-        self.active = user.active
-        self.course = user.course
-    
-    def to_dict(self):
-        model={
-            'user_id': self.user_id,
-            'name': self.name,
-            'email': self.email,
-            'ra': self.ra,
-            'state': self.state.value if self.state is not None else None,
-            'role': self.role.value if self.state is not None else None,
-            'organization': self.organization.value if self.organization is not None else None,
-            'active': self.active.value if self.active is not None else None,
-            'course': self.course.value if self.course is not None else None
+class CreateUserViewmodel:
+    def __init__(self, user: User | list[User]):
+        self.is_list = isinstance(user, list)
+        self.user_or_users = user
+
+    def _user_to_dict(self, user: User):
+        return {
+            "user": {
+                "user_id": user.user_id,
+                "name": user.name,
+                "email": user.email,
+                "ra": user.ra,
+                "state": user.state.value if user.state else None,
+                "role": user.role.value if user.role else None,
+                "organization": user.organization.value if user.organization else None,
+                "active": user.active.value if user.active else None,
+                "course": user.course.value if user.course else None
+            }
         }
 
-        model.update({'message': "the user was created successfully"})
-        return model
+    def to_dict(self):
+        if self.is_list:
+            return {
+                "users": [self._user_to_dict(u) for u in self.user_or_users],
+                "message": "the users were created successfully"
+            }
+
+        return {
+            **self._user_to_dict(self.user_or_users),
+            "message": "the user was created successfully"
+        }

@@ -15,13 +15,24 @@ class CreateUserUsecase:
         self.repo = repo
 
     def __call__(self, user_data: dict, case, requester_id) -> IUserRepository.create_user:
-        new_user_data: dict = user_data.get('new_user');
-    
+        new_user_data: dict = user_data.get('new_user')
+        user_exists = False
+
+        # Check if user already exists
+        try:
+            existing_user = self.repo.get_user_by_email(new_user_data.get('email'))
+            if existing_user:
+                user_exists = True
+        except Exception as e:
+            pass
+
+        if user_exists:
+            raise Exception("User with this email already exists.")
+
         match case:
             case ROLE.ADM:
                 # nome, email, organization; role
                 try:
-
                     user = User(
                         user_id=f"{uuid.uuid4()}",
                         name=new_user_data.get('name'),
@@ -49,7 +60,7 @@ class CreateUserUsecase:
                             email=new_user_data.get('email'),
                             role=ROLE.USER,
                             organization=ORGANIZATION(new_user_data.get('organization')),
-                            course=COURSE(new_user_data.get('course')),
+                            course=COURSE(new_user_data.get('course')) if new_user_data.get('course') else None,
                             year=new_user_data.get('year'),
                             active=ACTIVE.ACTIVE,
                             state=STATE(new_user_data.get('state')) if new_user_data.get('state') else STATE.PENDING,

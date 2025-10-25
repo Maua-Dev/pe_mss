@@ -62,14 +62,14 @@ class Test_CreateUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] is not None
-        assert response.body['name'] == 'Maria'
-        assert response.body['email'] == '21.00100-2@maua.br'
-        assert response.body['organization'] == 'DEV'
-        assert response.body['role'] == 'USER'
-        assert response.body['active'] == 'ACTIVE'
-        assert response.body['state'] == 'PENDING'
-        assert response.body['ra'] == '21.00100-2'
+        assert response.body["user"]['user_id'] is not None
+        assert response.body["user"]['name'] == 'Maria'
+        assert response.body["user"]['email'] == '21.00100-2@maua.br'
+        assert response.body["user"]['organization'] == 'DEV'
+        assert response.body["user"]['role'] == 'USER'
+        assert response.body["user"]['active'] == 'ACTIVE'
+        assert response.body["user"]['state'] == 'PENDING'
+        assert response.body["user"]['ra'] == '21.00100-2'
 
     def test_create_user_controller_as_president(self):
         repo = UserRepositoryMock()
@@ -95,14 +95,14 @@ class Test_CreateUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] is not None
-        assert response.body['name'] == 'Maria'
-        assert response.body['email'] == '21.00100-2@maua.br'
-        assert response.body['organization'] == 'NAWAT'
-        assert response.body['role'] == 'USER'
-        assert response.body['active'] == 'ACTIVE'
-        assert response.body['state'] == 'PENDING'
-        assert response.body['ra'] == '21.00100-2'
+        assert response.body["user"]['user_id'] is not None
+        assert response.body["user"]['name'] == 'Maria'
+        assert response.body["user"]['email'] == '21.00100-2@maua.br'
+        assert response.body["user"]['organization'] == 'NAWAT'
+        assert response.body["user"]['role'] == 'USER'
+        assert response.body["user"]['active'] == 'ACTIVE'
+        assert response.body["user"]['state'] == 'PENDING'
+        assert response.body["user"]['ra'] == '21.00100-2'
 
     def test_create_user_controller_as_unauthorized_president(self):
         repo = UserRepositoryMock()
@@ -165,19 +165,19 @@ class Test_CreateUserController:
 
         assert response.status_code == 200
         assert len(response.body) == 2
-        assert response.body[0]['user_id'] is not None
-        assert response.body[0]['name'] == 'Maria'
-        assert response.body[0]['email'] == '21.00100-2@maua.br'
-        assert response.body[0]['organization'] == 'DEV'
-        assert response.body[0]['role'] == 'USER'
-        assert response.body[0]['active'] == 'ACTIVE'
-        assert response.body[0]['state'] == 'PENDING'
-        assert response.body[0]['ra'] == '21.00100-2'
-        assert response.body[1]['user_id'] is not None
-        assert response.body[1]['name'] == 'José'
-        assert response.body[1]['email'] == '21.00101-2@maua.br'
-        assert response.body[1]['organization'] == 'DEV'
-        assert response.body[1]['role'] == 'USER'
-        assert response.body[1]['active'] == 'ACTIVE'
-        assert response.body[1]['state'] == 'PENDING'
-        assert response.body[1]['ra'] == '21.00101-2'
+        assert response.body["users"][0]['user']['user_id'] is not None
+        assert response.body["users"][0]['user']['name'] == 'Maria'
+        assert response.body["users"][0]['user']['email'] == '21.00100-2@maua.br'
+        assert response.body["users"][0]['user']['organization'] == 'DEV'
+        assert response.body["users"][0]['user']['role'] == 'USER'
+        assert response.body["users"][0]['user']['active'] == 'ACTIVE'
+        assert response.body["users"][0]['user']['state'] == 'PENDING'
+        assert response.body["users"][0]['user']['ra'] == '21.00100-2'
+        assert response.body["users"][1]['user']['user_id'] is not None
+        assert response.body["users"][1]['user']['name'] == 'José'
+        assert response.body["users"][1]['user']['email'] == '21.00101-2@maua.br'
+        assert response.body["users"][1]['user']['organization'] == 'DEV'
+        assert response.body["users"][1]['user']['role'] == 'USER'
+        assert response.body["users"][1]['user']['active'] == 'ACTIVE'
+        assert response.body["users"][1]['user']['state'] == 'PENDING'
+        assert response.body["users"][1]['user']['ra'] == '21.00101-2'

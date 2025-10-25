@@ -12,31 +12,33 @@ from src.shared.helpers.errors.domain_errors import EntityError, InvalidUserIdFo
 
 
 class User(abc.ABC):
+    user_id: str    
     name: str
     email: str
     ra: str
-    state: STATE
-    course: COURSE
-    year: int
     role: ROLE
-    active: ACTIVE
-    organization: ORGANIZATION
+    state: STATE | None
+    course: COURSE | None
+    year: int | None
+    active: ACTIVE | None
+    organization: ORGANIZATION | None
+    
     MIN_NAME_LENGTH = 2
-    user_id: str
 
     def __init__(
         self, 
         user_id: str,
         name: str,
         email: str,
-        state: STATE, 
-        role: ROLE, 
-        active: ACTIVE,
-        ra: str = None,        # essa linha deve existir pois existem emails maua sem ra, como por exemplo emails de professores
-        course: COURSE=None,   #ou emails customizados, como o dev@maua.br. Muito provavelmente o email do Godoy nao é igual
-        year: int=None,        #ao dos alunos que vamos conseguir extrair o ra direto.
-        organization: ORGANIZATION=None, 
+        ra: str,
+        role: ROLE,
+        state: STATE = None,
+        active: ACTIVE = None,
+        course: COURSE=None,
+        year: int=None,
+        organization: ORGANIZATION=None,
     ):
+        
         if not User.validate_name(name):
             raise EntityError("name")
         self.name = name
@@ -45,23 +47,23 @@ class User(abc.ABC):
             raise EntityError("email")
         self.email = email
 
-        if not User.validate_ra(ra) and ra is not None:
+        if not User.validate_ra(ra):
             raise EntityError("ra")
         self.ra = ra
 
-        if type(state) != STATE:
+        if not User.validate_state(state):
             raise EntityError("state")
         self.state = state
-        
-        if type(role) != ROLE:
+
+        if not User.validate_role(role):
             raise EntityError("role")
         self.role = role
-        
-        if type(course) != COURSE and course is not None:
+
+        if not User.validate_course(course):
             raise EntityError("course")
         self.course = course
 
-        if type(active) != ACTIVE:
+        if not User.validate_active(active):
             raise EntityError("active")
         self.active = active
         
@@ -69,15 +71,25 @@ class User(abc.ABC):
             raise EntityError("year")
         self.year = year
 
-        if type(organization) != ORGANIZATION and organization is not None:
-            raise EntityError("entity")
+        if not User.validate_organization(organization) and organization is not None:
+            raise EntityError("organization")
         self.organization = organization
 
         if not User.validate_id(user_id):
             raise EntityError("user_id")
         self.user_id = user_id
 
-        
+    
+    @staticmethod
+    def validate_id(user_id: str) -> bool:
+        if type(user_id) != str:
+            return False
+        try:
+            if uuid.UUID(user_id):
+                return True
+            
+        except ValueError:
+            raise InvalidUserIdFormat("Invalid format for user id")
 
     @staticmethod
     def validate_name(name: str) -> bool:
@@ -101,7 +113,23 @@ class User(abc.ABC):
         regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
         return bool(re.fullmatch(regex, email))
-
+    
+    @staticmethod
+    def validate_role_admin_and_president(role: ROLE) -> bool:
+        if role == None:
+            return False
+        if type(role) != ROLE:
+            return False
+        return (role == ROLE.ADM or role == ROLE.PRESIDENT)
+    
+    @staticmethod
+    def validate_active(active: ACTIVE) -> bool:
+        if active == None:
+            return False
+        if type(active) != ACTIVE:
+            return False
+        return (active == ACTIVE.ACTIVE)
+    
     @staticmethod
     def validate_ra(ra: str) -> bool:
         if ra is None:
@@ -114,24 +142,58 @@ class User(abc.ABC):
         return bool(re.fullmatch(ragex, ra))
     
     @staticmethod
-    def validate_year(year: int) -> bool:
+    def validate_year(year: int | None) -> bool:
+        if year is None:
+            return True
         if type(year) != int:
             return False
         elif year < 0 or year > 5:
             return False
         
         return True
-
+    
     @staticmethod
-    def validate_id(user_id: str) -> bool:
-        if type(user_id) != str:
+    def validate_state(state: STATE | None) -> bool:
+        if state is None:
+            return True
+        if type(state) != STATE:
             return False
-        try:
-            if uuid.UUID(user_id):
-                return True
-            
-        except ValueError:
-            raise InvalidUserIdFormat("Invalid format for user id")
+        
+        return True
+    
+    @staticmethod
+    def validate_role(role: ROLE) -> bool:
+        if type(role) != ROLE:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_course(course: COURSE | None) -> bool:
+        if course is None:
+            return True
+        if type(course) != COURSE:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_active(active: ACTIVE | None) -> bool:
+        if active is None:
+            return True
+        if type(active) != ACTIVE:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_organization(organization: ORGANIZATION | None) -> bool:
+        if organization is None:
+            return True
+        if type(organization) != ORGANIZATION:
+            return False
+        
+        return True
         
     @classmethod
     def from_dict(cls, data: dict) -> "User":
@@ -143,7 +205,6 @@ class User(abc.ABC):
         return cls(**data)
 
     def to_dict(self) -> dict:
-        
         return {
             "user_id": self.user_id,
             "name": self.name,

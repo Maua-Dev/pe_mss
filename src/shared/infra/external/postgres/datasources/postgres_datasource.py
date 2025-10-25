@@ -4,6 +4,8 @@ import logging
 from contextlib import contextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Generator
+import botocore.exceptions
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +91,80 @@ class RdsDataDatasource:
             
             sql_params.append({"name": k, "value": value})
         return sql_params
+    
+    def _retry_operation(self, func, *args, max_retries=5, delay=3, **kwargs):
+        """
+        [Interno] Executa uma função do cliente Boto3 com lógica de retry robusta.
+
+        Este método envolve uma chamada de função (como 'execute_statement') e a
+        retenta automaticamente com um backoff exponencial leve em caso de erros
+        transitórios específicos da AWS RDS Data API.
+
+        Ele é projetado para lidar com:
+        1.  "Cold starts" do Aurora Serverless V1 (via 'BadRequestException'
+            contendo "initializing" ou "Communications link failure").
+        2.  Erros transitórios do lado do servidor (InternalServerErrorException,
+            ServiceUnavailableError).
+        3.  Contenção de API/Throttling (TooManyRequestsException).
+        4.  Falhas de conexão de rede (EndpointConnectionError).
+
+        Erros do cliente que não são transitórios (como erros de sintaxe SQL,
+        que também são 'BadRequestException', mas sem a mensagem específica)
+        são imediatamente levantados sem retry.
+
+        Args:
+            func (callable): A função/método do cliente Boto3 a ser executado
+                             (ex: self.client.execute_statement).
+            *args: Argumentos posicionais a serem passados para 'func'.
+            max_retries (int): O número máximo de tentativas.
+            delay (float): O tempo de espera inicial (em segundos) antes da
+                           primeira nova tentativa.
+            **kwargs: Argumentos nomeados a serem passados para 'func'.
+
+        Returns:
+            Any: O retorno original da função 'func' se ela for bem-sucedida.
+
+        Raises:
+            RdsDataError: Se a operação falhar após todas as 'max_retries'
+                          tentativas. A exceção original (o último erro
+                          transiente) é anexada.
+            botocore.exceptions.ClientError: Relança imediatamente exceções do
+                                             cliente que não são consideradas
+                                             transitórias.
+        """
+        last_exception = None 
+
+        for attempt in range(1, max_retries + 1):
+            try:
+                return func(*args, **kwargs)
+
+            except (self.client.exceptions.InternalServerErrorException,
+                    self.client.exceptions.ServiceUnavailableError) as e:
+                logger.warning(f"Erro transitório de servidor (tentativa {attempt}/{max_retries}): {e}")
+                last_exception = e
+
+            except self.client.exceptions.BadRequestException as e:
+                msg = e.response.get("Error", {}).get("Message", "")
+                if "Communications link failure" in msg or "initializing" in msg or "wait a few seconds" in msg:
+                    logger.warning(f"Aurora ainda inicializando (tentativa {attempt}/{max_retries})...")
+                    last_exception = e
+                else:
+                    raise e
+            
+            except botocore.exceptions.EndpointConnectionError as e:
+                logger.warning(f"Conexão indisponível (tentativa {attempt}/{max_retries}): {e}")
+                last_exception = e
+
+            if attempt < max_retries:
+                time.sleep(delay)
+                delay *= 1.5  # Backoff exponencial leve
+            else:
+                logger.error(f"Operação falhou após {max_retries} tentativas.")
+                raise RdsDataError(f"Aurora RDS não respondeu após múltiplas tentativas. Último erro: {last_exception}") from last_exception
+        
+        # Este ponto não deve ser atingido, mas por segurança:
+        raise RdsDataError(f"Falha de lógica no retry. Último erro: {last_exception}")
+
 
     @staticmethod
     def _records_to_dicts(column_metadata: List[Dict], records: List[List[Dict]]) -> List[Dict[str, Any]]:
@@ -110,9 +186,11 @@ class RdsDataDatasource:
         for record in records:
             row = {}
             for i, field in enumerate(record):
-                # Extrai o valor do primeiro (e único) campo dentro do 'field' dict
-                # Ex: de {'stringValue': 'valor'} para 'valor'
-                value = next(iter(field.values()), None)
+                if 'isNull' in field:
+                    value = None
+                else:
+                    value = next(iter(field.values()), None)
+                    
                 row[columns[i]] = value
             result.append(row)
         return result
@@ -121,7 +199,7 @@ class RdsDataDatasource:
         self,
         sql: str,
         params: Optional[Dict[str, Any]] = None,
-        transaction_id: Optional[str] = None,
+        transaction_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Executa uma consulta SQL de leitura (ex: SELECT) e retorna os resultados.
@@ -150,13 +228,23 @@ class RdsDataDatasource:
         
         try:
             logger.debug(f"Executando query: {sql} com params: {params}")
-            response = self.client.execute_statement(**kwargs)
+
+            response = self._retry_operation(
+                self.client.execute_statement,
+                **kwargs
+            )
+            
             return self._records_to_dicts(
                 response.get("columnMetadata", []), response.get("records", [])
             )
-        except self.client.exceptions.ClientError as e:
-            logger.error(f"Erro ao executar query: {e.response['Error']['Message']}")
-            raise RdsDataError(e) from e
+        
+        except (self.client.exceptions.ClientError, RdsDataError) as e:
+            error_msg = str(e)
+            if isinstance(e, self.client.exceptions.ClientError):
+                error_msg = e.response.get("Error", {}).get("Message", str(e))
+
+            logger.error(f"Erro ao executar query: {error_msg}")
+            raise RdsDataError(f"Falha na query: {error_msg}") from e
 
     def execute(
         self,

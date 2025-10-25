@@ -23,15 +23,15 @@ class Test_AuthUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == '550e8400-e29b-41d4-a716-446655440000'
-        assert response.body['name'] == 'Guilherme'
-        assert response.body['email'] == '25.00178-5@maua.br'
-        assert response.body['ra'] == '25.00178-5'
-        assert response.body['state'] == 'PENDING'
-        assert response.body['role'] == 'USER'
-        assert response.body['active'] == 'ACTIVE'
-        assert response.body['message'] == 'the user was retrieved successfully'
-        
+        assert response.body["user"]['user_id'] == '550e8400-e29b-41d4-a716-446655440000'
+        assert response.body["user"]['name'] == 'Guilherme'
+        assert response.body["user"]['email'] == '25.00178-5@maua.br'
+        assert response.body["user"]['ra'] == '25.00178-5'
+        assert response.body["user"]['state'] == 'PENDING'
+        assert response.body["user"]['role'] == 'USER'
+        assert response.body["user"]['active'] == 'ACTIVE'
+        assert response.body["message"] == 'the user was retrieved successfully'
+
 
     def test_auth_user_controller_user_not_in_repo_mock(self):
         repo = UserRepositoryMock()
@@ -49,14 +49,14 @@ class Test_AuthUserController:
         response= controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == '550e8400-e29b-41d4-a716-446655440010'
-        assert response.body['name'] == 'José'
-        assert response.body['email'] == '20.00158-5@maua.br'
-        assert response.body['ra'] == '20.00158-5'
-        assert response.body['state'] == 'PENDING'
-        assert response.body['role'] == 'USER'
-        assert response.body['active'] == 'ACTIVE'
-        assert response.body['message'] == 'the user was created successfully'
+        assert response.body["user"]['user_id'] == '550e8400-e29b-41d4-a716-446655440010'
+        assert response.body["user"]['name'] == 'José'
+        assert response.body["user"]['email'] == '20.00158-5@maua.br'
+        assert response.body["user"]['ra'] == '20.00158-5'
+        assert response.body["user"]['state'] == None
+        assert response.body["user"]['role'] == 'USER'
+        assert response.body["user"]['active'] == None
+        assert response.body["message"] == 'the user was created successfully'
 
     def test_auth_user_controller_user_is_in_repo_mock_however_the_request_only_have_id_like_in_repo(self):
         repo = UserRepositoryMock()
@@ -74,14 +74,14 @@ class Test_AuthUserController:
         response= controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == '550e8400-e29b-41d4-a716-446655440000'
-        assert response.body['name'] == 'Guilherme'
-        assert response.body['email'] == '25.00178-5@maua.br'
-        assert response.body['ra'] == '25.00178-5'
-        assert response.body['state'] == 'PENDING'
-        assert response.body['role'] == 'USER'
-        assert response.body['active'] == 'ACTIVE'
-        assert response.body['message'] == 'the user was retrieved successfully'
+        assert response.body["user"]['user_id'] == '550e8400-e29b-41d4-a716-446655440000'
+        assert response.body["user"]['name'] == 'Guilherme'
+        assert response.body["user"]['email'] == '25.00178-5@maua.br'
+        assert response.body["user"]['ra'] == '25.00178-5'
+        assert response.body["user"]['state'] == 'PENDING'
+        assert response.body["user"]['role'] == 'USER'
+        assert response.body["user"]['active'] == 'ACTIVE'
+        assert response.body["message"] == 'the user was retrieved successfully'
 
     def test_auth_user_controller_id_is_missing(self):
         repo = UserRepositoryMock()
