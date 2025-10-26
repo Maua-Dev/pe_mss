@@ -26,7 +26,7 @@ class LambdaConstruct(Construct):
             runtime=lambda_.Runtime.PYTHON_3_11,
             layers=[self.lambda_layer],
             environment=environment_variables,
-            timeout=Duration.seconds(15)
+            timeout=Duration.seconds(67)
         )
 
         mss_student_api_resource.add_resource(
