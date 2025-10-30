@@ -138,7 +138,8 @@ class LambdaConstruct(Construct):
             self.delete_user_function,
             self.upload_users_function,
             self.get_all_users_function,
-            self.get_user_function
+            self.get_user_function,
+            self.update_user_function
         ]
         
         self.functions_that_need_s3_permissions = [
