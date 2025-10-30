@@ -153,12 +153,12 @@ class UserRepositoryMock(IUserRepository):
     def update_user(
         self, 
         user_id: str, 
-        new_state: STATE =None, 
-        new_role: ROLE =None, 
-        new_active: ACTIVE=None, 
-        new_course: COURSE=None, 
-        new_year: int=None,  
-        new_organization: ORGANIZATION=None
+        new_state: Optional[STATE] =None, 
+        new_role: Optional[ROLE] =None, 
+        new_active: Optional[ACTIVE]=None, 
+        new_course: Optional[COURSE]=None, 
+        new_year: Optional[int]=None,  
+        new_organization: Optional[ORGANIZATION]=None
     ) -> Optional[User]:
         for user in self.users:
             if user.user_id == user_id:
