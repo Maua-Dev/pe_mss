@@ -1,20 +1,11 @@
-from src.shared.domain.entities.warning import Warning
+from src.shared.domain.entities.warning import Warning, WarningBody
+from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.repositories.warning_repository_interface import IWarningRepository
 import datetime
 from dataclasses import dataclass
 from src.shared.domain.enums.role_enum import ROLE
 from typing import *
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
-
-@dataclass
-class UserWarningLink:
-    user_id: str
-    warning_id: str
-    
-@dataclass
-class RoleWarningLink:
-    role: ROLE
-    warning_id: str
 
 class WarningRepositoryMock(IWarningRepository):
     
@@ -25,50 +16,37 @@ class WarningRepositoryMock(IWarningRepository):
         
         self.warnings = [
             Warning(
-                title="Titulo do alerta 1",
-                description="Descrição do alerta 1",
-                expire=datetime.datetime.now(datetime.UTC),
-                viewed=False,
-                warning_id="e6112d17-c030-4d65-8b9f-e472d20055a5"
+                warning_id="e6112d17-c030-4d65-8b9f-e472d20055a5",
+                target_role=ROLE.PRESIDENT,
+                target_org=ORGANIZATION.DEV,
+                body=WarningBody(
+                    title="Titulo do alerta 1",
+                    description="Descrição do alerta 1",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc)
             ),
             Warning(
-                title="Titulo do alerta 2",
-                description="Descrição do alerta 2",
-                expire=datetime.datetime.now(datetime.UTC),
-                viewed=True,
-                warning_id="0f9806f9-1baf-4df4-95ac-61011e190189"
-            )
-        ]
-        
-        #tabela de avisos-role, usada para uma relação direta entre roles e warning_ids
-        #facilita a busca em grupos
-        #a tabela esta aqui pois retorna warnings
-        #isso apeans simula uma tabela, a dataclass é irrelevante
-        
-        self.user_warning = [
-            UserWarningLink(
-                user_id="550e8400-e29b-41d4-a716-446655440002", 
-                warning_id="e6112d17-c030-4d65-8b9f-e472d20055a5"
+                warning_id="0f9806f9-1baf-4df4-95ac-61011e190189",
+                target_role=ROLE.PRESIDENT,
+                target_org=ORGANIZATION.NAWAT,
+                body=WarningBody(
+                    title="Titulo do alerta 2",
+                    description="Descrição do alerta 2",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc)
             ),
-            UserWarningLink(
-                user_id="e6bed58f-424a-4b62-b408-18e0a8d1f069",
-                warning_id="0f9806f9-1baf-4df4-95ac-61011e190189"
-            )
-        ]
-        
-        #tabela de avisos-usuários, usada para uma relação direta entre user_id e warning_id
-        #facilita imensamente a busca individual
-        #essa tabela esta no banco de avisos pois os getters retornam avisos e nao usuarios
-        #isso apeans simula uma tabela, a dataclass é irrelevante
-        
-        self.role_warning = [
-            RoleWarningLink(
-                role=ROLE.PRESIDENT,
-                warning_id="e6112d17-c030-4d65-8b9f-e472d20055a5"
-            ),
-            RoleWarningLink(
-                role=ROLE.PRESIDENT,
-                warning_id="0f9806f9-1baf-4df4-95ac-61011e190189"
+            Warning(
+                warning_id="1f9806f9-1baf-4df4-95ac-61011e190189",
+                target_role=ROLE.PRESIDENT,
+                target_org=ORGANIZATION.ESPORTS,
+                body=WarningBody(
+                    title="Titulo do alerta 3",
+                    description="Descrição do alerta 3",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc)
             )
         ]
         
@@ -77,18 +55,6 @@ class WarningRepositoryMock(IWarningRepository):
         self.warnings.append(new_warning)
         
         return new_warning
-    
-    def link_to_users(self, warning_id: str, user_ids: list[str]) -> None:
-        
-        for user_id in user_ids:
-            
-            self.user_warning.append(UserWarningLink(warning_id=warning_id, user_id=user_id))
-            
-    def link_to_roles(self, warning_id: str, roles: list[ROLE]):
-        
-        for role in roles:
-            
-            self.role_warning.append(RoleWarningLink(warning_id=warning_id, role=role))
     
     def update_warning(self, warning: Warning) -> Optional[Warning]:
         
@@ -126,24 +92,6 @@ class WarningRepositoryMock(IWarningRepository):
                 warning_found = True
                 
                 break
-        
-        #o alerta precisa ser deletado das outras tabelas    
-        
-        for i, existing_user_alert_link in enumerate(self.user_warning):
-            
-            if existing_user_alert_link.warning_id == warning_id:
-                
-                self.user_warning.pop(i)
-
-                break
-            
-        for i, existing_role_alert_link in enumerate(self.role_warning):
-            
-            if existing_role_alert_link.warning_id == warning_id:
-                
-                self.role_warning.pop(i)
-                                
-                break
             
         if not warning_found:
             
@@ -165,42 +113,28 @@ class WarningRepositoryMock(IWarningRepository):
         
         return self.warnings
     
-    def get_user_warnings(self, user_id: str) -> Optional[Warning]:
+    def get_warnings_by_org(self, target_org: ORGANIZATION) -> List[Warning]:        
+        org_warnings = [warning for warning in self.warnings if ORGANIZATION(warning.target_org) == target_org]
         
-        target_warning_ids = [
-            link.warning_id 
-            for link in self.user_warning 
-            if link.user_id == user_id
-        ]
-        
-        warnings_found = []
-        
-        for warning_id in target_warning_ids:
-            
-            warning = self.get_warning(warning_id)
-            
-            if warning:
-                
-                warnings_found.append(warning)
-                
-        return warnings_found
+        if not org_warnings:
+            raise NoItemsFound(f"No warnings found for organization: {target_org}")
+
+        return org_warnings
     
-    def get_president_warnings(self) -> Optional[Warning]:
+    def get_warnings_by_role(self, target_role: ROLE) -> List[Warning]:
         
-        target_warning_ids = [
-            link.warning_id
-            for link in self.role_warning
-            if link.role == ROLE.PRESIDENT
-        ]
+        role_warnings = [warning for warning in self.warnings if ROLE(warning.target_role) == target_role]
         
-        warnings_found = []
+        if not role_warnings:
+            raise NoItemsFound(f"No warnings found for role: {target_role}")
         
-        for warning_id in target_warning_ids:
-            
-            warning = self.get_warning(warning_id)
-                
-            if warning:
-                
-                warnings_found.append(warning)
-                
-        return warnings_found
+        return role_warnings
+    
+    def get_warnings_by_org_and_role(self, target_org: ORGANIZATION, target_role: ROLE) -> List[Warning]:
+        
+        org_role_warnings = [warning for warning in self.warnings if ORGANIZATION(warning.target_org) == target_org and ROLE(warning.target_role) == target_role]
+        
+        if not org_role_warnings:
+            raise NoItemsFound(f"No warnings found for organization: {target_org} and role: {target_role}")
+        
+        return org_role_warnings

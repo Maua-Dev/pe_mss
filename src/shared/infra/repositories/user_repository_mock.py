@@ -127,6 +127,12 @@ class UserRepositoryMock(IUserRepository):
             if user.user_id == user_id:
                 return user
         raise NoItemsFound(user_id)
+
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        for user in self.users:
+            if user.email == email:
+                return user
+        raise NoItemsFound(email)
     
     def get_all_user(self) -> Optional[List[User]]:
         if not self.users:
@@ -147,12 +153,12 @@ class UserRepositoryMock(IUserRepository):
     def update_user(
         self, 
         user_id: str, 
-        new_state: STATE =None, 
-        new_role: ROLE =None, 
-        new_active: ACTIVE=None, 
-        new_course: COURSE=None, 
-        new_year: int=None,  
-        new_organization: ORGANIZATION=None
+        new_state: Optional[STATE] =None, 
+        new_role: Optional[ROLE] =None, 
+        new_active: Optional[ACTIVE]=None, 
+        new_course: Optional[COURSE]=None, 
+        new_year: Optional[int]=None,  
+        new_organization: Optional[ORGANIZATION]=None
     ) -> Optional[User]:
         for user in self.users:
             if user.user_id == user_id:
@@ -239,3 +245,35 @@ class UserRepositoryMock(IUserRepository):
             raise NoItemsFound(requester_id)
         except ForbiddenAction as e:
             raise ForbiddenAction(e.message)
+
+    def get_users(self,
+                  name: Optional[str] = None,
+                  ra: Optional[str] = None,
+                  state: Optional[STATE] = None,
+                  role: Optional[ROLE] = None,
+                  active: Optional[ACTIVE] = None,
+                  course: Optional[COURSE] = None,
+                  year: Optional[int] = None,
+                  organization: Optional[ORGANIZATION] = None
+                  ):
+        filters = locals().copy()
+        filters.pop("self")
+        
+        filters = {k: v for k, v in filters.items() if v is not None}
+        
+        users = []
+
+        for user in self.users:
+            user_dict = user.__dict__
+            if all(user_dict.get(key) == value for key, value in filters.items()):
+                users.append(user)
+
+        return users
+    
+    def reallocate_id(self, user_id, email):
+        
+        for user in self.users:
+            if user.email == email:
+                user.user_id = user_id
+                return user
+        raise NoItemsFound(email)

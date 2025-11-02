@@ -32,15 +32,17 @@ class AuthUserViewmodel:
     
     def to_dict(self):
         model={
-            'user_id': self.user_id,
-            'name': self.name,
-            'email': self.email,
-            'ra': self.ra,
-            'state': self.state.value if self.state is not None else None,
-            'role': self.role.value if self.state is not None else None,
-            'organization': self.organization.value if self.organization is not None else None,
-            'active': self.active.value if self.active is not None else None,
-            'course': self.course.value if self.course is not None else None
+            "user": {
+                'user_id': self.user_id,
+                'name': self.name,
+                'email': self.email,
+                'ra': self.ra,
+                'state': self.state.value if self.state is not None else None,
+                'role': self.role.value if self.role is not None else None,
+                'organization': self.organization.value if self.organization is not None else None,
+                'active': self.active.value if self.active is not None else None,
+                'course': self.course.value if self.course is not None else None
+            }
         }
 
         if self.case_number == 0:

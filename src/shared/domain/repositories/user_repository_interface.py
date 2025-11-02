@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
+from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.course_enum import COURSE
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.domain.entities.user import User
-
+from src.shared.domain.enums.active_enum import ACTIVE
 
 class IUserRepository(ABC):
 
@@ -16,11 +17,36 @@ class IUserRepository(ABC):
         If user not found raise NoItemsFound
         """
         pass
+
+    @abstractmethod
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        """
+        If user not found raise NoItemsFound
+        """
+        pass
         
     @abstractmethod
     def get_all_user(self) -> Optional[List[Optional[User]]]:
         """
-        If no users found raise NoItemsFound"""
+        If no users found raise NoItemsFound
+        """
+        pass
+
+    @abstractmethod
+    def get_users(self,
+                  name: Optional[str] = None,
+                  ra: Optional[str] = None,
+                  state: Optional[STATE] = None,
+                  role: Optional[ROLE] = None,
+                  active: Optional[ACTIVE] = None,
+                  course: Optional[COURSE] = None,
+                  year: Optional[int] = None,
+                  organization: Optional[ORGANIZATION] = None
+                  ):
+        """
+        Returns a list of users that match the given filters
+        If no filters are provided, returns all users
+        """
         pass
 
     @abstractmethod
@@ -38,7 +64,7 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def update_user(self, user_id: str, new_state: STATE=None, new_role: ROLE=None, new_course: COURSE=None, new_year: int=None,  new_organization: ORGANIZATION=None) -> Optional[User]:
+    def update_user(self, user_id: str, new_state: Optional[STATE]=None, new_role: Optional[ROLE]=None, new_course: Optional[COURSE]=None, new_year: Optional[int]=None,  new_organization: Optional[ORGANIZATION]=None, new_active: Optional[ACTIVE] = None) -> Optional[User]:
         """
         If user not found raise NoItemsFound
         """
@@ -71,4 +97,11 @@ class IUserRepository(ABC):
         If ( requester Role ends up being greater than target's AND requester is from same organization ) OR requester is simply admin: returns True
         Else will raise ForbiddenError or NoItemsFound
         '''
+        pass
+    
+    @abstractmethod
+    def reallocate_id(self, user_id: str, email: str) -> Optional[User]:
+        """
+        Changes the user_id of a user to the matching token id
+        """
         pass
