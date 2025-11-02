@@ -222,7 +222,7 @@ class UserRepositoryPostgres(IUserRepository):
             return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
             # return User.from_dict(user_data_from_db)
 
-        return None
+        raise NoItemsFound("No user was found with that email")
         
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
         if requester_id == target_user.user_id:
