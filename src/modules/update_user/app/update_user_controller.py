@@ -28,22 +28,23 @@ class UpdateUserController:
             new_organization = request.data.get("new_organization")
             new_active = request.data.get("new_active")
 
-            # 🧩 Conversão de string para Enum antes da checagem de tipo
-            if isinstance(new_active, str):
-                new_active = ACTIVE[new_active]
-
-            if new_state is not None and type(new_state) != STATE:
+            if new_state is not None and not isinstance(new_state, str):
                 raise WrongTypeParameter("new_state", "STATE", type(new_state).__name__)
-            if new_role is not None and type(new_role) != ROLE:
+            
+            if new_role is not None and not isinstance(new_role, str):
                 raise WrongTypeParameter("new_role", "ROLE", type(new_role).__name__)
-            if new_course is not None and type(new_course) != COURSE:
+            
+            if new_course is not None and not isinstance(new_course, str):  
                 raise WrongTypeParameter("new_course", "COURSE", type(new_course).__name__)
-            if new_year is not None and type(new_year) != int:
+            
+            if new_year is not None and not isinstance(new_year, int):
                 raise WrongTypeParameter("new_year", "int", type(new_year).__name__)
-            if new_organization is not None and type(new_organization) != ORGANIZATION:
+            
+            if new_organization is not None and not isinstance(new_organization, str):
                 raise WrongTypeParameter("new_organization", "ORGANIZATION", type(new_organization).__name__)
-            if new_active is not None and type(new_active) != ACTIVE:
-                raise WrongTypeParameter("new_active", "ACTIVE", type(new_active).__name__)
+            
+            if new_active is not None and not isinstance(new_active, str):
+                raise WrongTypeParameter("new_active", "bool", type(new_active).__name__)
 
             user = self.usecase(
                 user_id=request.data.get("user_id"),

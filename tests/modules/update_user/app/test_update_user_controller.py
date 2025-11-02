@@ -18,12 +18,13 @@ class Test_UpdateUserController:
 
         request = HttpRequest(body={
             'user_id': repo.users[0].user_id,
-            'new_state': STATE.APPROVED,
-            'new_role': ROLE.USER,
-            'new_course': COURSE.ARQ,   # opcional
-            'new_year': 3,          # opcional
-            'new_active': ACTIVE.ACTIVE  # opcional
+            'new_state': STATE.APPROVED.value,
+            'new_role': ROLE.USER.value,
+            'new_course': COURSE.ARQ.value,   # opcional
+            'new_year': 3,                    # opcional
+            'new_active': ACTIVE.ACTIVE.value  # opcional
         })
+
 
         response = controller(request=request)
 
@@ -38,10 +39,10 @@ class Test_UpdateUserController:
 
         request = HttpRequest(body={
             'user_id': repo.users[1].user_id,
-            'new_state': STATE.APPROVED,
-            'new_role': ROLE.USER,
-            'new_organization': ORGANIZATION.DEV,  # opcional
-            'new_course': COURSE.CIC,
+            'new_state': STATE.APPROVED.value,
+            'new_role': ROLE.USER.value,
+            'new_organization': ORGANIZATION.DEV.value,  # opcional
+            'new_course': COURSE.CIC.value,
             'new_year': repo.users[1].year
             
         })
@@ -72,8 +73,8 @@ class Test_UpdateUserController:
 
         request = HttpRequest(body={
             'user_id': repo.users[2].user_id,
-            'new_state': STATE.APPROVED,
-            'new_role': ROLE.PRESIDENT,
+            'new_state': STATE.APPROVED.value,
+            'new_role': ROLE.PRESIDENT.value,
             'new_year': "terceiro"  # errado, deveria ser int
         })
 
