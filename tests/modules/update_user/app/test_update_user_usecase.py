@@ -44,11 +44,11 @@ class Test_UpdateUserUsecase:
         with pytest.raises(EntityError):
             usecase(
                 user_id="550e8400-e29b-41d4-a716-446655440002",
-                new_state="APPROVED",  # string inválida, deve ser STATE
-                new_role=ROLE.USER,
-                new_course=COURSE.CIC,
+                new_state=5,  
+                new_role=ROLE.USER.value,
+                new_course=COURSE.CIC.value,
                 new_year=4,
-                new_organization=ORGANIZATION.DEV
+                new_organization=ORGANIZATION.DEV.value
             )
 
     def test_update_user_usecase_wrong_new_role(self):
@@ -58,7 +58,7 @@ class Test_UpdateUserUsecase:
             usecase(
                 user_id="550e8400-e29b-41d4-a716-446655440002",
                 new_state=STATE.APPROVED,
-                new_role="USER",  # string inválida, deve ser ROLE
+                new_role="adm", # string inválida, deve ser ROLE  
                 new_course=COURSE.CIC,
                 new_year=4,
                 new_organization=ORGANIZATION.DEV
@@ -72,7 +72,7 @@ class Test_UpdateUserUsecase:
                 user_id="550e8400-e29b-41d4-a716-446655440002",
                 new_state=STATE.APPROVED,
                 new_role=ROLE.USER,
-                new_course="CIC",  # string inválida, deve ser COURSE
+                new_course="ola",  # string inválida, deve ser COURSE
                 new_year=4,
                 new_organization=ORGANIZATION.DEV
             )
@@ -86,7 +86,7 @@ class Test_UpdateUserUsecase:
                 new_state=STATE.APPROVED,
                 new_role=ROLE.USER,
                 new_course=COURSE.CIC,
-                new_year="4",  # string inválida, deve ser int
+                new_year="Ola" ,  # string inválida, deve ser int
                 new_organization=ORGANIZATION.DEV
             )
 
@@ -100,7 +100,7 @@ class Test_UpdateUserUsecase:
                 new_role=ROLE.USER,
                 new_course=COURSE.CIC,
                 new_year=4,
-                new_organization="DEV"  # string inválida, deve ser ORGANIZATION
+                new_organization="5"  # string inválida, deve ser ORGANIZATION
             )
 
     def test_update_user_usecase_user_not_found(self):
