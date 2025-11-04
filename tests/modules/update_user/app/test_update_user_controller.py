@@ -17,6 +17,11 @@ class Test_UpdateUserController:
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
+            "user_from_authorizer": {
+                'id': repo.users[1].user_id,
+                'displayName': "Leonardo Silva",
+                "mail": "23.00847-4@maua.br"
+            },
             'user_id': repo.users[0].user_id,
             'new_state': STATE.APPROVED.value,
             'new_role': ROLE.USER.value,
@@ -38,6 +43,11 @@ class Test_UpdateUserController:
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
+            "user_from_authorizer": {
+                'id': repo.users[1].user_id,
+                'displayName': "Leonardo Silva",
+                "mail": "23.00847-4@maua.br"
+            },
             'user_id': repo.users[1].user_id,
             'new_state': STATE.APPROVED.value,
             'new_role': ROLE.USER.value,
@@ -72,6 +82,11 @@ class Test_UpdateUserController:
         controller = UpdateUserController(usecase=usecase)
 
         request = HttpRequest(body={
+            "user_from_authorizer": {
+                'id': repo.users[1].user_id,
+                'displayName': "Leonardo Silva",
+                "mail": "23.00847-4@maua.br"
+            },
             'user_id': repo.users[2].user_id,
             'new_state': STATE.APPROVED.value,
             'new_role': ROLE.PRESIDENT.value,

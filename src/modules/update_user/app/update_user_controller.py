@@ -4,8 +4,8 @@ from .update_user_usecase import UpdateUserUsecase
 from .update_user_viewmodel import UpdateUserViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
-from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
+from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
+from src.shared.helpers.external_interfaces.http_codes import OK, Forbidden, NotFound, BadRequest, InternalServerError
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.course_enum import COURSE
@@ -18,8 +18,16 @@ class UpdateUserController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
+            
+            requester_user = request.data.get("user_from_authorizer")
+            
+            if requester_user is None:
+                raise MissingParameters('user_from_authorizer')
+            
             if request.data.get('user_id') is None or request.data.get('user_id') == "":
                 raise MissingParameters('user_id')
+            
+            target_id = request.data.get('user_id')
 
             new_state = request.data.get("new_state")
             new_role = request.data.get("new_role")
@@ -45,9 +53,16 @@ class UpdateUserController:
             
             if new_active is not None and not isinstance(new_active, str):
                 raise WrongTypeParameter("new_active", "bool", type(new_active).__name__)
+            
+            requester_user_id = requester_user.get("id")
+
+            has_permission = self.usecase.repo.has_permission_target_id(
+                requester_user_id,
+                target_id
+            )
 
             user = self.usecase(
-                user_id=request.data.get("user_id"),
+                user_id=target_id,
                 new_state=new_state,
                 new_role=new_role,
                 new_course=new_course,
@@ -63,5 +78,7 @@ class UpdateUserController:
             return NotFound(body=err.message)
         except (MissingParameters, WrongTypeParameter, EntityError) as err:
             return BadRequest(body=err.message)
+        except ForbiddenAction as err:
+            return Forbidden(body=err.message)
         except Exception as err:
             return InternalServerError(body=str(err))
