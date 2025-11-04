@@ -15,6 +15,8 @@ class UpdateUserUsecase:
 
     def __call__(self, 
                  
+                requester_id: str,
+                 
                 user_id: str, 
                 new_state: Optional[str] = None, 
                 new_role: Optional[str] = None, 
@@ -25,6 +27,11 @@ class UpdateUserUsecase:
 
         if type(user_id) != str or not User.validate_id(user_id):
             raise EntityError("user_id")
+        
+        self.repo.has_permission_target_id(
+            requester_id=requester_id,
+            target_id=user_id
+        )
 
         if new_state is not None:
 

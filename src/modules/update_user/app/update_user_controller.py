@@ -62,6 +62,9 @@ class UpdateUserController:
             )
 
             user = self.usecase(
+                
+                requester_id=requester_user_id,
+                
                 user_id=target_id,
                 new_state=new_state,
                 new_role=new_role,
