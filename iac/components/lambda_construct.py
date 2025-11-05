@@ -125,13 +125,22 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
+        self.export_users_function= self.create_lambda_api_gateway_integration(
+            module_name="export_user",
+            method="GET",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            authorizer=token_authorizer_lambda
+        )
+
         self.functions_that_need_db_access = [
             self.auth_user_function,
             self.create_user_function,
             self.delete_user_function,
             self.upload_users_function,
             self.get_all_users_function,
-            self.get_user_function
+            self.get_user_function,
+            self.export_users_function
         ]
         
         self.functions_that_need_s3_permissions = [

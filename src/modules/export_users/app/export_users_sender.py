@@ -6,7 +6,7 @@ from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHt
 
 user_repo= Environments.get_user_repo()
 
-def lambda_handler(event, context):    
+def lambda_handler(event, context):   
 
     extractor= DownloadUsersExtractor(repo= user_repo)
     transformer= DownloadUsersTransformer(extractor= extractor)
