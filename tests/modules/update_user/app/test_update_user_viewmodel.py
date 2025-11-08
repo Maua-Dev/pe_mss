@@ -15,17 +15,18 @@ class Test_UpadateUserViewmodel:
 
         expected = {
             
-            'name': "Test",
-            'email': "23.00768-0@maua.br",
-            'ra': "23.00768-0",
-            'state': STATE.APPROVED.value,
-            'course': COURSE.CIC.value,
-            'year': 4,
-            'role': ROLE.USER.value,
-            'organization': ORGANIZATION.DEV.value,
-            'active': ACTIVE.ACTIVE.value,
-            'user_id': "550e8400-e29b-41d4-a716-446655440001",
-
+            "user": {
+                'name': "Test",
+                'email': "23.00768-0@maua.br",
+                'ra': "23.00768-0",
+                'state': STATE.APPROVED.value,
+                'course': COURSE.CIC.value,
+                'year': 4,
+                'role': ROLE.USER.value,
+                'organization': ORGANIZATION.DEV.value,
+                'active': ACTIVE.ACTIVE.value,
+                'user_id': "550e8400-e29b-41d4-a716-446655440001",
+            },
             'message': "the user was updated successfully"
         }
 

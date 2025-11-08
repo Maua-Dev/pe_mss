@@ -34,8 +34,8 @@ class Test_UpdateUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['course'] == 'ARQ'
-        assert response.body['year'] == 3
+        assert response.body['user']['course'] == 'ARQ'
+        assert response.body['user']['year'] == 3
 
     def test_update_user_with_organization(self):
         repo = UserRepositoryMock()
@@ -60,8 +60,8 @@ class Test_UpdateUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['organization'] == 'DEV'
-        assert response.body['year'] == repo.users[1].year
+        assert response.body['user']['organization'] == 'DEV'
+        assert response.body['user']['year'] == repo.users[1].year
 
 
     def test_update_user_invalid_course_enum(self):

@@ -33,16 +33,18 @@ class UpdateUserViewmodel:
 
     def to_dict(self):
         return {
-            'name': self.name,
-            'email': self.email,
-            'ra': self.ra,
-            'state': self.state.value if self.state else None,
-            'course': self.course.value if self.course else None,
-            'year': self.year,
-            'role': self.role.value if self.role else None,
-            'organization': self.organization.value if self.organization else None,
-            'active': self.active.value if self.active else None,
-            'user_id': self.user_id,
+            "user": {
+                'user_id': self.user_id,
+                'name': self.name,
+                'email': self.email,
+                'ra': self.ra,
+                'role': self.role.value if self.role else None,
+                'state': self.state.value if self.state else None,
+                'course': self.course.value if self.course else None,
+                'year': self.year,
+                'organization': self.organization.value if self.organization else None,
+                'active': self.active.value if self.active else None,
+            },
             'message': "the user was updated successfully"
         }
     
