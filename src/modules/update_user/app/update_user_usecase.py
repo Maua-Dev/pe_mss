@@ -14,37 +14,88 @@ class UpdateUserUsecase:
         self.repo = repo
 
     def __call__(self, 
-                user_id: str, 
-                new_state: Optional[STATE] = None, 
-                new_role: Optional[ROLE] = None, 
-                new_course: Optional[COURSE] = None,
+                 
+                requester_id: str,
+                target_id: str,
+                 
+                new_state: Optional[str] = None, 
+                new_role: Optional[str] = None, 
+                new_course: Optional[str] = None,
                 new_year: Optional[int] = None, 
-                new_organization: Optional[ORGANIZATION] = None, 
-                new_active: Optional[ACTIVE] = None) -> User:
+                new_organization: Optional[str] = None, 
+                new_active: Optional[str] = None) -> User:
 
-        if type(user_id) != str or not User.validate_id(user_id):
+        if User.validate_id(target_id) is False:
             raise EntityError("user_id")
 
-        if new_state is not None and type(new_state) != STATE:
-            raise EntityError("state")
-
-        if new_role is not None and type(new_role) != ROLE:
-            raise EntityError("role")
-
-        if new_course is not None and type(new_course) != COURSE:
-            raise EntityError("course")
-
-        if new_year is not None and type(new_year) != int:
-            raise EntityError("year")
-
-        if new_organization is not None and type(new_organization) != ORGANIZATION:
-            raise EntityError("organization")
+        if User.validate_id(requester_id) is False:
+            raise EntityError("requester_id")
         
-        if new_active is not None and type(new_active) != ACTIVE:
-            raise EntityError("active")
+        # raise for not found user
+        self.repo.get_user(user_id=target_id)
+
+        self.repo.has_permission_target_id(
+            requester_id=requester_id,
+            target_id=target_id
+        )
+
+        if new_state is not None:
+
+            try:  
+
+                new_state = STATE(new_state)
+
+            except ValueError:
+
+                raise EntityError("state")
+
+        if new_role is not None:
+
+            try:  
+
+                new_role = ROLE(new_role)
+
+            except ValueError:
+
+                raise EntityError("role")
+            
+        if new_course is not None:
+
+            try:  
+
+                new_course = COURSE(new_course)
+
+            except ValueError:
+
+                raise EntityError("course")
+            
+        if new_year is not None:
+
+            if type(new_year) != int:
+                raise EntityError("year")
+        
+        if new_organization is not None:
+
+            try:  
+
+                new_organization = ORGANIZATION(new_organization)
+
+            except ValueError:
+
+                raise EntityError("organization")
+            
+        if new_active is not None:
+
+            try:  
+
+                new_active = ACTIVE(new_active)
+
+            except ValueError:
+
+                raise EntityError("active")
 
         updated_user = self.repo.update_user(
-            user_id=user_id,
+            user_id=target_id,
             new_state=new_state,
             new_role=new_role,
             new_course=new_course,
