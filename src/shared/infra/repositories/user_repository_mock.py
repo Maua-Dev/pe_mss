@@ -177,7 +177,6 @@ class UserRepositoryMock(IUserRepository):
                 return user
         raise NoItemsFound(user_id)
     
-    @DeprecationWarning
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
         
         #DEPRECATED: usar has_permission_target_id

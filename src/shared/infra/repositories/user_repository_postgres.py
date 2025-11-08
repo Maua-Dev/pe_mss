@@ -224,7 +224,6 @@ class UserRepositoryPostgres(IUserRepository):
 
         raise NoItemsFound("No user was found with that email")
         
-    @DeprecationWarning
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
         
         #DEPRECATED: usar has_permission_target_id
