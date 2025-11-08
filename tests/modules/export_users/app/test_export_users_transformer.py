@@ -73,6 +73,7 @@ class TestDownloadUsers:
 
         assert response.status_code == 403
             
+    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_export_users_transformer_real_repo(self):
                     
         datasource= TestsRdsDatasource()
