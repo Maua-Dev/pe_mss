@@ -21,7 +21,7 @@ class TestUpdateUserPresenter:
             },
             "body": json.dumps({
                 "user_id": "1",
-                "name": "Novo Nome do Usuário"  # Conforme seu presenter espera
+                "name": "Novo Nome do Usuário"
             }),
             "isBase64Encoded": False
         }
@@ -29,8 +29,7 @@ class TestUpdateUserPresenter:
         response = lambda_handler(event, None)
         body = response["body"]
 
-        # O presenter retorna 400 se houver algum problema, 200 só se for mock configurado
-        assert response["statusCode"] == 200 or response["statusCode"] == 400
+        assert response["statusCode"] == 400
 
     def test_update_user_missing_user_id(self):
         event = {
@@ -86,7 +85,7 @@ class TestUpdateUserPresenter:
         body = response["body"]
 
         assert response["statusCode"] == 400
-        assert body.strip('"') == "Invalid format for user id"  # mensagem real do presenter
+        assert body.strip('"') == "Invalid format for user id"
 
     def test_update_user_not_found(self):
         event = {
@@ -105,7 +104,7 @@ class TestUpdateUserPresenter:
                 }
             },
             "body": json.dumps({
-                "user_id": "999",
+                "user_id": "550e8411-e29b-41d4-a716-446655440000",
                 "name": "Nome Inexistente"
             }),
             "isBase64Encoded": False
@@ -114,5 +113,4 @@ class TestUpdateUserPresenter:
         response = lambda_handler(event, None)
         body = response["body"]
 
-        assert response["statusCode"] == 400  # presenter retorna 400 se não encontrou
-        assert body.strip('"') == "Invalid format for user id"  # mensagem real do presenter
+        assert response["statusCode"] == 404

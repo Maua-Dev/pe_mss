@@ -16,8 +16,8 @@ class UpdateUserUsecase:
     def __call__(self, 
                  
                 requester_id: str,
+                target_id: str,
                  
-                user_id: str, 
                 new_state: Optional[str] = None, 
                 new_role: Optional[str] = None, 
                 new_course: Optional[str] = None,
@@ -25,12 +25,18 @@ class UpdateUserUsecase:
                 new_organization: Optional[str] = None, 
                 new_active: Optional[str] = None) -> User:
 
-        if type(user_id) != str or not User.validate_id(user_id):
+        if User.validate_id(target_id) is False:
             raise EntityError("user_id")
+
+        if User.validate_id(requester_id) is False:
+            raise EntityError("requester_id")
         
+        # raise for not found user
+        self.repo.get_user(user_id=target_id)
+
         self.repo.has_permission_target_id(
             requester_id=requester_id,
-            target_id=user_id
+            target_id=target_id
         )
 
         if new_state is not None:
@@ -89,7 +95,7 @@ class UpdateUserUsecase:
                 raise EntityError("active")
 
         updated_user = self.repo.update_user(
-            user_id=user_id,
+            user_id=target_id,
             new_state=new_state,
             new_role=new_role,
             new_course=new_course,

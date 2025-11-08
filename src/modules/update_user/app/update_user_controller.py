@@ -1,4 +1,3 @@
-from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.helpers.external_interfaces.external_interface import IResponse, IRequest
 from .update_user_usecase import UpdateUserUsecase
 from .update_user_viewmodel import UpdateUserViewmodel
@@ -6,10 +5,7 @@ from src.shared.helpers.errors.controller_errors import MissingParameters, Wrong
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound, ForbiddenAction
 from src.shared.helpers.external_interfaces.http_codes import OK, Forbidden, NotFound, BadRequest, InternalServerError
-from src.shared.domain.enums.state_enum import STATE
-from src.shared.domain.enums.role_enum import ROLE
-from src.shared.domain.enums.course_enum import COURSE
-from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.entities.user import User
 
 
 class UpdateUserController:
@@ -56,16 +52,11 @@ class UpdateUserController:
             
             requester_user_id = requester_user.get("id")
 
-            has_permission = self.usecase.repo.has_permission_target_id(
-                requester_user_id,
-                target_id
-            )
-
             user = self.usecase(
                 
                 requester_id=requester_user_id,
+                target_id=target_id,
                 
-                user_id=target_id,
                 new_state=new_state,
                 new_role=new_role,
                 new_course=new_course,

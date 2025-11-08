@@ -34,7 +34,7 @@ class Test_UpdateUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['course'].name == 'ARQ'
+        assert response.body['course'] == 'ARQ'
         assert response.body['year'] == 3
 
     def test_update_user_with_organization(self):
@@ -60,7 +60,7 @@ class Test_UpdateUserController:
         response = controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['organization'].name == 'DEV'
+        assert response.body['organization'] == 'DEV'
         assert response.body['year'] == repo.users[1].year
 
 
@@ -70,10 +70,11 @@ class Test_UpdateUserController:
 
         with pytest.raises(EntityError, match="course"):
             usecase(
+                requester_id=repo.users[1].user_id,
                 new_state=STATE.APPROVED,
                 new_role=ROLE.PRESIDENT,
                 new_course="INVALIDO",  # erro aqui
-                user_id=repo.users[2].user_id
+                target_id=repo.users[2].user_id,
             )
 
     def test_update_user_controller_invalid_user_id(self):

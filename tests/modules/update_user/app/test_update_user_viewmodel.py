@@ -19,10 +19,10 @@ class Test_UpadateUserViewmodel:
             'email': "23.00768-0@maua.br",
             'ra': "23.00768-0",
             'state': STATE.APPROVED.value,
-            'course': COURSE.CIC,
+            'course': COURSE.CIC.value,
             'year': 4,
-            'role': ROLE.USER,
-            'organization': ORGANIZATION.DEV,
+            'role': ROLE.USER.value,
+            'organization': ORGANIZATION.DEV.value,
             'active': ACTIVE.ACTIVE.value,
             'user_id': "550e8400-e29b-41d4-a716-446655440001",
 

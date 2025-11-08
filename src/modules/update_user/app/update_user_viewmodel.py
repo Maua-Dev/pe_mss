@@ -36,12 +36,12 @@ class UpdateUserViewmodel:
             'name': self.name,
             'email': self.email,
             'ra': self.ra,
-            'state': self.state.value,
-            'course': self.course,
+            'state': self.state.value if self.state else None,
+            'course': self.course.value if self.course else None,
             'year': self.year,
-            'role': self.role,
-            'organization': self.organization,
-            'active': self.active.value,
+            'role': self.role.value if self.role else None,
+            'organization': self.organization.value if self.organization else None,
+            'active': self.active.value if self.active else None,
             'user_id': self.user_id,
             'message': "the user was updated successfully"
         }
