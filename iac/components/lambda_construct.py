@@ -148,7 +148,7 @@ class LambdaConstruct(Construct):
             self.upload_users_function,
             self.get_all_users_function,
             self.get_user_function,
-            self.export_users_function
+            self.export_users_function,
             self.update_user_function
         ]
         

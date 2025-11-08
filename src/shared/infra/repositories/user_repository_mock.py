@@ -177,7 +177,11 @@ class UserRepositoryMock(IUserRepository):
                 return user
         raise NoItemsFound(user_id)
     
+    @DeprecationWarning
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
+        
+        #DEPRECATED: usar has_permission_target_id
+        
         try:
             # usuário pode se auto-gerenciar
             if requester_id == target_user.user_id:
@@ -238,6 +242,10 @@ class UserRepositoryMock(IUserRepository):
             # presidente só pode agir sobre a mesma organização
             if requester_user.organization != target_user.organization:
                 raise ForbiddenAction("President is not allowed to perform action in other organization besides he's")
+            
+            # ninguem pode agir sobre adms
+            if target_user.role == ROLE.ADM:
+                raise ForbiddenAction("No one is allowed to perform actions in adms")
 
             return True
 

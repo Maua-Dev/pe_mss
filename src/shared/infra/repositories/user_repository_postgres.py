@@ -224,7 +224,11 @@ class UserRepositoryPostgres(IUserRepository):
 
         raise NoItemsFound("No user was found with that email")
         
+    @DeprecationWarning
     def has_permission_target_user(self, requester_id: str, target_user: User) -> Optional[bool]:
+        
+        #DEPRECATED: usar has_permission_target_id
+        
         if requester_id == target_user.user_id:
                 return True
         
@@ -315,7 +319,11 @@ class UserRepositoryPostgres(IUserRepository):
         if requester_user.organization != target_user.organization:
             raise ForbiddenAction("President is not allowed to perform action in other organization besides he's")
         
-        return True   
+        # ninguem pode agir sobre adms
+        if target_user.role == ROLE.ADM:
+            raise ForbiddenAction("No one is allowed to perform actions in adms")
+
+        return True
 
     def update_user(
         self, 

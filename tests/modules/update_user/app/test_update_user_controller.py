@@ -50,7 +50,7 @@ class Test_UpdateUserController:
             },
             'user_id': repo.users[1].user_id,
             'new_state': STATE.APPROVED.value,
-            'new_role': ROLE.USER.value,
+            'new_role': ROLE.ADM.value,
             'new_organization': ORGANIZATION.DEV.value,  # opcional
             'new_course': COURSE.CIC.value,
             'new_year': repo.users[1].year

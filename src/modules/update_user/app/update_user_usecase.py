@@ -7,6 +7,7 @@ from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.state_enum import STATE
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction
 
 
 class UpdateUserUsecase:
@@ -32,7 +33,8 @@ class UpdateUserUsecase:
             raise EntityError("requester_id")
         
         # raise for not found user
-        self.repo.get_user(user_id=target_id)
+        target_user = self.repo.get_user(user_id=target_id)
+        requester_user = self.repo.get_user(user_id=requester_id)
 
         self.repo.has_permission_target_id(
             requester_id=requester_id,
@@ -93,6 +95,28 @@ class UpdateUserUsecase:
             except ValueError:
 
                 raise EntityError("active")
+            
+        if requester_user.role == ROLE.PRESIDENT and requester_user.user_id == target_user.user_id:
+
+            if new_role == ROLE.ADM:
+                raise ForbiddenAction("You do not have permission to update yourself to adm")
+            
+        if requester_user.role == ROLE.PRESIDENT and new_role == ROLE.ADM:
+
+            raise ForbiddenAction("You do not have permission to update user or president to adm")
+        
+        if new_organization is not None and requester_user.role != ROLE.ADM:
+            
+            raise ForbiddenAction("Only ADM can transfer users between organizations.")
+        
+        if requester_user.user_id == target_user.user_id and new_role is not None:
+            
+            if new_role != requester_user.role:
+            
+                raise ForbiddenAction("Users cannot change their own role.")
+        
+        if requester_user.role == ROLE.PRESIDENT and target_user.role == ROLE.ADM and new_role is not None:
+            raise ForbiddenAction("President is not allowed to change ADM roles.")
 
         updated_user = self.repo.update_user(
             user_id=target_id,
