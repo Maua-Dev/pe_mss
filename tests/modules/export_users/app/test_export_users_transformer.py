@@ -17,7 +17,6 @@ from src.shared.infra.repositories.user_repository_postgres import UserRepositor
 class TestDownloadUsers:
     IN_GITHUB_ACTIONS = os.getenv('GITHUB_ACTIONS', 'false').lower() == 'true'
     
-    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_export_users_transformer(self):
         
         user_repo= UserRepositoryMock()
@@ -52,7 +51,6 @@ class TestDownloadUsers:
         elif sys.platform.startswith("win"):
             os.startfile(temp_file_path)
             
-    @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping tests in GitHub Actions environment")
     def test_export_users_transformer_forbidden(self):
         
         user_repo= UserRepositoryMock()

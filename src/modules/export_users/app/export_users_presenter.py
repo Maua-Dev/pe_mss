@@ -33,11 +33,12 @@ def lambda_handler(event, context):
     extractor= DownloadUsersExtractor(repo=user_repo)
     transformer= DownloadUsersTransformer(extractor=extractor)
 
-    download=transformer(httpRequest)
+    response=transformer(httpRequest)
 
     httpResponse= LambdaHttpResponse( 
-        status_code= 200,
-        body= download
+        status_code=response.status_code,
+        body=response.body,
+        headers=response.headers
     )
 
     return httpResponse.toDict()
