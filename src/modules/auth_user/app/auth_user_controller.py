@@ -1,4 +1,5 @@
 import re
+import logging
 from .auth_user_usecase import AuthUserUsecase
 from .auth_user_viewmodel import AuthUserViewmodel
 from src.shared.domain.entities.user import User
@@ -12,13 +13,13 @@ from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest, InternalServerError, NotFound
 
-
 class AuthUserController:
     def __init__(self, usecase: AuthUserUsecase):
         self.AuthUserUsecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
+
             if request.data.get('user_from_authorizer') is None:
                 raise MissingParameters('user_from_authorizer')
 
