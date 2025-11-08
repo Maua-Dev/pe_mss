@@ -33,7 +33,7 @@ def lambda_handler(event, context):
     extractor= DownloadUsersExtractor(repo=user_repo)
     transformer= DownloadUsersTransformer(extractor=extractor)
 
-    download=transformer()
+    download=transformer(httpRequest)
 
     httpResponse= LambdaHttpResponse( 
         status_code= 200,
