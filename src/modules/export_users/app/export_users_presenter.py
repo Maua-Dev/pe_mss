@@ -1,5 +1,5 @@
-from src.modules.export_users.app.export_users_extractor import DownloadUsersExtractor
-from src.modules.export_users.app.export_users_transformer import DownloadUsersTransformer
+from .export_users_extractor import DownloadUsersExtractor
+from .export_users_transformer import DownloadUsersTransformer
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 import json

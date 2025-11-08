@@ -1,4 +1,4 @@
-from src.modules.export_users.app.export_users_extractor import DownloadUsersExtractor
+from .export_users_extractor import DownloadUsersExtractor
 import pandas as pd
 import io
 import base64
@@ -6,7 +6,6 @@ import base64
 from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
 from src.shared.helpers.external_interfaces.http_codes import OK, Forbidden, InternalServerError, NotFound
-from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest
 
 
 class DownloadUsersTransformer:
