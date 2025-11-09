@@ -1,18 +1,44 @@
 import abc
 import re
+import uuid
 
+from src.shared.domain.enums.active_enum import ACTIVE
+from src.shared.domain.enums.course_enum import COURSE
+from src.shared.domain.enums.organization_enum import ORGANIZATION
+from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.enums.state_enum import STATE
-from src.shared.helpers.errors.domain_errors import EntityError
+from src.shared.helpers.errors.domain_errors import EntityError, InvalidUserIdFormat
+
 
 
 class User(abc.ABC):
+    user_id: str    
     name: str
     email: str
-    state: STATE
+    ra: str
+    role: ROLE
+    state: STATE | None
+    course: COURSE | None
+    year: int | None
+    active: ACTIVE | None
+    organization: ORGANIZATION | None
+    
     MIN_NAME_LENGTH = 2
-    user_id: int
 
-    def __init__(self, name: str, email: str, state: STATE, user_id: int = None):
+    def __init__(
+        self, 
+        user_id: str,
+        name: str,
+        email: str,
+        ra: str,
+        role: ROLE,
+        state: STATE = None,
+        active: ACTIVE = None,
+        course: COURSE=None,
+        year: int=None,
+        organization: ORGANIZATION=None,
+    ):
+        
         if not User.validate_name(name):
             raise EntityError("name")
         self.name = name
@@ -21,18 +47,49 @@ class User(abc.ABC):
             raise EntityError("email")
         self.email = email
 
-        if type(user_id) == int:
-            if user_id < 0:
-                raise EntityError("user_id")
+        if not User.validate_ra(ra):
+            raise EntityError("ra")
+        self.ra = ra
 
-        if type(user_id) != int and user_id is not None:
-            raise EntityError("user_id")
-
-        self.user_id = user_id
-
-        if type(state) != STATE:
+        if not User.validate_state(state):
             raise EntityError("state")
         self.state = state
+
+        if not User.validate_role(role):
+            raise EntityError("role")
+        self.role = role
+
+        if not User.validate_course(course):
+            raise EntityError("course")
+        self.course = course
+
+        if not User.validate_active(active):
+            raise EntityError("active")
+        self.active = active
+        
+        if not User.validate_year(year) and year is not None:
+            raise EntityError("year")
+        self.year = year
+
+        if not User.validate_organization(organization) and organization is not None:
+            raise EntityError("organization")
+        self.organization = organization
+
+        if not User.validate_id(user_id):
+            raise EntityError("user_id")
+        self.user_id = user_id
+
+    
+    @staticmethod
+    def validate_id(user_id: str) -> bool:
+        if type(user_id) != str:
+            return False
+        try:
+            if uuid.UUID(user_id):
+                return True
+            
+        except ValueError:
+            raise InvalidUserIdFormat("Invalid format for user id")
 
     @staticmethod
     def validate_name(name: str) -> bool:
@@ -44,17 +101,138 @@ class User(abc.ABC):
             return False
 
         return True
-
+    
     @staticmethod
     def validate_email(email: str) -> bool:
         if email is None:
             return False
 
+        if email[-8:] != "@maua.br":
+            return False
+        
         regex = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
         return bool(re.fullmatch(regex, email))
+    
+    @staticmethod
+    def validate_role_admin_and_president(role: ROLE) -> bool:
+        if role == None:
+            return False
+        if type(role) != ROLE:
+            return False
+        return (role == ROLE.ADM or role == ROLE.PRESIDENT)
+    
+    @staticmethod
+    def validate_active(active: ACTIVE) -> bool:
+        if active == None:
+            return False
+        if type(active) != ACTIVE:
+            return False
+        return (active == ACTIVE.ACTIVE)
+    
+    @staticmethod
+    def validate_ra(ra: str) -> bool:
+        if ra is None:
+            return False
+        elif type(ra) != str:
+            return False
+        
+        ragex = re.compile(r"(^\d{2}\.?\d{5}-?\d{1}$)")
 
+        return bool(re.fullmatch(ragex, ra))
+    
+    @staticmethod
+    def validate_year(year: int | None) -> bool:
+        if year is None:
+            return True
+        if type(year) != int:
+            return False
+        elif year < 0 or year > 5:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_state(state: STATE | None) -> bool:
+        if state is None:
+            return True
+        if type(state) != STATE:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_role(role: ROLE) -> bool:
+        if type(role) != ROLE:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_course(course: COURSE | None) -> bool:
+        if course is None:
+            return True
+        if type(course) != COURSE:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_active(active: ACTIVE | None) -> bool:
+        if active is None:
+            return True
+        if type(active) != ACTIVE:
+            return False
+        
+        return True
+    
+    @staticmethod
+    def validate_organization(organization: ORGANIZATION | None) -> bool:
+        if organization is None:
+            return True
+        if type(organization) != ORGANIZATION:
+            return False
+        
+        return True
+        
+    @classmethod
+    def from_dict(cls, data: dict) -> "User":
+        if 'state' in data and data['state'] is not None: data['state'] = STATE(data['state'])
+        if 'role' in data and data['role'] is not None: data['role'] = ROLE(data['role'])
+        if 'active' in data and data['active'] is not None: data['active'] = ACTIVE(data['active'])
+        if 'course' in data and data['course'] is not None: data['course'] = COURSE(data['course'])
+        if 'organization' in data and data['organization'] is not None: data['organization'] = ORGANIZATION(data['organization'])
+        return cls(**data)
 
+    def to_dict(self) -> dict:
+        return {
+            "user_id": self.user_id,
+            "name": self.name,
+            "ra": self.ra,
+            "email": self.email,
+            "course": self.course.value if self.course else None,
+            "year": self.year,
+            "role": self.role.value if self.role else None,
+            "active": self.active.value if self.active else None,
+            "organization": self.organization.value if self.organization else None,
+            "state": self.state.value if self.state else None
+        }
 
     def __repr__(self):
-        return f"User(name={self.name}, email={self.email}, user_id={self.user_id}, state={self.state})"
+        return f"User(user_id={self.user_id}, name={self.name}, ra={self.ra}, email={self.email}, course={self.course.value if self.course else None}, year={self.year}, role={self.role.value if self.role else None}, active={self.active.value if self.active else None}, organization={self.organization.value if self.organization else None}, state={self.state.value if self.state else None})"
+
+    def __eq__(self, other: "User"):
+        if not isinstance(other, User):
+            return False
+        return (
+            self.user_id == other.user_id,
+            self.name == other.name,
+            self.ra == other.ra,
+            self.email == other.email,
+            self.course == other.course,
+            self.year == other.year,
+            self.role == other.role,
+            self.active == other.active,
+            self.organization == other.organization,
+            self.state == other.state
+        )

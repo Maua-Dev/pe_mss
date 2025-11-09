@@ -1,64 +1,63 @@
-from src.shared.infra.external.observability.observability_aws import ObservabilityAWS
 from .get_user_usecase import GetUserUsecase
-from .get_user_viewmodel import GetUserViewmodel
+from .get_user_viewmodel import GetUserViewModel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
-from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
-from src.shared.helpers.external_interfaces.http_codes import OK, NotFound, BadRequest, InternalServerError
-from aws_lambda_powertools import Logger
-
+from src.shared.helpers.external_interfaces.http_codes import OK, BadRequest
 
 
 class GetUserController:
 
-    def __init__(self, usecase: GetUserUsecase, observability: ObservabilityAWS):
-        self.GetUserUsecase = usecase
-        self.observability = observability
+    def __init__(self, usecase: GetUserUsecase):
+        self.usecase = usecase
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            self.observability.log_controller_in()
-            if request.data.get('user_id') is None:
-                raise MissingParameters('user_id')
+            if request.data.get('user_from_authorizer') is None:
+                raise MissingParameters('user_from_authorizer')
 
-            if type(request.data.get('user_id')) != str:
+            if request.data.get('user_from_authorizer').get('id') is None:
+                raise MissingParameters('id')
+            if request.data.get('user_from_authorizer').get('displayName') is None:
+                raise MissingParameters('displayName')
+            if request.data.get('user_from_authorizer').get('mail') is None:
+                raise MissingParameters('mail')
+            
+            if type(request.data.get('user_from_authorizer').get('id')) != str:
                 raise WrongTypeParameter(
-                    fieldName="user_id",
+                    fieldName="id",
                     fieldTypeExpected="str",
-                    fieldTypeReceived=request.data.get('user_id').__class__.__name__
+                    fieldTypeReceived=request.data.get('user_from_authorizer').get('id').__class__.__name__
+                )
+            
+            if type(request.data.get('user_from_authorizer').get('displayName')) != str:
+                raise WrongTypeParameter(
+                    fieldName="displayName",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=request.data.get('user_from_authorizer').get('displayName').__class__.__name__
+                )
+            
+            if type(request.data.get('user_from_authorizer').get('mail')) != str:
+                raise WrongTypeParameter(
+                    fieldName="mail",
+                    fieldTypeExpected="str",
+                    fieldTypeReceived=request.data.get('user_from_authorizer').get('mail').__class__.__name__
                 )
 
-            if not request.data.get('user_id').isdecimal():
-                raise EntityError("user_id")
+            requester_user_id = request.data.get('user_from_authorizer').get('id')
+            user = self.usecase(user_id=requester_user_id)
+            viewmodel = GetUserViewModel(user=user)
 
-
-            user = self.GetUserUsecase(
-                user_id=int(request.data.get('user_id'))
-            )
-
-            viewmodel = GetUserViewmodel(user)
-            
-            response = OK(viewmodel.to_dict())
-            self.observability.log_controller_out(input=user.user_id)
-            return response
-
-        except NoItemsFound as err:
-            self.observability.log_exception(message=err.message)
-            return NotFound(body=err.message)
+            return OK(viewmodel.to_dict())
 
         except MissingParameters as err:
-            self.observability.log_exception(message=err.message)
             return BadRequest(body=err.message)
-
+        
         except WrongTypeParameter as err:
-            self.observability.log_exception(message=err.message)
             return BadRequest(body=err.message)
-
-        except EntityError as err:
-            self.observability.log_exception(message=err.message)
+        
+        except NoItemsFound as err:
             return BadRequest(body=err.message)
 
         except Exception as err:
-            self.observability.log_exception(message=err.args[0])
-            return InternalServerError(body=err.args[0])
+            return BadRequest(body=err.args[0])

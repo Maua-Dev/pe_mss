@@ -6,7 +6,7 @@
 
 ## Setup dynamodb local
 - `docker run -p 8000:8000 amazon/dynamodb-local -sharedDB -inMemory`
-- run `src/shared/infra/repositories/load_user_mock_to_dynamo.py`
+- run `src/shared/infra/repositories/load_{entity_name}_mock_to_{db_name, ex: dynamo or postgres}.py`
 
 
 ## Build cdk (/iac)

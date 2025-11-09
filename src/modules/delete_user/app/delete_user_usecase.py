@@ -7,12 +7,11 @@ class DeleteUserUsecase:
     def __init__(self, repo: IUserRepository):
         self.repo = repo
 
-    def __call__(self, user_id: int) -> User:
+    def __call__(self, user_id: str) -> User:
 
-
-        if type(user_id) != int:
+        if type(user_id) != str:
             raise EntityError("user_id")
 
-        user = self.repo.delete_user(user_id)
+        deleted_user = self.repo.delete_user(user_id=user_id)
 
-        return user
+        return deleted_user

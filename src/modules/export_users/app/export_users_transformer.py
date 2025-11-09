@@ -1,0 +1,69 @@
+from .export_users_extractor import DownloadUsersExtractor
+import pandas as pd
+import io
+import base64
+
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
+from src.shared.helpers.external_interfaces.external_interface import IRequest, IResponse
+from src.shared.helpers.external_interfaces.http_codes import OK, Forbidden, InternalServerError, NotFound
+
+
+class DownloadUsersTransformer:
+    def __init__(self, extractor: DownloadUsersExtractor):
+        self.extractor= extractor
+
+    def __call__(self, request: IRequest) -> IResponse:
+        
+        try:
+
+            requester_id = request.data.get('user_from_authorizer').get('id')
+
+            users_dict= self.extractor(requester_user_id=requester_id)
+
+            df_users= pd.DataFrame.from_dict(users_dict, orient='index')
+
+            df_users_from_dev= df_users[df_users['organization']=='DEV']
+
+            df_users_from_esports= df_users[df_users['organization']=='ESPORTS']
+
+            df_users_from_metaverso= df_users[df_users['organization']=='METAVERSO']
+
+            df_users_from_guardian= df_users[df_users['organization']=='GUARDIAN']
+
+            df_users_from_nawat= df_users[df_users['organization']=='NAWAT']
+
+            # para testes do dataframe
+            print(df_users_from_dev.shape)
+            print(df_users_from_esports.shape)
+            print(df_users_from_metaverso.shape)
+            print(df_users_from_guardian.shape)
+            print(df_users_from_nawat.shape)
+
+            output = io.BytesIO()
+
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                df_users_from_dev.to_excel(writer, sheet_name='DEV', index=False)
+                df_users_from_esports.to_excel(writer, sheet_name='ESPORTS', index=False)
+                df_users_from_metaverso.to_excel(writer, sheet_name='METAVERSO', index=False)
+                df_users_from_guardian.to_excel(writer, sheet_name='GUARDIAN', index=False)
+                df_users_from_nawat.to_excel(writer, sheet_name='NAWAT', index=False)
+
+            output.seek(0)
+
+            output_base64= base64.b64encode(output.getvalue()).decode('utf-8')
+
+            return OK(
+                {
+                    'file_base64': output_base64,
+                    'message': 'Users exported successfully.'
+                }
+            )
+        
+        except ForbiddenAction as e:
+            return Forbidden(body=e.message)
+        
+        except NoItemsFound as e:
+            return NotFound(body=e.message)
+        
+        except Exception as e:
+            return InternalServerError(body=str(e))

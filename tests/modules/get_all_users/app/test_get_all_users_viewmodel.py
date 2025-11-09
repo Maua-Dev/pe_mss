@@ -1,64 +1,123 @@
-from src.modules.get_all_users.app.get_all_users_viewmodel import GetAllUsersViewmodel, UserViewmodel
-from src.shared.domain.entities.user import User
+from src.modules.get_all_users.app.get_all_users_usecase import GetAllUsersUsecase
+from src.modules.get_all_users.app.get_all_users_viewmodel import GetAllUsersViewModel
+from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.state_enum import STATE
+from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
 class Test_GetAllUsersViewmodel:
-    all_users_list = [
-        User(user_id=1,
-             name="Lucas Duez",
-             email="deuzexmachina@gmail.com",
-             state=STATE.APPROVED),
-
-        User(user_id=2,
-             name="Laura Blablachan",
-             email="laurinha@gmail.com",
-             state=STATE.APPROVED),
-    ]
 
     def test_get_all_users_viewmodel(self):
-        viewmodel = GetAllUsersViewmodel(self.all_users_list)
+        userrepo = UserRepositoryMock()
+        usecase = GetAllUsersUsecase(userrepo=userrepo)
+        users, role = usecase(user_id="550e8400-e29b-41d4-a716-446655440001")
 
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role).to_dict()
         expected = {
-            "all_users": [
+            'users': [
                 {
-                    'user_id': 1,
-                    'name': "Lucas Duez",
-                    'email': "deuzexmachina@gmail.com",
-                    'state': 'APPROVED',
-                },
-                {
-                    'user_id': 2,
-                    'name': "Laura Blablachan",
-                    'email': "laurinha@gmail.com",
-                    'state': 'APPROVED',
-                }
+                    'user_id': u.user_id,
+                    'name': u.name,
+                    'email': u.email,
+                    'state': (u.state.value if u.state is not None else None),
+                    'role': (u.role.value if u.role is not None else None),
+                    'active': (u.active.value if u.active is not None else None),
+                    'ra': u.ra,
+                    'course': (u.course.value if u.course is not None else None),
+                    'year': u.year,
+                    'organization': (u.organization.value if u.organization is not None else None),
+                } for u in sorted(users, key=lambda x: x.name.casefold())
             ],
-            "message": "all users has been retrieved"
+            'message': 'the users were retrieved'
         }
 
-        response = viewmodel.to_dict()
+        assert viewmodel == expected
 
-        assert response == expected
+    def test_get_all_users_vewmodel_from_dev(self):
+        userrepo = UserRepositoryMock()
+        usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-    def test_user_viewmodel(self):
-        viewmodel = UserViewmodel(
-            User(user_id=2,
-                 name="Laura Blablachan",
-                 email="laurinha@gmail.com",
-                 state=STATE.APPROVED),
-)
+        users, role = usecase(user_id="550e8400-e29b-41d4-a716-446655440002", organization=ORGANIZATION.DEV)
 
-        response = viewmodel.to_dict()
-
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role).to_dict()
         expected = {
-                    'user_id': 2,
-                    'name': "Laura Blablachan",
-                    'email': "laurinha@gmail.com",
-                    'state': 'APPROVED',
+            'users': [
+                {
+                    'user_id': u.user_id,
+                    'name': u.name,
+                    'email': u.email,
+                    'state': (u.state.value if u.state is not None else None),
+                    'role': (u.role.value if u.role is not None else None),
+                    'active': (u.active.value if u.active is not None else None),
+                    'ra': u.ra,
+                    'course': (u.course.value if u.course is not None else None),
+                    'year': u.year,
+                    'organization': (u.organization.value if u.organization is not None else None),
+                } for u in sorted(users, key=lambda x: x.name.casefold())
+            ],
+            'message': 'the users were retrieved'
         }
 
-        assert response == expected
+        assert viewmodel == expected
 
+    def test_get_all_users_viewmodel_approved_state(self):
+        userrepo = UserRepositoryMock()
+        usecase = GetAllUsersUsecase(userrepo=userrepo)
 
-    
+        users, role = usecase(user_id="550e8400-e29b-41d4-a716-446655440001", state=STATE.APPROVED)
+
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role).to_dict()
+        expected = {
+            'users': [
+                {
+                    'user_id': u.user_id,
+                    'name': u.name,
+                    'email': u.email,
+                    'state': (u.state.value if u.state is not None else None),
+                    'role': (u.role.value if u.role is not None else None),
+                    'active': (u.active.value if u.active is not None else None),
+                    'ra': u.ra,
+                    'course': (u.course.value if u.course is not None else None),
+                    'year': u.year,
+                    'organization': (u.organization.value if u.organization is not None else None),
+                } for u in sorted(users, key=lambda x: x.name.casefold())
+            ],
+            'message': 'the users were retrieved'
+        }
+
+        assert viewmodel == expected
+
+    def test_get_all_users_viewmodel_nawat_approved(self):
+        userrepo = UserRepositoryMock()
+        usecase = GetAllUsersUsecase(userrepo=userrepo)
+
+        users, role = usecase(
+            user_id="b423780f-2045-44e1-9c0b-98352841817d",
+            organization=ORGANIZATION.NAWAT,
+            state=STATE.APPROVED
+        )
+
+        viewmodel = GetAllUsersViewModel(users=users, requester_role=role, requester_id="b423780f-2045-44e1-9c0b-98352841817d").to_dict()
+        expected = {
+            'users': [
+                {
+                    **(
+                        {'user_id': u.user_id}
+                        if u.user_id == "b423780f-2045-44e1-9c0b-98352841817d"
+                        else {}
+                    ),
+                    'name': u.name,
+                    'email': u.email,
+                    'state': (u.state.value if u.state is not None else None),
+                    'role': (u.role.value if u.role is not None else None),
+                    'active': (u.active.value if u.active is not None else None),
+                    'ra': u.ra,
+                    'course': (u.course.value if u.course is not None else None),
+                    'year': u.year,
+                    'organization': (u.organization.value if u.organization is not None else None),
+                } for u in sorted(users, key=lambda x: x.name.casefold())
+            ],
+            'message': 'the users were retrieved'
+        }
+
+        assert viewmodel == expected
