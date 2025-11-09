@@ -1,5 +1,4 @@
 import json
-
 from src.modules.get_all_users.app.get_all_users_presenter import lambda_handler
 
 
@@ -19,21 +18,17 @@ class Test_GetAllUsersPresenter:
                 "header2": "value1,value2"
             },
             "queryStringParameters": {
-                "parameter1": "value1",
+                "parameter1": "1"
             },
             "requestContext": {
                 "accountId": "123456789012",
                 "apiId": "<urlid>",
                 "authentication": None,
                 "authorizer": {
-                    "iam": {
-                        "accessKey": "AKIA...",
-                        "accountId": "111122223333",
-                        "callerId": "AIDA...",
-                        "cognitoIdentity": None,
-                        "principalOrgId": None,
-                        "userArn": "arn:aws:iam::111122223333:user_id/example-user_id",
-                        "userId": "AIDA..."
+                    "user": {
+                        "id": "550e8400-e29b-41d4-a716-446655440001",
+                        "displayName": "João", 
+                        "mail": "21.00678-2@maua.br"
                     }
                 },
                 "domainName": "<url-id>.lambda-url.us-west-2.on.aws",
@@ -51,37 +46,12 @@ class Test_GetAllUsersPresenter:
                 "time": "12/Mar/2020:19:03:58 +0000",
                 "timeEpoch": 1583348638390
             },
-            "body": "Hello from client!",
+            "body": '{"user_id": "550e8400-e29b-41d4-a716-446655440000"}',
             "pathParameters": None,
             "isBase64Encoded": None,
             "stageVariables": None
         }
 
-        expected_body = {
-            "all_users": [
-                {
-                    'user_id': 1,
-                    'name': "Bruno Soller",
-                    'email': "soller@soller.com",
-                    'state': 'APPROVED',
-                },
-                {
-                    'user_id': 2,
-                    'name': "Vitor Brancas",
-                    'email': "brancas@brancas.com",
-                    'state': 'REJECTED',
-                },
-                {
-                    'user_id': 3,
-                    'name': "João Vilas",
-                    'email': "bruno@bruno.com",
-                    'state': 'PENDING',
-                }
-            ],
-            "message": "all users has been retrieved"
-        }
-
         response = lambda_handler(event=event, context=None)
-
-        assert response["statusCode"] == 200
-        assert json.loads(response["body"]) == expected_body
+        assert response['statusCode'] == 200
+        assert json.loads(response['body'])['message'] == 'the users were retrieved'

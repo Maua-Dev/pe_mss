@@ -1,32 +1,22 @@
 import pytest
-
 from src.modules.delete_user.app.delete_user_usecase import DeleteUserUsecase
 from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
 
 class Test_DeleteUserUsecase:
-    def test_delete_user(self):
+    def test_delete_user_usecase(self):
         repo = UserRepositoryMock()
-        usecase = DeleteUserUsecase(repo)
+        deleted_user_id=repo.users[0].user_id
+        usecase = DeleteUserUsecase(repo=repo)
+        deleted_user = usecase(user_id=deleted_user_id)
 
-        lenBefore = len(repo.users)
+        assert deleted_user.user_id == deleted_user_id
+        assert deleted_user.state.value == "PENDING"
 
-        user = usecase(1)
-
-        assert len(repo.users) == lenBefore - 1
-
-    def test_delete_user_not_found(self):
+    def test_delete_user_usecase_entity_error(self):
         repo = UserRepositoryMock()
-        usecase = DeleteUserUsecase(repo)
-
-        with pytest.raises(NoItemsFound):
-            user = usecase(69)
-
-    def test_delete_user_invalid_id(self):
-        repo = UserRepositoryMock()
-        usecase = DeleteUserUsecase(repo)
+        usecase = DeleteUserUsecase(repo=repo)
 
         with pytest.raises(EntityError):
-            user = usecase("invalid")
+            usecase(user_id=10)

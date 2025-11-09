@@ -1,33 +1,29 @@
 import pytest
-
 from src.modules.get_user.app.get_user_usecase import GetUserUsecase
-from src.shared.helpers.errors.domain_errors import EntityError
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
-from src.shared.infra.external.observability.observability_mock import ObservabilityMock
+from src.shared.domain.entities.user import User
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
-observability = ObservabilityMock(module_name="get_user")
 
 class Test_GetUserUsecase:
+    def test_get_user_usecase(self):
+        user_repo = UserRepositoryMock()
+        usecase = GetUserUsecase(user_repo=user_repo)
 
-    def test_get_user(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo, observability=observability)
+        user = usecase(user_id="550e8400-e29b-41d4-a716-446655440001")
+        assert user == user_repo.users[1]
+        assert type(user) == User
 
-        user = usecase(user_id=repo.users[1].user_id)
-
-        assert repo.users[1] == user
-
-    def test_get_user_not_found(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo, observability=observability)
+    def test_get_user_usecase_not_found_user(self):
+        user_repo = UserRepositoryMock()
+        usecase = GetUserUsecase(user_repo=user_repo)
 
         with pytest.raises(NoItemsFound):
-            user = usecase(user_id=999)
+            usecase(user_id="550e8400-e29b-41d4-a716-446655440099")
 
-    def test_get_user_invalid_id(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo, observability=observability)
+    def test_get_user_usecase_disconnected_user(self):
+        user_repo = UserRepositoryMock()
+        usecase = GetUserUsecase(user_repo=user_repo)
 
-        with pytest.raises(EntityError):
-            user = usecase(user_id="invalid")
+        with pytest.raises(ForbiddenAction):
+            usecase(user_id="3d32ec27-09c3-41da-92e2-be106e449b6a")

@@ -1,80 +1,80 @@
 from src.modules.get_user.app.get_user_controller import GetUserController
 from src.modules.get_user.app.get_user_usecase import GetUserUsecase
 from src.shared.helpers.external_interfaces.http_models import HttpRequest
-from src.shared.infra.external.observability.observability_mock import ObservabilityMock
 from src.shared.infra.repositories.user_repository_mock import UserRepositoryMock
 
-observability = ObservabilityMock(module_name="get_user")
 
 class Test_GetUserController:
-    def test_get_user_controller(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
+    user_repo = UserRepositoryMock()
+    usecase = GetUserUsecase(user_repo=user_repo)
+    controller = GetUserController(usecase=usecase)
 
-        request = HttpRequest(query_params={
-            'user_id': str(repo.users[1].user_id)
+    def test_get_user_controller(self):
+        request = HttpRequest(body={
+            'user_from_authorizer':{
+                'id': "550e8400-e29b-41d4-a716-446655440001",
+                'displayName': "Guilherme",
+                'mail': "25.00178-5@maua.br"
+            }
         })
 
-        response = controller(request=request)
+        expected = {
+            'user':{
+                'user_id': '550e8400-e29b-41d4-a716-446655440001',
+                'name': 'João',
+                'email': '21.00678-2@maua.br',
+                'ra': '21.00678-2',
+                'state': 'APPROVED',
+                'role': 'ADM',
+                'active': 'ACTIVE',
+                'course': 'CIC',
+                'year': 4,
+                'organization': 'DEV'
+            },
+            'message': 'the user was retrieved'
+        }
+
+        response = self.controller(request=request)
 
         assert response.status_code == 200
-        assert response.body['user_id'] == repo.users[1].user_id
-        assert response.body['name'] == repo.users[1].name
-        assert response.body['email'] == repo.users[1].email
-        assert response.body['state'] == repo.users[1].state.value
+        assert response.body == expected
 
-    def test_get_user_controller_missing_parameters(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
-
-        request = HttpRequest(query_params={})
-
-        response = controller(request=request)
-
-        assert response.status_code == 400
-        assert response.body == 'Field user_id is missing'
-
-
-    def test_get_user_contoller_wrong_type_parameter(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
-
-        request = HttpRequest(query_params={
-            'user_id': 999
+    def test_get_user_controller_invalid_id(self):
+        request = HttpRequest(body={
+            'user_from_authorizer':{
+                'id': "Um id inválido",
+                'displayName': "Guilherme",
+                'mail': "25.00178-5@maua.br"
+            }
         })
 
-        response = controller(request=request)
+        response = self.controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == "Field user_id isn't in the right type.\n Received: int.\n Expected: str"
 
-    def test_get_user_contoller_entity_error(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
-
-        request = HttpRequest(query_params={
-            'user_id': 'abc'
+    def test_get_user_controller_without_id(self):
+        request = HttpRequest(body={
+            'user_from_authorizer':{
+                'id': None,
+                'displayName': "Guilherme",
+                'mail': "25.00178-5@maua.br"
+            }
         })
 
-        response = controller(request=request)
+        response = self.controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == 'Field user_id is not valid'
 
-    def test_get_user_controller_no_items_found(self):
-        repo = UserRepositoryMock()
-        usecase = GetUserUsecase(repo=repo, observability=observability)
-        controller = GetUserController(usecase=usecase, observability=observability)
-
-        request = HttpRequest(query_params={
-            'user_id': str(999)
+    def test_get_user_controller_not_found(self):
+        request = HttpRequest(body={
+            'user_from_authorizer':{
+                'id': "550e8400-e29b-41d4-a716-446655440999",
+                'displayName': "Guilherme",
+                'mail': "25.00178-5@maua.br"
+            }
         })
 
-        response = controller(request=request)
+        response = self.controller(request=request)
 
-        assert response.status_code == 404
-        assert response.body == 'No items found for user_id'
+        assert response.status_code == 400
+        assert response.body == "No items found for 550e8400-e29b-41d4-a716-446655440999"
