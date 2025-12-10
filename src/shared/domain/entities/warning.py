@@ -25,11 +25,13 @@ class Warning(BaseModel):
     )
     
     target_role: ROLE = Field(
-        description="Role alvo do aviso"
+        description="Role alvo do aviso",
+        default=ROLE.PRESIDENT
     )
     
     target_org: ORGANIZATION = Field(
         description="Organização alvo do aviso",
+        default=None
         # Turn to string in the model dump
     )
     

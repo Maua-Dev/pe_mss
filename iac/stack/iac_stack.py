@@ -3,6 +3,7 @@ from aws_cdk import (
     Stack,
     # aws_sqs as sqs,
 )
+from .sm_stack import SmStack
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
@@ -55,8 +56,16 @@ class IacStack(Stack):
             "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT")
         }
 
-        self.lambda_stack = LambdaConstruct(self, api_gateway_resource=api_gateway_resource,
-                                        environment_variables=ENVIRONMENT_VARIABLES)
+        self.sm_stack= SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
+
+        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"]= self.sm_stack.event_secret.secret_arn
+
+        self.lambda_stack = LambdaConstruct(
+            self, 
+            api_gateway_resource=api_gateway_resource,
+            environment_variables=ENVIRONMENT_VARIABLES,
+            sm_stack=self.sm_stack
+        )
 
         for fn in self.lambda_stack.functions_that_need_db_access:
             self.aurora.cluster.grant_data_api_access(fn)

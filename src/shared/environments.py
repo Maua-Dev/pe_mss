@@ -3,6 +3,7 @@ from enum import Enum
 import os
 from src.shared.domain.observability.observability_interface import IObservability
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
+from src.shared.domain.repositories.warning_repository_interface import IWarningRepository
 
 
 class STAGE(Enum):
@@ -79,6 +80,7 @@ class Environments:
             self.db_name = os.environ.get("DB_NAME")
             self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
             self.graph_microsoft_endpoint = os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
+            self.delete_warning_lambda_arn = os.environ.get("DELETE_WARNING_LAMBDA_ARN")
 
     @staticmethod
     def get_user_repo() -> IUserRepository:
@@ -90,6 +92,17 @@ class Environments:
             from src.shared.infra.repositories.user_repository_postgres import UserRepositoryPostgres
             from src.shared.infra.external.postgres.datasources.postgres_datasource import RdsDataDatasource
             return UserRepositoryPostgres(db_datasource=RdsDataDatasource())
+        else:
+            raise Exception("No repository found for this stage")
+        
+    def get_warning_repo() -> IWarningRepository:
+        if Environments.get_envs().stage == STAGE.TEST:
+            from src.shared.infra.repositories.warning_repository_mock import WarningRepositoryMock
+            return WarningRepositoryMock()
+        elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
+            from src.shared.infra.repositories.warning_repository_dynamo import WarningRepositoryDynamo
+            from src.shared.infra.external.dynamo.datasources.dynamo_datasource import DynamoDatasource
+            return WarningRepositoryDynamo(dynamo_datasource=DynamoDatasource())
         else:
             raise Exception("No repository found for this stage")
 
