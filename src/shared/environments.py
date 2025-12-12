@@ -81,6 +81,7 @@ class Environments:
             self.cloud_front_distribution_domain = os.environ.get("CLOUD_FRONT_DISTRIBUTION_DOMAIN")
             self.graph_microsoft_endpoint = os.environ.get("GRAPH_MICROSOFT_ENDPOINT")
             self.delete_warning_lambda_arn = os.environ.get("DELETE_WARNING_LAMBDA_ARN")
+            self.warning_table_name = os.environ.get("WARNING_TABLE_NAME")
 
     @staticmethod
     def get_user_repo() -> IUserRepository:

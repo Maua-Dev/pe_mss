@@ -16,16 +16,22 @@ class DynamoDatasource:
     gsi_partition_key: str
     gsi_sort_key: str
 
-    def __init__(self, dynamo_table_name: str, partition_key: str, region: str, gsi_partition_key: str = None, gsi_sort_key: str = None,
-                 endpoint_url: str = None, sort_key: str = None):
+    def __init__(
+        
+        self, 
+        dynamo_table_name: str, 
+        partition_key: str, 
+        region: str, 
+        endpoint_url: str = None, 
+        sort_key: str = None
+        
+    ) -> None:
 
         s = boto3.Session(region_name=region)
         dynamo = s.resource('dynamodb', endpoint_url=endpoint_url)
         self.dynamo_table = dynamo.Table(dynamo_table_name)
         self.partition_key = partition_key
         self.sort_key = sort_key
-        self.gsi_partition_key = gsi_partition_key
-        self.gsi_sort_key = gsi_sort_key
 
     @staticmethod
     def _parse_float_to_decimal(item):

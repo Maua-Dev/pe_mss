@@ -3,6 +3,8 @@ from aws_cdk import (
     Stack,
     # aws_sqs as sqs,
 )
+
+from iac.components.dynamo_construct import DynamoConstruct
 from .sm_stack import SmStack
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
@@ -34,13 +36,16 @@ class IacStack(Stack):
                                     }
                                 )
 
-        api_gateway_resource = self.rest_api.root.add_resource("pe-mss", default_cors_preflight_options=
-        {
-            "allow_origins": Cors.ALL_ORIGINS,
-            "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": Cors.DEFAULT_HEADERS
-        }
-                                                               )
+        api_gateway_resource = self.rest_api.root.add_resource(
+            "pe-mss", 
+            default_cors_preflight_options = {
+                "allow_origins": Cors.ALL_ORIGINS,
+                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": Cors.DEFAULT_HEADERS
+            }
+        )
+        
+        self.dynamo_construct = DynamoConstruct(self, "PEDynamo")
 
         self.aurora = AuroraConstruct(self, "Aurora")
         self.s3_bucket = BucketContruct(self)
@@ -53,7 +58,8 @@ class IacStack(Stack):
             "REGION": self.region,
             "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name,
             "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT"),
-            "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT")
+            "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT"),
+            "WARNING_TABLE_NAME": self.dynamo_construct.warning_table.table_name
         }
 
         self.sm_stack= SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
