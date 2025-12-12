@@ -70,6 +70,7 @@ class Environments:
             self.client_id = "root"
             self.client_secret = "root1234"
             self.graph_microsoft_endpoint = "https://graph.microsoft.com"
+            self.warning_table_name = os.environ.get("WARNING_TABLE_NAME", "warning-table-test")
 
         else:
             self.s3_bucket_name = os.environ.get("S3_BUCKET_NAME")
