@@ -19,7 +19,7 @@ class TestGetAllWarningsController:
             }
         })
 
-        response = controller.handle(request=request)
+        response = controller(request=request)
 
         expected_warnings = [
             {
@@ -58,7 +58,7 @@ class TestGetAllWarningsController:
         request = HttpRequest(body={
         })
 
-        response = controller.handle(request=request)
+        response = controller(request=request)
 
         assert response.status_code == 400
         assert response.body == 'Field user_from_authorizer is missing'
@@ -77,7 +77,7 @@ class TestGetAllWarningsController:
             }
         })
 
-        response = controller.handle(request=request)
+        response = controller(request=request)
 
         assert response.status_code == 403
         assert response.body == 'Only ADM users can get all warnings.'

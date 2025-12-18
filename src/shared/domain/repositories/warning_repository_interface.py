@@ -73,13 +73,12 @@ class IWarningRepository(ABC):
     #getters
     
     @abstractmethod
-    def get_warning(self, warning_id: str, target_org: ORGANIZATION) -> Optional[Warning]:
+    def get_warning(self, warning_id: str) -> Optional[Warning]:
         """
         Método para buscar um aviso no banco por seu id
 
         Args:
             warning_id (str): id do aviso
-            target_org (ORGANIZATION): organização do aviso a ser buscado
 
         Returns:
             Optional[Warning]: retorna um aviso caso encontre-o
