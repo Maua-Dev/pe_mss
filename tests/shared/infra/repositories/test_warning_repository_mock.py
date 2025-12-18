@@ -55,7 +55,7 @@ class TestWarningRepositoryMock:
     def test_get_all_warnings(self):
         repo = WarningRepositoryMock()
         
-        assert len(repo.get_all_warnings()) == 3
+        assert len(repo.get_all_warnings()) == 4
         
     def test_get_warning(self):
         repo = WarningRepositoryMock()
@@ -82,7 +82,7 @@ class TestWarningRepositoryMock:
         
         warnings = repo.get_warnings_by_role(target_role=role)
         
-        assert len(warnings) == 3
+        assert len(warnings) == 4
         assert all(ROLE(w.target_role) == role for w in warnings)
 
     def test_get_warnings_by_org_and_role(self):
@@ -105,4 +105,4 @@ class TestWarningRepositoryMock:
         deleted_warning = repo.delete_warning(warning_id=warning_id)
         
         assert deleted_warning == warning
-        assert len(repo.warnings) == 2        
+        assert len(repo.warnings) == 3        
