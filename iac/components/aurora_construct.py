@@ -21,7 +21,7 @@ class AuroraConstruct(Construct):
 
         vpc = ec2.Vpc(
             self, f"PortalEntidadesVpc-{stage}",
-            max_azs=3,
+            max_azs=1,
             cidr="10.0.0.0/16",
             subnet_configuration=[
                 ec2.SubnetConfiguration(
@@ -42,12 +42,6 @@ class AuroraConstruct(Construct):
             f"SecretsManagerEndpoint-{stage}",
             service=ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER
         )
-        
-        vpc.add_interface_endpoint(
-            f"RdsDataEndpoint-{stage}",
-            service=ec2.InterfaceVpcEndpointAwsService.RDS_DATA
-        )
-        
         
 
         creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
