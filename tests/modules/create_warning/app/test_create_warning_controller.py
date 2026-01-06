@@ -54,7 +54,7 @@ class Test_CreateWarningController:
             'new_warning':{
                 'title': 'Manutenção no sistema',
                 'description': 'O sistema ficará indisponível para manutenção.',
-                'expire': '2025-12-31T23:59:59',
+                'expire': '2026-12-31T23:59:59',
                 'target_role': 'PRESIDENT',
                 'target_org': 'DEV'
             }
@@ -66,7 +66,7 @@ class Test_CreateWarningController:
         assert response.body["warning"]['warning_id'] is not None
         assert response.body["warning"]['body']['title'] == 'Manutenção no sistema'
         assert response.body["warning"]['body']['description'] == 'O sistema ficará indisponível para manutenção.'
-        assert response.body["warning"]['body']['expire'] == datetime.datetime(2025, 12, 31, 23, 59, 59)
+        assert response.body["warning"]['body']['expire'] == datetime.datetime(2026, 12, 31, 23, 59, 59)
         assert response.body["warning"]['target_role'] == 'PRESIDENT'
         assert response.body["warning"]['target_org'] == 'DEV'
 
@@ -85,7 +85,7 @@ class Test_CreateWarningController:
             'new_warning':{
                 'title': 'Atualização de política',
                 'description': 'Haverá uma atualização na política de uso.',
-                'expire': '2025-12-30T23:59:59',
+                'expire': '2026-12-30T23:59:59',
                 'target_role': 'USER',
                 # No target_org is provided for general warning
             }
@@ -97,7 +97,7 @@ class Test_CreateWarningController:
         assert response.body["warning"]['warning_id'] is not None
         assert response.body["warning"]['body']['title'] == 'Atualização de política'
         assert response.body["warning"]['body']['description'] == 'Haverá uma atualização na política de uso.'
-        assert response.body["warning"]['body']['expire'] == datetime.datetime(2025, 12, 30, 23, 59, 59)
+        assert response.body["warning"]['body']['expire'] == datetime.datetime(2026, 12, 30, 23, 59, 59)
         assert response.body["warning"]['target_role'] == 'USER'
         assert response.body["warning"]['target_org'] is None
 
