@@ -43,7 +43,11 @@ class AuroraConstruct(Construct):
             service=ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER
         )
         
-
+        vpc.add_interface_endpoint(
+            f"RdsDataEndpoint-{stage}",
+            service=ec2.InterfaceVpcEndpointAwsService.RDS_DATA
+        )
+        
         creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
         
         db_name = "PortalEntidades_UserTable"
