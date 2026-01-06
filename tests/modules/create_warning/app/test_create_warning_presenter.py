@@ -52,7 +52,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "General Warning",
                     "description": "This is a general warning for all organizations",
-                    "expire": '2025-12-31T23:59:59',
+                    "expire": '2026-12-31T23:59:59',
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -119,7 +119,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "DEV Organization Warning",
                     "description": "This is a warning specifically for DEV organization",
-                    "expire": '2025-12-31T23:59:59',
+                    "expire": '2026-12-31T23:59:59',
                     "target_role": "PRESIDENT",
                     "target_org": "DEV"
                 }
@@ -478,7 +478,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Title",
                     "description": "Test Description",
-                    "expire": '2025-12-31T23:59:59'
+                    "expire": '2026-12-31T23:59:59'
                 }
             }),
             "pathParameters": None,
