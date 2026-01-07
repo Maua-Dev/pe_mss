@@ -21,31 +21,33 @@ class AuroraConstruct(Construct):
 
         vpc = ec2.Vpc(
             self, f"PortalEntidadesVpc-{stage}",
-            max_azs=1,
+            max_azs=2,
             cidr="10.0.0.0/16",
             subnet_configuration=[
                 ec2.SubnetConfiguration(
                     name=f"PrivateSubnet-{stage}",
                     subnet_type=ec2.SubnetType.PRIVATE_ISOLATED,
                     cidr_mask=24
-                ),
-                ec2.SubnetConfiguration(
-                    name=f"PublicSubnet-{stage}",
-                    subnet_type=ec2.SubnetType.PUBLIC,
-                    cidr_mask=24
                 )
             ],
             nat_gateways=0
         )
         
+        single_az_selection = ec2.SubnetSelection(
+            subnet_type=ec2.SubnetType.PRIVATE_ISOLATED,
+            availability_zones=[vpc.availability_zones[0]] 
+        )
+        
         vpc.add_interface_endpoint(
             f"SecretsManagerEndpoint-{stage}",
-            service=ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER
+            service=ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+            subnets=single_az_selection
         )
         
         vpc.add_interface_endpoint(
             f"RdsDataEndpoint-{stage}",
-            service=ec2.InterfaceVpcEndpointAwsService.RDS_DATA
+            service=ec2.InterfaceVpcEndpointAwsService.RDS_DATA,
+            subnets=single_az_selection
         )
         
         creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
