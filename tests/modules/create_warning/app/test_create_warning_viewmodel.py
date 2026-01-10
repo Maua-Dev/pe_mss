@@ -1,5 +1,4 @@
-import datetime
-
+from datetime import datetime
 from src.modules.create_warning.app.create_warning_viewmodel import CreateWarningViewmodel
 from src.shared.domain.entities.warning import Warning, WarningBody
 from src.shared.domain.enums.organization_enum import ORGANIZATION
@@ -15,9 +14,9 @@ class Test_CreateWarningViewmodel:
             body=WarningBody(
                 title="Test Warning Title",
                 description="Test Warning Description",
-                expire=datetime.datetime(2025, 12, 31, 23, 59, 59)
+                expire=datetime.now().replace(year=datetime.now().year + 1).isoformat()
             ),
-            created_at=datetime.datetime(2025, 11, 28, 10, 0, 0)
+            created_at=datetime(2025, 11, 28, 10, 0, 0)
         )
 
         warning_viewmodel = CreateWarningViewmodel(warning=warning)
@@ -31,9 +30,9 @@ class Test_CreateWarningViewmodel:
             body=WarningBody(
                 title="General Warning",
                 description="This is a general warning",
-                expire=datetime.datetime(2025, 12, 15, 12, 0, 0)
+                expire=datetime.now().replace(year=datetime.now().year + 1).isoformat()
             ),
-            created_at=datetime.datetime(2025, 11, 28, 10, 0, 0)
+            created_at=datetime(2025, 11, 28, 10, 0, 0)
         )
 
         warning_viewmodel = CreateWarningViewmodel(warning=warning)
@@ -48,9 +47,9 @@ class Test_CreateWarningViewmodel:
             body=WarningBody(
                 title="NAWAT Warning",
                 description="Important update for NAWAT",
-                expire=datetime.datetime(2025, 12, 20, 18, 30, 0)
+                expire=datetime.now().replace(year=datetime.now().year + 1).isoformat()
             ),
-            created_at=datetime.datetime(2025, 11, 28, 10, 0, 0)
+            created_at=datetime(2025, 11, 28, 10, 0, 0)
         )
 
         warning_viewmodel = CreateWarningViewmodel(warning=warning)
@@ -65,9 +64,9 @@ class Test_CreateWarningViewmodel:
                 "body": {
                     "title": "NAWAT Warning",
                     "description": "Important update for NAWAT",
-                    "expire": datetime.datetime(2025, 12, 20, 18, 30, 0),
+                    "expire": warning.body.expire,
                 },
-                "created_at": datetime.datetime(2025, 11, 28, 10, 0, 0),
+                "created_at": datetime(2025, 11, 28, 10, 0, 0),
             },
             "message": "the warning was created successfully"
         }
@@ -79,9 +78,9 @@ class Test_CreateWarningViewmodel:
             body=WarningBody(
                 title="Admin Alert",
                 description="System maintenance scheduled",
-                expire=datetime.datetime(2025, 12, 10, 8, 0, 0)
+                expire=datetime.now().replace(year=datetime.now().year + 1).isoformat()
             ),
-            created_at=datetime.datetime(2025, 11, 28, 10, 0, 0)
+            created_at=datetime(2025, 11, 28, 10, 0, 0)
         )
 
         warning_viewmodel = CreateWarningViewmodel(warning=warning)
@@ -93,6 +92,6 @@ class Test_CreateWarningViewmodel:
         assert result["warning"]["target_org"] is None
         assert result["warning"]["body"]["title"] == "Admin Alert"
         assert result["warning"]["body"]["description"] == "System maintenance scheduled"
-        assert result["warning"]["body"]["expire"] == datetime.datetime(2025, 12, 10, 8, 0, 0)
-        assert result["warning"]["created_at"] == datetime.datetime(2025, 11, 28, 10, 0, 0)
+        assert result["warning"]["body"]["expire"] == warning.body.expire
+        assert result["warning"]["created_at"] == datetime(2025, 11, 28, 10, 0, 0)
         assert result["message"] == "the warning was created successfully"

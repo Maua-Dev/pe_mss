@@ -1,6 +1,5 @@
 import pytest
-import datetime
-
+from datetime import datetime 
 from src.modules.create_warning.app.create_warning_usecase import CreateWarningUsecase
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -19,7 +18,7 @@ class Test_CreateWarningUsecase:
         created_warning = usecase(
             title="New General Warning",
             description="This is a general warning for all organizations",
-            expire='2025-12-31T23:59:59',
+            expire=datetime.now().replace(year=datetime.now().year + 1).isoformat(),
             target_role=ROLE.PRESIDENT,
             user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
         )
@@ -41,7 +40,7 @@ class Test_CreateWarningUsecase:
         created_warning = usecase(
             title="DEV Organization Warning",
             description="This is a warning specifically for DEV organization",
-            expire='2025-12-31T23:59:59',
+            expire=datetime.now().replace(year=datetime.now().year + 1).isoformat(),
             target_role=ROLE.PRESIDENT,
             target_org=ORGANIZATION.DEV,
             user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
@@ -62,7 +61,7 @@ class Test_CreateWarningUsecase:
         created_warning = usecase(
             title="User Role Warning",
             description="This is a warning for USER role",
-            expire='2025-12-31T23:59:59',
+            expire=datetime.now().replace(year=datetime.now().year + 1).isoformat(),
             target_role=ROLE.USER,
             target_org=ORGANIZATION.NAWAT,
             user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
@@ -82,7 +81,7 @@ class Test_CreateWarningUsecase:
         created_warning = usecase(
             title="ADM Warning",
             description="Important warning for administrators",
-            expire='2025-12-31T23:59:59',
+            expire=datetime.now().replace(year=datetime.now().year + 1).isoformat(),
             target_role=ROLE.ADM,
             user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
         )
@@ -103,7 +102,7 @@ class Test_CreateWarningUsecase:
             usecase(
                 title="Test Warning",
                 description="Test Description",
-                expire='2025-12-31T23:59:59',
+                expire=datetime.now().replace(year=datetime.now().year + 1).isoformat(),
                 target_role=ROLE.PRESIDENT,
                 user_id="550e8400-e29b-41d4-a716-446655440000"  # Non-admin user
             )

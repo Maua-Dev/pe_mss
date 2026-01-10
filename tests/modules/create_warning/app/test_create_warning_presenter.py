@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 from src.modules.create_warning.app.create_warning_presenter import lambda_handler
 
@@ -51,7 +52,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "General Warning",
                     "description": "This is a general warning for all organizations",
-                    "expire": '2026-12-31T23:59:59',
+                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -118,7 +119,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "DEV Organization Warning",
                     "description": "This is a warning specifically for DEV organization",
-                    "expire": '2026-12-31T23:59:59',
+                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
                     "target_role": "PRESIDENT",
                     "target_org": "DEV"
                 }
@@ -182,7 +183,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Warning",
                     "description": "Test Description",
-                    "expire": '2025-12-31T23:59:59',
+                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -296,7 +297,7 @@ class Test_CreateWarningPresenter:
             "body": json.dumps({
                 "new_warning": {
                     "description": "Test Description",
-                    "expire": '2025-12-31T23:59:59',
+                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -356,7 +357,7 @@ class Test_CreateWarningPresenter:
             "body": json.dumps({
                 "new_warning": {
                     "title": "Test Title",
-                    "expire": '2025-12-31T23:59:59',
+                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -477,7 +478,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Title",
                     "description": "Test Description",
-                    "expire": '2026-12-31T23:59:59'
+                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat()
                 }
             }),
             "pathParameters": None,
@@ -537,7 +538,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Warning",
                     "description": "Test Description",
-                    "expire": '2026-12-31T23:59:59',
+                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
                     "target_role": "PRESIDENT"
                 }
             }),

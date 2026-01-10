@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from src.modules.create_warning.app.create_warning_usecase import CreateWarningUsecase
 from src.modules.create_warning.app.create_warning_viewmodel import CreateWarningViewmodel
 from src.shared.domain.enums.organization_enum import ORGANIZATION
@@ -37,7 +37,7 @@ class CreateWarningController:
             if new_warning_data.get('expire') is None:
                 raise MissingParameters('expire')
             
-            if datetime.datetime.fromisoformat(new_warning_data.get('expire')) <= datetime.datetime.now():
+            if datetime.fromisoformat(new_warning_data.get('expire')) <= datetime.now():
                 raise WrongTypeParameter(
                     fieldName="expire",
                     fieldTypeExpected="a future date",
