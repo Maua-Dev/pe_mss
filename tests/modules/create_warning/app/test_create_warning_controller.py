@@ -101,34 +101,6 @@ class Test_CreateWarningController:
         assert response.body["warning"]['target_role'] == 'USER'
         assert response.body["warning"]['target_org'] is None
 
-    # in this first version, only ADM users can create warnings, PRESIDENT and USER can't
-    def test_create_warning_controller_as_non_admin(self):
-        repo = WarningRepositoryMock()
-        user_repo= UserRepositoryMock()
-        usecase= CreateWarningUsecase(repo=repo, user_repo=user_repo)
-        controller= CreateWarningController(usecase=usecase)
-
-        # the test is beeing done with a USER in case that in future we allow PRESIDENT users to create warnings
-        request = HttpRequest(body={
-            'user_from_authorizer':{
-                'id': '550e8400-e29b-41d4-a716-446655440000',
-                'displayName': 'Guilherme',
-                'mail': '25.00178-5@maua.br'
-            },
-            'new_warning':{
-                'title': 'Manutenção no sistema',
-                'description': 'O sistema ficará indisponível para manutenção.',
-                'expire': '2025-12-31T23:59:59',
-                'target_role': 'PRESIDENT',
-                'target_org': 'DEV'
-            }
-        }) 
-
-        response= controller(request=request)
-
-        assert response.status_code == 403
-        assert response.body == 'Only ADM users can create warnings.'
-
     def test_create_warning_controller_with_past_expire_date(self):
         repo = WarningRepositoryMock()
         user_repo= UserRepositoryMock()

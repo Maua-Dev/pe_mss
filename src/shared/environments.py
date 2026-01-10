@@ -97,7 +97,7 @@ class Environments:
         else:
             raise Exception("No repository found for this stage")
         
-    def get_warning_repo() -> IWarningRepository:
+    def warning_repo() -> IWarningRepository:
         if Environments.get_envs().stage == STAGE.TEST:
             from src.shared.infra.repositories.warning_repository_mock import WarningRepositoryMock
             return WarningRepositoryMock()

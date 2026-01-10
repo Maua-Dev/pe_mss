@@ -15,5 +15,5 @@ class DeleteWarningViewmodel:
                 },
                 "created_at": self.warning.created_at,
             },
-            "message": "the warning was deleted sucessfully"
+            "message": "the warning was deleted successfully"
         }

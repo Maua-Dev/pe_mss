@@ -41,7 +41,7 @@ class TestGetWarningController:
             }
         ]
 
-        expeted_dict= {
+        expected_dict= {
             'warnings': expected_warning,
             'message': "The warning/s was/were retrieved successfully"
         }
@@ -49,7 +49,7 @@ class TestGetWarningController:
         assert response.status_code == 200
         assert isinstance(response.body, dict)
         assert len(response.body['warnings']) == 1
-        assert response.body == expeted_dict
+        assert response.body == expected_dict
 
 
     def test_get_warning_controller_with_org_and_role(self):
@@ -89,7 +89,7 @@ class TestGetWarningController:
             
         ]
 
-        expeted_dict= {
+        expected_dict= {
             'warnings': expected_warning,
             'message': "The warning/s was/were retrieved successfully"
         }
@@ -97,7 +97,7 @@ class TestGetWarningController:
         assert response.status_code == 200
         assert isinstance(response.body, dict)
         assert len(response.body['warnings']) == 2
-        assert response.body == expeted_dict
+        assert response.body == expected_dict
 
 
     def test_get_warning_controller_missing_user_from_authorizer(self):

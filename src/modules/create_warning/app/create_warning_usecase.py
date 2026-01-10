@@ -1,11 +1,11 @@
 import uuid
 from src.shared.clients.event_bridge_client import EventBridgeClient
 from src.shared.domain.entities.warning import WarningBody, Warning
-from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.domain.repositories.warning_repository_interface import IWarningRepository
 from src.shared.environments import Environments
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction
 
 
 class CreateWarningUsecase:
@@ -19,8 +19,13 @@ class CreateWarningUsecase:
         description,
         expire,
         target_role,
-        target_org=None,
+        user_id,
+        target_org=None
     ):
+        
+        if self.user_repo.get_user(user_id=user_id).role != ROLE.ADM:
+            raise ForbiddenAction("Only ADM users can create warnings.")
+        
         if target_org:
             body= WarningBody(
                 title=title,
@@ -33,7 +38,7 @@ class CreateWarningUsecase:
                 target_role=target_role, # this is already ROLE enum
                 target_org=target_org, # this is already ORGANIZATION enum
                 body=body
-                # created_at is beeing set automatically
+                # created_at is being set automatically
             )
         else:
             body= WarningBody(
@@ -45,7 +50,7 @@ class CreateWarningUsecase:
             warning= Warning(
                 warning_id=str(uuid.uuid4()),
                 target_role=target_role, # this is already ROLE enum
-                # created_at is beeing set automatically
+                # created_at is being set automatically
                 body=body
             )
         

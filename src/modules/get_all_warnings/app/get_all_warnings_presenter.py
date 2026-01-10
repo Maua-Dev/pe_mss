@@ -5,7 +5,7 @@ from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 
 
-repo= Environments.get_warning_repo()
+repo= Environments.warning_repo()
 user_repo= Environments.get_user_repo()
 
 usecase= GetAllWarningsUseCase(repo, user_repo)

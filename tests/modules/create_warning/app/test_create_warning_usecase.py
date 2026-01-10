@@ -20,7 +20,8 @@ class Test_CreateWarningUsecase:
             title="New General Warning",
             description="This is a general warning for all organizations",
             expire='2025-12-31T23:59:59',
-            target_role=ROLE.PRESIDENT
+            target_role=ROLE.PRESIDENT,
+            user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
         )
         
         assert created_warning.body.title == "New General Warning"
@@ -42,7 +43,8 @@ class Test_CreateWarningUsecase:
             description="This is a warning specifically for DEV organization",
             expire='2025-12-31T23:59:59',
             target_role=ROLE.PRESIDENT,
-            target_org=ORGANIZATION.DEV
+            target_org=ORGANIZATION.DEV,
+            user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
         )
         
         assert created_warning.body.title == "DEV Organization Warning"
@@ -62,7 +64,8 @@ class Test_CreateWarningUsecase:
             description="This is a warning for USER role",
             expire='2025-12-31T23:59:59',
             target_role=ROLE.USER,
-            target_org=ORGANIZATION.NAWAT
+            target_org=ORGANIZATION.NAWAT,
+            user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
         )
         
         assert created_warning.body.title == "User Role Warning"
@@ -80,10 +83,29 @@ class Test_CreateWarningUsecase:
             title="ADM Warning",
             description="Important warning for administrators",
             expire='2025-12-31T23:59:59',
-            target_role=ROLE.ADM
+            target_role=ROLE.ADM,
+            user_id="550e8400-e29b-41d4-a716-446655440001"  # Admin user
         )
         
         assert created_warning.body.title == "ADM Warning"
         assert created_warning.body.description == "Important warning for administrators"
         assert created_warning.target_role == "ADM"
         assert created_warning.target_org is None
+
+    def test_create_warning_usecase_non_admin_user(self):
+        repo = WarningRepositoryMock()
+        user_repo = UserRepositoryMock()
+        usecase = CreateWarningUsecase(repo=repo, user_repo=user_repo)
+
+        from src.shared.helpers.errors.usecase_errors import ForbiddenAction
+
+        with pytest.raises(ForbiddenAction) as exc_info:
+            usecase(
+                title="Test Warning",
+                description="Test Description",
+                expire='2025-12-31T23:59:59',
+                target_role=ROLE.PRESIDENT,
+                user_id="550e8400-e29b-41d4-a716-446655440000"  # Non-admin user
+            )
+        
+        assert str(exc_info.value) == "Only ADM users can create warnings."

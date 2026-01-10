@@ -22,11 +22,6 @@ class CreateWarningController:
                 raise MissingParameters('user_from_authorizer')
 
             requester_user_id = requester_user.get('id')
-
-            requester_user_role = self.create_warning_usecase.user_repo.get_user(user_id=requester_user_id).role
-
-            if requester_user_role != ROLE.ADM:
-                raise ForbiddenAction("Only ADM users can create warnings.")
             
             new_warning_data = request.data.get('new_warning')
 
@@ -66,7 +61,8 @@ class CreateWarningController:
                     target_role=ROLE(new_warning_data.get('target_role')),
                     title=new_warning_data.get('title'),
                     description=new_warning_data.get('description'),
-                    expire=new_warning_data.get('expire')
+                    expire=new_warning_data.get('expire'),
+                    user_id=requester_user_id
                 )
 
             else:
@@ -83,7 +79,8 @@ class CreateWarningController:
                     target_org=ORGANIZATION(new_warning_data.get('target_org')),
                     title=new_warning_data.get('title'),
                     description=new_warning_data.get('description'),
-                    expire=new_warning_data.get('expire')
+                    expire=new_warning_data.get('expire'),
+                    user_id=requester_user_id
                 )
 
             viewmodel= CreateWarningViewmodel(warning=new_specific_warning if new_warning_data.get('target_org') else new_general_warning)

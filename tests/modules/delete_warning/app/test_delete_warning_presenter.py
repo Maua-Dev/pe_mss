@@ -63,8 +63,8 @@ class Test_DeleteWarningPresenter:
         assert body["warning"]["target_role"] is not None
         assert body["warning"]["body"]["title"] is not None
         assert body["warning"]["body"]["description"] is not None
-        assert body["message"] == "the warning was deleted sucessfully"
-
+        assert body["message"] == "the warning was deleted successfully"
+        
     def test_delete_warning_presenter_without_user_from_authorizer(self):
         event = {
             "version": "2.0",

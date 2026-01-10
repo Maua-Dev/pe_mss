@@ -1,8 +1,9 @@
 from src.shared.clients.event_bridge_client import EventBridgeClient
+from src.shared.domain.enums.role_enum import ROLE
 from src.shared.domain.repositories.user_repository_interface import IUserRepository
 from src.shared.domain.repositories.warning_repository_interface import IWarningRepository
 from src.shared.environments import Environments
-from src.shared.helpers.errors.usecase_errors import NoItemsFound
+from src.shared.helpers.errors.usecase_errors import ForbiddenAction, NoItemsFound
 
 
 class DeleteWarningUsecase:
@@ -12,8 +13,12 @@ class DeleteWarningUsecase:
 
     def __call__(
         self,
-        warning_id
+        warning_id,
+        user_id
     ):
+        
+        if self.user_repo.get_user(user_id=user_id).role != ROLE.ADM:
+            raise ForbiddenAction("Only ADM users can delete warnings.")
         
         if not Environments.get_envs().stage.value == "TEST":
             try:

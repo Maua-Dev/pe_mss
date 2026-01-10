@@ -37,11 +37,11 @@ class GetWarningController:
             organization= request.data.get('organization')
 
             if warning_id is None and role is None and organization is None:
-                return BadRequest("You should inform warnin_id or role and organization (at least one)")
+                return BadRequest("You should inform warning_id or role and organization (at least one)")
             
             if warning_id:
                 if role or organization:
-                    return BadRequest("You should inform warnin_id or role and organization (only one)")
+                    return BadRequest("You should inform warning_id or role and organization (only one)")
                 
                 warning= self.get_warning_usecase(warning_id)
                 

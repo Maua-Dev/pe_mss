@@ -1,6 +1,5 @@
 from src.modules.delete_warning.app.delete_warning_usecase import DeleteWarningUsecase
 from src.modules.delete_warning.app.delete_warning_viewmodel import DeleteWarningViewmodel
-from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import DuplicatedItem, ForbiddenAction, NoItemsFound
@@ -20,11 +19,6 @@ class DeleteWarningController:
             
             requester_user_id = requester_user.get('id')
             
-            requester_user_role= self.delete_warning_usecase.user_repo.get_user(user_id=requester_user_id).role
-
-            if requester_user_role != ROLE.ADM:
-                raise ForbiddenAction("Only ADM users can delete warnings.")
-            
             warning_id= request.data.get('warning_id')
 
             if warning_id is None:
@@ -37,7 +31,7 @@ class DeleteWarningController:
                     fieldTypeReceived=warning_id.__class__.__name__
                 )
             
-            deleted_warning= self.delete_warning_usecase(warning_id)
+            deleted_warning= self.delete_warning_usecase(warning_id, requester_user_id)
 
             return OK(body=DeleteWarningViewmodel(deleted_warning).to_dict())
         

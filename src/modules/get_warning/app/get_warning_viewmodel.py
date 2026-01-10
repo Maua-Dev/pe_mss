@@ -1,5 +1,5 @@
 from typing import List
-
+from src.shared.domain.entities.warning import Warning
 
 class WarningViewModel:
     warning_id: str
@@ -10,7 +10,6 @@ class WarningViewModel:
     title: str
     description: str
     expire: int
-    created_at: str
 
     def __init__(self, warning: Warning):
         self.warning_id = warning.warning_id

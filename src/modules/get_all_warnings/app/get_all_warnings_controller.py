@@ -21,12 +21,12 @@ class GetAllWarningsController:
 
             requester_user_id = requester_user.get('id')
 
-            requester_user_role = self.usecase.user_repo.get_user(user_id=requester_user_id).role
+            # requester_user_role = self.usecase.user_repo.get_user(user_id=requester_user_id).role
 
-            if requester_user_role != ROLE.ADM:
-                raise ForbiddenAction("Only ADM users can get all warnings.")
+            # if requester_user_role != ROLE.ADM:
+            #     raise ForbiddenAction("Only ADM users can get all warnings.")
             
-            all_warnings = self.usecase()
+            all_warnings = self.usecase(user_id=requester_user_id)
 
             viewmodel = GetAllWarningsViewModel(all_warnings)
             

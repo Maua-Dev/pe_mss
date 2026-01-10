@@ -1,5 +1,4 @@
 import json
-import datetime
 from src.modules.create_warning.app.create_warning_presenter import lambda_handler
 
 
@@ -538,7 +537,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Warning",
                     "description": "Test Description",
-                    "expire": '2025-12-31T23:59:59',
+                    "expire": '2026-12-31T23:59:59',
                     "target_role": "PRESIDENT"
                 }
             }),

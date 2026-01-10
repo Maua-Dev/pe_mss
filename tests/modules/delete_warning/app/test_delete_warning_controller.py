@@ -32,28 +32,6 @@ class Test_DeleteWarningUsecase:
         assert response.body["warning"]["body"]["expire"] == response.body["warning"]["body"]["expire"]
         assert response.body["warning"]["created_at"] == response.body["warning"]["created_at"]
 
-    
-
-    def test_delete_warning_as_not_admin(self):
-        repo = WarningRepositoryMock()
-        user_repo= UserRepositoryMock()
-        usecase= DeleteWarningUsecase(repo=repo, user_repo=user_repo)
-        controller= DeleteWarningController(usecase=usecase)
-
-        request = HttpRequest(body={
-            'user_from_authorizer':{
-                'id': '550e8400-e29b-41d4-a716-446655440000',
-                'displayName': 'Guilherme',
-                'mail': '25.00178-5@maua.br'
-            },
-            'warning_id':'e6112d17-c030-4d65-8b9f-e472d20055a5'
-        })
-
-        response= controller(request=request)
-
-        assert response.status_code == 403
-        assert response.body == 'Only ADM users can delete warnings.'
-
 
     def test_delete_warning_with_missing_warning_id(self):
         repo = WarningRepositoryMock()

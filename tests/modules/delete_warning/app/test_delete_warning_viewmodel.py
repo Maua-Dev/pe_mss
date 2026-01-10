@@ -69,7 +69,7 @@ class Test_DeleteWarningViewmodel:
                 },
                 "created_at": datetime.datetime(2025, 12, 10, 10, 0, 0),
             },
-            "message": "the warning was deleted sucessfully"
+            "message": "the warning was deleted successfully"
         }
 
     def test_delete_warning_viewmodel_to_dict_without_target_org(self):
@@ -95,4 +95,4 @@ class Test_DeleteWarningViewmodel:
         assert result["warning"]["body"]["description"] == "System maintenance scheduled"
         assert result["warning"]["body"]["expire"] == datetime.datetime(2025, 12, 10, 8, 0, 0)
         assert result["warning"]["created_at"] == datetime.datetime(2025, 12, 10, 10, 0, 0)
-        assert result["message"] == "the warning was deleted sucessfully"
+        assert result["message"] == "the warning was deleted successfully"

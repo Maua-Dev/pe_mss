@@ -62,22 +62,3 @@ class TestGetAllWarningsController:
 
         assert response.status_code == 400
         assert response.body == 'Field user_from_authorizer is missing'
-
-    def test_get_all_warnings_controller_user_not_adm(self):
-        repo= WarningRepositoryMock()
-        user_repo=  UserRepositoryMock()
-        usecase = GetAllWarningsUseCase(repo=repo, user_repo=user_repo)
-        controller = GetAllWarningsController(usecase=usecase)
-
-        request = HttpRequest(body={
-            'user_from_authorizer':{
-                'id': "550e8400-e29b-41d4-a716-446655440000",
-                'displayName': "Guilherme",
-                'mail': "25.00178-5@maua.br"
-            }
-        })
-
-        response = controller(request=request)
-
-        assert response.status_code == 403
-        assert response.body == 'Only ADM users can get all warnings.'
