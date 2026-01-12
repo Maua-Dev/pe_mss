@@ -55,7 +55,7 @@ class EventBridgeClient:
                 Name=rule_name,
                 ScheduleExpression=cron_expr,
                 State="ENABLED",
-                Description="Rule for deleting a created alert after certain time in the reservation mss alert. This rule triggers a delete alert lambda function"
+                Description="Rule for deleting a created warning after certain time in the pe mss. This rule triggers a delete warning lambda function"
             )
             
             print(f"Successfully updated schedule for rule: {rule_name}")
@@ -82,7 +82,7 @@ class EventBridgeClient:
             
             self.eventbridge.remove_targets(
                 Rule = rule_name,
-                Ids=["DeleteAlertLambdaTarget"]
+                Ids=["DeleteWarningLambdaTarget"]
             )
             
             print(f"Successfully removed targets from rule: {rule_name}")
@@ -124,7 +124,7 @@ class EventBridgeClient:
                 Name=rule_name,
                 ScheduleExpression=cron_expr,
                 State="ENABLED",
-                Description="Rule for deleting a created alert after certain time in the reservation mss alert. This rule triggers a delete alert lambda function"
+                Description="Rule for deleting a created warning after certain time in the pe mss. This rule triggers a delete warning lambda function"
             )
             print(f"Successfully created rule: {rule_name}")
         
@@ -153,7 +153,7 @@ class EventBridgeClient:
                 Rule=rule_name,
                 Targets=[
                     {
-                        "Id": "DeleteAlertLambdaTarget",
+                        "Id": "DeleteWarningLambdaTarget",
                         "Arn": self.delete_warning_lambda_arn,
                         "Input": input_payload
                     }
