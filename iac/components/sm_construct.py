@@ -10,10 +10,10 @@ class SmConstruct(Construct):
     def __init__(
         self,
         scope: Construct,
-        environment_varibles: dict
+        environment_variables: dict
     ):
-        stage= environment_varibles.get("STAGE", "errorStage")
-        stack_name= environment_varibles.get("STACK_NAME", "errorStackName")
+        stage= environment_variables.get("STAGE", "errorStage")
+        stack_name= environment_variables.get("STACK_NAME", "errorStackName")
 
         super().__init__(scope, f"{stack_name}_SmConstruct_{stage}")
 
