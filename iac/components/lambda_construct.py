@@ -2,7 +2,9 @@ import os
 from aws_cdk import (
     aws_lambda as lambda_,
     NestedStack, Duration,
-    aws_apigateway as apigw
+    aws_apigateway as apigw,
+    Stack,
+    aws_iam as iam
 )
 from constructs import Construct
 from aws_cdk.aws_apigateway import Resource, LambdaIntegration
@@ -41,8 +43,9 @@ class LambdaConstruct(Construct):
     def __init__(
         self, 
         scope: Construct, 
-        api_gateway_resource: Resource, 
-        environment_variables: dict
+        api_gateway_resource: Resource,
+        environment_variables: dict,
+        sm_stack: Construct, 
     ) -> None:
         
         super().__init__(scope, "PortalEntidades_Lambdas")
@@ -141,6 +144,70 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
+        self.delete_warning = self.create_lambda_api_gateway_integration(
+            module_name="delete_warning",
+            method="DELETE",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            authorizer=token_authorizer_lambda
+        )
+        
+        self.delete_warning.add_permission(
+            "AllowEventBridgeToInvoke",
+            principal=iam.ServicePrincipal("events.amazonaws.com"),
+            action="lambda:InvokeFunction",
+            source_arn=f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
+        )
+
+        env_vars_with_arn = environment_variables.copy()
+        env_vars_with_arn["DELETE_WARNING_LAMBDA_ARN"] = self.delete_warning.function_arn
+
+        self.create_warning= self.create_lambda_api_gateway_integration(
+            module_name="create_warning",
+            method="POST",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=env_vars_with_arn,
+            authorizer=token_authorizer_lambda
+        )
+
+        # ALL LAMBDAS THAT USE EVENT BRIDGE CLIENT NEED READ ACCESS TO THE SECRET
+        
+        secret = sm_stack.event_secret
+                
+        secret.grant_read(self.create_warning)
+        secret.grant_read(self.delete_warning)
+
+        event_bridge_policy= iam.PolicyStatement(
+            effect=iam.Effect.ALLOW,
+            actions=[
+                "events:PutRule",
+                "events:DeleteRule",
+                "events:DescribeRule",
+                "events:PutTargets",
+                "events:RemoveTargets"
+            ],
+            resources=[
+                f"arn:aws:events:{Stack.of(self).region}:{Stack.of(self).account}:rule/one-time-trigger-*"
+            ]
+        )
+
+        self.get_warning= self.create_lambda_api_gateway_integration(
+            module_name="get_warning",
+            method="GET",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+        )
+
+        self.get_all_warnings= self.create_lambda_api_gateway_integration(
+            module_name="get_all_warnings",
+            method="GET",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=environment_variables
+        )
+
+        self.create_warning.add_to_role_policy(event_bridge_policy)
+        self.delete_warning.add_to_role_policy(event_bridge_policy)
+
         self.functions_that_need_db_access = [
             self.auth_user_function,
             self.create_user_function,
@@ -150,6 +217,13 @@ class LambdaConstruct(Construct):
             self.get_user_function,
             self.export_users_function,
             self.update_user_function
+        ]
+
+        self.functions_that_need_dynamo_permissions = [
+            self.create_warning,
+            self.delete_warning,
+            self.get_warning,
+            self.get_all_warnings
         ]
         
         self.functions_that_need_s3_permissions = [

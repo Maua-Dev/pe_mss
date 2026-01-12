@@ -12,7 +12,7 @@ from src.shared.infra.external.dynamo.datasources.dynamo_datasource import Dynam
 
 class WarningRepositoryDynamo(IWarningRepository):
     PARTITION_KEY = "warning_id"
-    TABLE_NAME = "warnings"
+    TABLE_NAME = Environments.get_envs().warning_table_name
     
     @staticmethod
     def partition_key_format(warning_id: str) -> str:
@@ -36,7 +36,7 @@ class WarningRepositoryDynamo(IWarningRepository):
         envs = Environments.get_envs()
 
         self.dynamo = DynamoDatasource(
-            endpoint_url=f'{envs.dynamo_endpoint_url}:{envs.dynamo_endpoint_port}',
+            endpoint_url=envs.endpoint_url,
             dynamo_table_name=self.TABLE_NAME,
             region=envs.dynamo_region,
             partition_key=self.PARTITION_KEY,

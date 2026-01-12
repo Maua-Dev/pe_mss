@@ -47,6 +47,17 @@ class WarningRepositoryMock(IWarningRepository):
                     expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2)
                 ),
                 created_at=datetime.datetime.now(datetime.timezone.utc)
+            ),
+            Warning(
+                warning_id="2f9806f9-1baf-4df4-95ac-61011e190189",
+                target_role=ROLE.PRESIDENT,
+                target_org=ORGANIZATION.NAWAT,
+                body=WarningBody(
+                    title="Titulo do alerta 4",
+                    description="Descrição do alerta 4",
+                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                ),
+                created_at=datetime.datetime.now(datetime.timezone.utc)
             )
         ]
         
