@@ -45,7 +45,7 @@ class LambdaConstruct(Construct):
         scope: Construct, 
         api_gateway_resource: Resource,
         environment_variables: dict,
-        sm_stack: Construct, 
+        sm_construct: Construct,
     ) -> None:
         
         super().__init__(scope, "PortalEntidades_Lambdas")
@@ -172,7 +172,7 @@ class LambdaConstruct(Construct):
 
         # ALL LAMBDAS THAT USE EVENT BRIDGE CLIENT NEED READ ACCESS TO THE SECRET
         
-        secret = sm_stack.event_secret
+        secret = sm_construct.event_secret
                 
         secret.grant_read(self.create_warning)
         secret.grant_read(self.delete_warning)
