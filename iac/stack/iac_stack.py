@@ -4,8 +4,6 @@ from aws_cdk import (
     # aws_sqs as sqs,
 )
 
-from iac.components.dynamo_construct import DynamoConstruct
-from .sm_stack import SmStack
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
@@ -13,6 +11,8 @@ from aws_cdk.aws_apigateway import RestApi, Cors
 from components.aurora_construct import AuroraConstruct
 from components.lambda_construct import LambdaConstruct
 from components.bucket_construct import BucketContruct
+from components.dynamo_construct import DynamoConstruct
+from components.sm_construct import SmConstruct
 import os
 
 class IacStack(Stack):
@@ -62,18 +62,18 @@ class IacStack(Stack):
             "WARNING_TABLE_NAME": self.dynamo_construct.warning_table.table_name
         }
 
-        self.sm_stack= SmStack(self, environment_variables=ENVIRONMENT_VARIABLES)
+        self.sm_construct= SmConstruct(self, environment_variables=ENVIRONMENT_VARIABLES)
 
-        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"]= self.sm_stack.event_secret.secret_arn
+        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"]= self.sm_construct.event_secret.secret_arn
 
-        self.lambda_stack = LambdaConstruct(
+        self.lambda_construct = LambdaConstruct(
             self, 
             api_gateway_resource=api_gateway_resource,
             environment_variables=ENVIRONMENT_VARIABLES,
-            sm_stack=self.sm_stack
+            sm_construct=self.sm_construct
         )
 
-        for fn in self.lambda_stack.functions_that_need_db_access:
+        for fn in self.lambda_construct.functions_that_need_db_access:
             self.aurora.cluster.grant_data_api_access(fn)
             self.aurora.secret.grant_read(fn)
             self.s3_bucket.s3_bucket_user.grant_read_write(fn)

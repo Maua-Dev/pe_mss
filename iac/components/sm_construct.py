@@ -4,7 +4,7 @@ from aws_cdk import (
 import json
 from constructs import Construct
 
-class SmStack(Construct):
+class SmConstruct(Construct):
     event_secret: secretsmanager.ISecret
 
     def __init__(
@@ -15,7 +15,7 @@ class SmStack(Construct):
         stage= environment_varibles.get("STAGE", "errorStage")
         stack_name= environment_varibles.get("STACK_NAME", "errorStackName")
 
-        super().__init__(scope, f"{stack_name}_SmStack_{stage}")
+        super().__init__(scope, f"{stack_name}_SmConstruct_{stage}")
 
         self.event_secret= secretsmanager.Secret(
             self,
