@@ -77,7 +77,7 @@ class IacStack(Stack):
             self.aurora.cluster.grant_data_api_access(fn)
             self.aurora.secret.grant_read(fn)
             
-        for fn in self.lambda_construct.functions_that_need_s3_access:
+        for fn in self.lambda_construct.functions_that_need_s3_permissions:
             self.s3_bucket.s3_bucket_user.grant_read_write(fn)
             
         for fn in self.lambda_construct.functions_that_need_dynamo_permissions:
