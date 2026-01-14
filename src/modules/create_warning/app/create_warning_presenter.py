@@ -1,6 +1,6 @@
 import json
-from src.modules.create_warning.app.create_warning_controller import CreateWarningController
-from src.modules.create_warning.app.create_warning_usecase import CreateWarningUsecase
+from .create_warning_controller import CreateWarningController
+from .create_warning_usecase import CreateWarningUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 

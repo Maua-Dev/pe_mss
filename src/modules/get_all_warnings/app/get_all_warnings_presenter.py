@@ -1,6 +1,6 @@
 import json
-from src.modules.get_all_warnings.app.get_all_warnings_controller import GetAllWarningsController
-from src.modules.get_all_warnings.app.get_all_warnings_usecase import GetAllWarningsUseCase
+from .get_all_warnings_controller import GetAllWarningsController
+from .get_all_warnings_usecase import GetAllWarningsUseCase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 

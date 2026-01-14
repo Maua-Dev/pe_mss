@@ -104,7 +104,7 @@ class Environments:
         elif Environments.get_envs().stage in [STAGE.DEV, STAGE.HOMOLOG, STAGE.PROD]:
             from src.shared.infra.repositories.warning_repository_dynamo import WarningRepositoryDynamo
             from src.shared.infra.external.dynamo.datasources.dynamo_datasource import DynamoDatasource
-            return WarningRepositoryDynamo(dynamo_datasource=DynamoDatasource())
+            return WarningRepositoryDynamo()
         else:
             raise Exception("No repository found for this stage")
 

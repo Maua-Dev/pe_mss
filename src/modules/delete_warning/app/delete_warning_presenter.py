@@ -1,6 +1,6 @@
 import json
-from src.modules.delete_warning.app.delete_warning_controller import DeleteWarningController
-from src.modules.delete_warning.app.delete_warning_usecase import DeleteWarningUsecase
+from .delete_warning_controller import DeleteWarningController
+from .delete_warning_usecase import DeleteWarningUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 

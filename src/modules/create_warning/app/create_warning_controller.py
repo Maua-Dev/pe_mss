@@ -1,6 +1,6 @@
 from datetime import datetime
-from src.modules.create_warning.app.create_warning_usecase import CreateWarningUsecase
-from src.modules.create_warning.app.create_warning_viewmodel import CreateWarningViewmodel
+from .create_warning_usecase import CreateWarningUsecase
+from .create_warning_viewmodel import CreateWarningViewmodel
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter

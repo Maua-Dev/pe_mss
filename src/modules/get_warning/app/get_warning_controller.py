@@ -1,6 +1,6 @@
 
-from src.modules.get_warning.app.get_warning_usecase import GetWarningUsecase
-from src.modules.get_warning.app.get_warning_viewmodel import GetWarningViewModel
+from .get_warning_usecase import GetWarningUsecase
+from .get_warning_viewmodel import GetWarningViewModel
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter

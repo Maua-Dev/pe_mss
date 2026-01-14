@@ -1,5 +1,5 @@
-from src.modules.get_all_warnings.app.get_all_warnings_usecase import GetAllWarningsUseCase
-from src.modules.get_all_warnings.app.get_all_warnings_viewmodel import GetAllWarningsViewModel
+from .get_all_warnings_usecase import GetAllWarningsUseCase
+from .get_all_warnings_viewmodel import GetAllWarningsViewModel
 from src.shared.domain.enums.role_enum import ROLE
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError

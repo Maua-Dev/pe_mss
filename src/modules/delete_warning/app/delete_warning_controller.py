@@ -1,5 +1,5 @@
-from src.modules.delete_warning.app.delete_warning_usecase import DeleteWarningUsecase
-from src.modules.delete_warning.app.delete_warning_viewmodel import DeleteWarningViewmodel
+from .delete_warning_usecase import DeleteWarningUsecase
+from .delete_warning_viewmodel import DeleteWarningViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import DuplicatedItem, ForbiddenAction, NoItemsFound
