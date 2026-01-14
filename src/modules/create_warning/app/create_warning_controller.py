@@ -37,7 +37,9 @@ class CreateWarningController:
             if new_warning_data.get('expire') is None:
                 raise MissingParameters('expire')
             
-            if datetime.fromisoformat(new_warning_data.get('expire')) <= datetime.now():
+            expire_dt = datetime.fromisoformat(new_warning_data.get('expire'))
+            
+            if expire_dt <= datetime.now():
                 raise WrongTypeParameter(
                     fieldName="expire",
                     fieldTypeExpected="a future date",
@@ -61,7 +63,7 @@ class CreateWarningController:
                     target_role=ROLE(new_warning_data.get('target_role')),
                     title=new_warning_data.get('title'),
                     description=new_warning_data.get('description'),
-                    expire=new_warning_data.get('expire'),
+                    expire=expire_dt,
                     user_id=requester_user_id
                 )
 
@@ -79,7 +81,7 @@ class CreateWarningController:
                     target_org=ORGANIZATION(new_warning_data.get('target_org')),
                     title=new_warning_data.get('title'),
                     description=new_warning_data.get('description'),
-                    expire=new_warning_data.get('expire'),
+                    expire=expire_dt,
                     user_id=requester_user_id
                 )
 

@@ -76,6 +76,11 @@ class IacStack(Stack):
         for fn in self.lambda_construct.functions_that_need_db_access:
             self.aurora.cluster.grant_data_api_access(fn)
             self.aurora.secret.grant_read(fn)
+            
+        for fn in self.lambda_construct.functions_that_need_s3_access:
             self.s3_bucket.s3_bucket_user.grant_read_write(fn)
+            
+        for fn in self.lambda_construct.functions_that_need_dynamo_permissions:
+            self.dynamo_construct.warning_table.grant_read_write_data(fn)
 
         
