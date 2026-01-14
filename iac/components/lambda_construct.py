@@ -216,7 +216,11 @@ class LambdaConstruct(Construct):
             self.get_all_users_function,
             self.get_user_function,
             self.export_users_function,
-            self.update_user_function
+            self.update_user_function,
+            self.create_warning,
+            self.delete_warning,
+            self.get_warning,
+            self.get_all_warnings
         ]
 
         self.functions_that_need_dynamo_permissions = [
