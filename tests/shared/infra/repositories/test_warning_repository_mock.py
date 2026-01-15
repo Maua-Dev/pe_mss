@@ -18,9 +18,9 @@ class TestWarningRepositoryMock:
             body=WarningBody(
                 title="Titulo do alerta teste",
                 description="Descrição do alerta teste",
-                expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).timestamp() * 1000)
             ),
-            created_at=datetime.datetime.now(datetime.timezone.utc)
+            created_at=int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
         )
 
         created_warning = repo.create_warning(new_warning=new_warning)
@@ -41,7 +41,7 @@ class TestWarningRepositoryMock:
             body=WarningBody(
                 title="Titulo do alerta atualizado",
                 description="Descrição do alerta atualizada",
-                expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=15)
+                expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=15)).timestamp() * 1000)
             ),
             created_at=previous_warning.created_at
         )
