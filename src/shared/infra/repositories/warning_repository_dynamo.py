@@ -128,7 +128,7 @@ class WarningRepositoryDynamo(IWarningRepository):
     
     def get_warnings_by_org_and_role(self, target_org: ORGANIZATION, target_role: ROLE) -> list[Warning]:
         response = self.dynamo.query(
-            TableName='warnings',
+            TableName=self.TABLE_NAME,
             IndexName='RoleOrgIndex', #composite index with role as PK and org as SK
             KeyConditionExpression='target_org = :org AND target_role = :role',
             ExpressionAttributeValues={
