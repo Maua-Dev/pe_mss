@@ -196,13 +196,15 @@ class LambdaConstruct(Construct):
             method="GET",
             mss_student_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
+            authorizer=token_authorizer_lambda
         )
 
         self.get_all_warnings= self.create_lambda_api_gateway_integration(
             module_name="get_all_warnings",
             method="GET",
             mss_student_api_resource=api_gateway_resource,
-            environment_variables=environment_variables
+            environment_variables=environment_variables,
+            authorizer=token_authorizer_lambda
         )
 
         self.create_warning.add_to_role_policy(event_bridge_policy)
