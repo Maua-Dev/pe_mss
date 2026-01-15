@@ -52,7 +52,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "General Warning",
                     "description": "This is a general warning for all organizations",
-                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
+                    "expire": int(datetime.now().replace(year=datetime.now().year + 1).timestamp() * 1000),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -119,7 +119,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "DEV Organization Warning",
                     "description": "This is a warning specifically for DEV organization",
-                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
+                    "expire": int(datetime.now().replace(year=datetime.now().year + 1).timestamp() * 1000),
                     "target_role": "PRESIDENT",
                     "target_org": "DEV"
                 }
@@ -183,7 +183,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Warning",
                     "description": "Test Description",
-                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
+                    "expire": int(datetime.now().replace(year=datetime.now().year + 1).timestamp() * 1000),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -297,7 +297,7 @@ class Test_CreateWarningPresenter:
             "body": json.dumps({
                 "new_warning": {
                     "description": "Test Description",
-                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
+                    "expire": int(datetime.now().replace(year=datetime.now().year + 1).timestamp() * 1000),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -357,7 +357,7 @@ class Test_CreateWarningPresenter:
             "body": json.dumps({
                 "new_warning": {
                     "title": "Test Title",
-                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
+                    "expire": int(datetime.now().replace(year=datetime.now().year + 1).timestamp() * 1000),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -478,7 +478,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Title",
                     "description": "Test Description",
-                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat()
+                    "expire": int(datetime.now().replace(year=datetime.now().year + 1).timestamp() * 1000)
                 }
             }),
             "pathParameters": None,
@@ -538,7 +538,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Warning",
                     "description": "Test Description",
-                    "expire": datetime.now().replace(year=datetime.now().year + 1).isoformat(),
+                    "expire": int(datetime.now().replace(year=datetime.now().year + 1).timestamp() * 1000),
                     "target_role": "PRESIDENT"
                 }
             }),
@@ -599,7 +599,7 @@ class Test_CreateWarningPresenter:
                 "new_warning": {
                     "title": "Test Warning",
                     "description": "Test Description",
-                    "expire": "2020-01-01T00:00:00",
+                    "expire": 1577836800000,
                     "target_role": "PRESIDENT"
                 }
             }),

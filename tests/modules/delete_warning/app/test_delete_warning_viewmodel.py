@@ -15,9 +15,9 @@ class Test_DeleteWarningViewmodel:
             body=WarningBody(
                 title="Test Warning Title",
                 description="Test Warning Description",
-                expire=datetime.datetime(2025, 12, 31, 23, 59, 59)
+                expire=int(datetime.datetime(2025, 12, 31, 23, 59, 59, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 10, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 10, 10, 0, 0).timestamp() * 1000)
         )
 
         warning_viewmodel = DeleteWarningViewmodel(warning=warning)
@@ -31,9 +31,9 @@ class Test_DeleteWarningViewmodel:
             body=WarningBody(
                 title="General Warning",
                 description="This is a general warning",
-                expire=datetime.datetime(2025, 12, 15, 12, 0, 0)
+                expire=int(datetime.datetime(2025, 12, 15, 12, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 10, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 10, 10, 0, 0).timestamp() * 1000)
         )
 
         warning_viewmodel = DeleteWarningViewmodel(warning=warning)
@@ -48,9 +48,9 @@ class Test_DeleteWarningViewmodel:
             body=WarningBody(
                 title="NAWAT Warning",
                 description="Important update for NAWAT",
-                expire=datetime.datetime(2025, 12, 20, 18, 30, 0)
+                expire=int(datetime.datetime(2025, 12, 20, 18, 30, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 10, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 10, 10, 0, 0).timestamp() * 1000)
         )
 
         warning_viewmodel = DeleteWarningViewmodel(warning=warning)
@@ -65,9 +65,9 @@ class Test_DeleteWarningViewmodel:
                 "body": {
                     "title": "NAWAT Warning",
                     "description": "Important update for NAWAT",
-                    "expire": datetime.datetime(2025, 12, 20, 18, 30, 0),
+                    "expire": int(datetime.datetime(2025, 12, 20, 18, 30, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000),
                 },
-                "created_at": datetime.datetime(2025, 12, 10, 10, 0, 0),
+                "created_at": int(datetime.datetime(2025, 12, 10, 10, 0, 0).timestamp() * 1000),
             },
             "message": "the warning was deleted successfully"
         }
@@ -79,9 +79,9 @@ class Test_DeleteWarningViewmodel:
             body=WarningBody(
                 title="Admin Alert",
                 description="System maintenance scheduled",
-                expire=datetime.datetime(2025, 12, 10, 8, 0, 0)
+                expire=int(datetime.datetime(2025, 12, 10, 8, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 10, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 10, 10, 0, 0).timestamp() * 1000)
         )
 
         warning_viewmodel = DeleteWarningViewmodel(warning=warning)
@@ -93,6 +93,6 @@ class Test_DeleteWarningViewmodel:
         assert result["warning"]["target_org"] is None
         assert result["warning"]["body"]["title"] == "Admin Alert"
         assert result["warning"]["body"]["description"] == "System maintenance scheduled"
-        assert result["warning"]["body"]["expire"] == datetime.datetime(2025, 12, 10, 8, 0, 0)
-        assert result["warning"]["created_at"] == datetime.datetime(2025, 12, 10, 10, 0, 0)
+        assert result["warning"]["body"]["expire"] == int(datetime.datetime(2025, 12, 10, 8, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
+        assert result["warning"]["created_at"] == int(datetime.datetime(2025, 12, 10, 10, 0, 0).timestamp() * 1000)
         assert result["message"] == "the warning was deleted successfully"

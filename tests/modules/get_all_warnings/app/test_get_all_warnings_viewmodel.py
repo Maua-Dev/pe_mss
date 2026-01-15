@@ -15,9 +15,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="Test Warning Title",
                 description="Test Warning Description",
-                expire=datetime.datetime(2025, 12, 31, 23, 59, 59)
+                expire=int(datetime.datetime(2025, 12, 31, 23, 59, 59, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
 
         warning_viewmodel = WarningViewModel(warning=warning)
@@ -36,9 +36,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="General Warning",
                 description="This is a general warning",
-                expire=datetime.datetime(2025, 12, 15, 12, 0, 0)
+                expire=int(datetime.datetime(2025, 12, 15, 12, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
 
         warning_viewmodel = WarningViewModel(warning=warning)
@@ -58,9 +58,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="NAWAT Warning",
                 description="Important update for NAWAT",
-                expire=datetime.datetime(2025, 12, 20, 18, 30, 0)
+                expire=int(datetime.datetime(2025, 12, 20, 18, 30, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
 
         get_warning_viewmodel = GetWarningViewModel(warning=warning)
@@ -75,9 +75,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="Admin Alert",
                 description="System maintenance scheduled",
-                expire=datetime.datetime(2025, 12, 10, 8, 0, 0)
+                expire=int(datetime.datetime(2025, 12, 10, 8, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
 
         get_warning_viewmodel = GetWarningViewModel(warning=warning)
@@ -96,9 +96,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="Warning 1",
                 description="Description 1",
-                expire=datetime.datetime(2025, 12, 31, 23, 59, 59)
+                expire=int(datetime.datetime(2025, 12, 31, 23, 59, 59, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
         
         warning2 = Warning(
@@ -108,9 +108,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="Warning 2",
                 description="Description 2",
-                expire=datetime.datetime(2025, 12, 15, 12, 0, 0)
+                expire=int(datetime.datetime(2025, 12, 15, 12, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
 
         warnings_list = [warning1, warning2]
@@ -128,9 +128,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="Warning 1",
                 description="Description 1",
-                expire=datetime.datetime(2025, 12, 31, 23, 59, 59)
+                expire=int(datetime.datetime(2025, 12, 31, 23, 59, 59, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
         
         warning2 = Warning(
@@ -139,9 +139,9 @@ class Test_GetAllWarningsViewmodel:
             body=WarningBody(
                 title="Warning 2",
                 description="Description 2",
-                expire=datetime.datetime(2025, 12, 15, 12, 0, 0)
+                expire=int(datetime.datetime(2025, 12, 15, 12, 0, 0, tzinfo=datetime.timezone.utc).timestamp() * 1000)
             ),
-            created_at=datetime.datetime(2025, 12, 17, 10, 0, 0)
+            created_at=int(datetime.datetime(2025, 12, 17, 10, 0, 0).timestamp() * 1000)
         )
 
         warnings_list = [warning1, warning2]

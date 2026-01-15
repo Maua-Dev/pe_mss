@@ -1,7 +1,7 @@
 from pydantic import *
 import uuid
 from typing import *
-import datetime
+from time import time
 
 from src.shared.domain.enums.organization_enum import ORGANIZATION
 from src.shared.domain.enums.role_enum import ROLE
@@ -13,7 +13,7 @@ class WarningBody(BaseModel):
     description: str = Field(
         description="Descrição do aviso"
     )
-    expire: datetime.datetime = Field(
+    expire: int = Field(
         description="Data de vencimento do aviso / data limite do aviso",
     )
 
@@ -39,9 +39,9 @@ class Warning(BaseModel):
         description="Corpo do aviso"
     )
     
-    created_at: datetime.datetime = Field(
-        description="Data de criação do aviso",
-        default_factory=lambda: datetime.datetime.now()
+    created_at: int= Field(
+        description="Data de criação do aviso (timestamp em milisegundos)",
+        default_factory=lambda: int(time() * 1000)
     )
         
     model_config = ConfigDict(

@@ -14,12 +14,13 @@ class DeleteWarningUsecase:
     def __call__(
         self,
         warning_id,
-        user_id
+        user_id = None
     ):
         
-        if self.user_repo.get_user(user_id=user_id).role != ROLE.ADM:
-            raise ForbiddenAction("Only ADM users can delete warnings.")
-        
+        if user_id:
+            if self.user_repo.get_user(user_id=user_id).role != ROLE.ADM:
+                raise ForbiddenAction("Only ADM users can delete warnings.")
+    
         if not Environments.get_envs().stage.value == "TEST":
             try:
                 eb_client= EventBridgeClient()

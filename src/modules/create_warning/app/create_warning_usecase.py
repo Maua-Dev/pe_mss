@@ -56,7 +56,7 @@ class CreateWarningUsecase:
         
         if not Environments.get_envs().stage.value == "TEST":
             eb_client= EventBridgeClient()
-            expire_timestamp_ms = int(expire.timestamp() * 1000)
+            expire_timestamp_ms = expire
             
             rule = eb_client.create_trigger_for_deletion(
                 warning_id=warning.warning_id,

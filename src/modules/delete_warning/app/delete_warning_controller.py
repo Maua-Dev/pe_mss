@@ -1,3 +1,4 @@
+from src.shared.clients.sm_client import SmClient
 from .delete_warning_usecase import DeleteWarningUsecase
 from .delete_warning_viewmodel import DeleteWarningViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
@@ -12,26 +13,41 @@ class DeleteWarningController:
 
     def __call__(self, request: IRequest) -> IResponse:
         try:
-            requester_user = request.data.get('user_from_authorizer')
+            signature= request.data.get("signature")
 
-            if requester_user is None:
-                raise MissingParameters('user_from_authorizer')
-            
-            requester_user_id = requester_user.get('id')
-            
-            warning_id= request.data.get('warning_id')
+            if signature:
+                sm_client= SmClient()
 
-            if warning_id is None:
-                raise MissingParameters('warning_id')
+                rule_name= request.data.get("rule_name")
+                warning_id= request.data.get("warning_id")
+
+                if not sm_client.verify(rule_name=rule_name, warning_id=warning_id, signature=signature):
+                    return InternalServerError(body="Invalid signatur")
+                
+
+                deleted_warning= self.delete_warning_usecase(warning_id=warning_id)
+
+            else:
+                requester_user = request.data.get('user_from_authorizer')
+
+                if requester_user is None:
+                    raise MissingParameters('user_from_authorizer')
+                
+                requester_user_id = requester_user.get('id')
+                
+                warning_id= request.data.get('warning_id')
+
+                if warning_id is None:
+                    raise MissingParameters('warning_id')
             
-            if type(warning_id) != str:
-                raise WrongTypeParameter(
-                    fieldName="warning_id",
-                    fieldTypeExpected="str",
-                    fieldTypeReceived=warning_id.__class__.__name__
-                )
-            
-            deleted_warning= self.delete_warning_usecase(warning_id, requester_user_id)
+                if type(warning_id) != str:
+                    raise WrongTypeParameter(
+                        fieldName="warning_id",
+                        fieldTypeExpected="str",
+                        fieldTypeReceived=warning_id.__class__.__name__
+                    )
+                
+                deleted_warning= self.delete_warning_usecase(warning_id=warning_id, user_id=requester_user_id)
 
             return OK(body=DeleteWarningViewmodel(deleted_warning).to_dict())
         

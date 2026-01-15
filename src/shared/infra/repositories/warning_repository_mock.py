@@ -22,9 +22,9 @@ class WarningRepositoryMock(IWarningRepository):
                 body=WarningBody(
                     title="Titulo do alerta 1",
                     description="Descrição do alerta 1",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=10)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc)
+                created_at=int((datetime.datetime.now(datetime.timezone.utc)).timestamp() * 1000)
             ),
             Warning(
                 warning_id="0f9806f9-1baf-4df4-95ac-61011e190189",
@@ -33,9 +33,9 @@ class WarningRepositoryMock(IWarningRepository):
                 body=WarningBody(
                     title="Titulo do alerta 2",
                     description="Descrição do alerta 2",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=5)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc)
+                created_at=int((datetime.datetime.now(datetime.timezone.utc)).timestamp() * 1000)
             ),
             Warning(
                 warning_id="1f9806f9-1baf-4df4-95ac-61011e190189",
@@ -44,9 +44,9 @@ class WarningRepositoryMock(IWarningRepository):
                 body=WarningBody(
                     title="Titulo do alerta 3",
                     description="Descrição do alerta 3",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=2)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc)
+                created_at=int((datetime.datetime.now(datetime.timezone.utc)).timestamp() * 1000)
             ),
             Warning(
                 warning_id="2f9806f9-1baf-4df4-95ac-61011e190189",
@@ -55,9 +55,9 @@ class WarningRepositoryMock(IWarningRepository):
                 body=WarningBody(
                     title="Titulo do alerta 4",
                     description="Descrição do alerta 4",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc)
+                created_at=int((datetime.datetime.now(datetime.timezone.utc)).timestamp() * 1000)
             )
         ]
         
