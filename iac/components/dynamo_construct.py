@@ -40,17 +40,7 @@ class DynamoConstruct(Construct):
             point_in_time_recovery=True if stage=="PROD" else False
         )
         
-        self.warning_table.add_global_secondary_index(
-            index_name="RoleOrgIndex",
-            partition_key=dynamodb.Attribute(
-                name="target_role",
-                type=dynamodb.AttributeType.STRING
-            ),
-            sort_key=dynamodb.Attribute(
-                name="target_org",
-                type=dynamodb.AttributeType.STRING
-            )
-        )
+        
         
         self.warning_table.add_global_secondary_index(
             index_name="OrganizationIndex",
