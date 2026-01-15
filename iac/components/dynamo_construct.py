@@ -41,17 +41,21 @@ class DynamoConstruct(Construct):
         )
         
         self.warning_table.add_global_secondary_index(
-            index_name="OrganizationIndex",
+            index_name="RoleOrgIndex",
             partition_key=dynamodb.Attribute(
+                name="target_role",
+                type=dynamodb.AttributeType.STRING
+            ),
+            sort_key=dynamodb.Attribute(
                 name="target_org",
                 type=dynamodb.AttributeType.STRING
             )
         )
         
         self.warning_table.add_global_secondary_index(
-            index_name="RoleIndex",
+            index_name="OrganizationIndex",
             partition_key=dynamodb.Attribute(
-                name="target_role",
+                name="target_org",
                 type=dynamodb.AttributeType.STRING
             )
         )
