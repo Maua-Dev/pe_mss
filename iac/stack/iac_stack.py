@@ -2,7 +2,9 @@ from aws_cdk import (
     # Duration,
     Stack,
     # aws_sqs as sqs,
+    aws_iam as iam
 )
+
 
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
@@ -82,5 +84,16 @@ class IacStack(Stack):
             
         for fn in self.lambda_construct.functions_that_need_dynamo_permissions:
             self.dynamo_construct.warning_table.grant_read_write_data(fn)
+            
+            # needed for gsi access
+            # methods that query to gsi will need this additional policy
+            # if any other use than query to gsi is needed, this must be adjusted
+            fn.add_to_role_policy(iam.PolicyStatement(
+                effect=iam.Effect.ALLOW,
+                actions=["dynamodb:Query"],
+                resources=[
+                    f"{self.dynamo_construct.warning_table.table_arn}/index/*"
+                ]
+            ))
 
         
