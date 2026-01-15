@@ -90,7 +90,7 @@ class WarningRepositoryDynamo(IWarningRepository):
     
     def get_warnings_by_org(self, target_org: ORGANIZATION) -> list[Warning]:
         response = self.dynamo.query(
-            TableName='warnings',
+            TableName=self.TABLE_NAME,
             IndexName='OrganizationIndex',
             KeyConditionExpression='target_org = :org',
             ExpressionAttributeValues={
@@ -109,7 +109,7 @@ class WarningRepositoryDynamo(IWarningRepository):
     
     def get_warnings_by_role(self, target_role: ROLE) -> list[Warning]:
         response = self.dynamo.query(
-            TableName='warnings',
+            TableName=self.TABLE_NAME,
             IndexName='RoleIndex',
             KeyConditionExpression='target_role = :role',
             ExpressionAttributeValues={
