@@ -294,7 +294,7 @@ class Test_GetWarningPresenter:
 
         assert response["statusCode"] == 400
         body = json.loads(response["body"])
-        assert "You should inform warning_id or role and organization" in body
+        assert "When using warning_id, you cannot specify role or organization" in body
 
     def test_get_warning_presenter_only_role_without_organization(self):
         event = {
@@ -349,9 +349,7 @@ class Test_GetWarningPresenter:
 
         response = lambda_handler(event, None)
 
-        assert response["statusCode"] == 400
-        body = json.loads(response["body"])
-        assert "You should inform role and organization" in body
+        assert response["statusCode"] == 200
 
     def test_get_warning_presenter_only_organization_without_role(self):
         event = {
@@ -406,10 +404,8 @@ class Test_GetWarningPresenter:
 
         response = lambda_handler(event, None)
 
-        assert response["statusCode"] == 400
-        body = json.loads(response["body"])
-        assert "You should inform role and organization" in body
-
+        assert response["statusCode"] == 200
+        
     def test_get_warning_presenter_not_found(self):
         event = {
             "version": "2.0",

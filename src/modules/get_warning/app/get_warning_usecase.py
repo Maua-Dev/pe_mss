@@ -16,13 +16,18 @@ class GetWarningUsecase:
             warning= self.repo.get_warning(warning_id=warning_id)
 
         else:
-            warning_role= self.repo.get_warnings_by_role(target_role=role)
-
-            filtered_role_warnings = [w for w in warning_role if w.target_org is None]
-
-            warning_org= self.repo.get_warnings_by_org_and_role(target_org=organization, target_role=role)
-
-            warning = filtered_role_warnings + warning_org
+            
+            if role and not organization:
+                warning = self.repo.get_warnings_by_role(target_role=role)
+                
+            elif organization and not role:
+                warning = self.repo.get_warnings_by_org(target_org=organization)
+                
+            else:
+                warning = self.repo.get_warnings_by_org_and_role(
+                    target_role=role,
+                    target_org=organization
+                )
 
         if warning is None:
             raise NoItemsFound("the parameters")
