@@ -90,7 +90,7 @@ class WarningRepositoryDynamo(IWarningRepository):
         response = self.dynamo.scan_items(
             TableName=self.TABLE_NAME,
             IndexName="RoleOrgIndex",
-            FilterExpression='begins_with(target_org, :org)',
+            filter_expression='begins_with(target_org, :org)',
             ExpressionAttributeValues={
                 ':org': target_org.value
             }
