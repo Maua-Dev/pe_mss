@@ -33,6 +33,10 @@ class DynamoConstruct(Construct):
                 name="warning_id",
                 type=dynamodb.AttributeType.STRING
             ),
+            sort_key=dynamodb.Attribute(
+                name="target_org",
+                type=dynamodb.AttributeType.STRING
+            ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             removal_policy=removal_policy,
         
@@ -52,12 +56,3 @@ class DynamoConstruct(Construct):
             )
         )
         
-        self.warning_table.add_global_secondary_index(
-            index_name="OrganizationIndex",
-            partition_key=dynamodb.Attribute(
-                name="target_org",
-                type=dynamodb.AttributeType.STRING
-            )
-        )
-        
-    

@@ -18,6 +18,10 @@ class WarningRepositoryDynamo(IWarningRepository):
     def partition_key_format(warning_id: str) -> str:
         return f"warning#{warning_id}"
     
+    @staticmethod 
+    def sort_key_format(target_org: str) -> str:
+        return target_org
+    
     @staticmethod
     def remove_prefixo(parametro: str):
         
@@ -27,10 +31,6 @@ class WarningRepositoryDynamo(IWarningRepository):
             parametro = partes[1]
             
         return parametro
-    
-    # @staticmethod
-    # def sort_key_format(target_org: str) -> str:
-    #     return f"target_org#{target_org}"
 
     def __init__(self):
         envs = Environments.get_envs()
@@ -46,9 +46,13 @@ class WarningRepositoryDynamo(IWarningRepository):
         item = new_warning.model_dump_json()
         item = json.loads(item)
         item['warning_id'] = self.partition_key_format(new_warning.warning_id)
-        # item['target_org'] = self.sort_key_format(new_warning.target_org)
+        item['target_org'] = self.sort_key_format(new_warning.target_org)
 
-        self.dynamo.put_item(item=item, partition_key=item['warning_id'])
+        self.dynamo.put_item(
+            item=item, 
+            partition_key=item['warning_id'], 
+            sort_key=item['target_org']
+        )
         
         return new_warning
 
@@ -89,10 +93,10 @@ class WarningRepositoryDynamo(IWarningRepository):
         return warnings
     
     def get_warnings_by_org(self, target_org: ORGANIZATION) -> list[Warning]:
-        response = self.dynamo.query(
+        
+        response = self.dynamo.scan_items(
             TableName=self.TABLE_NAME,
-            IndexName='OrganizationIndex', #need a specific index for this. Org as PK
-            KeyConditionExpression='target_org = :org',
+            FilterExpression='begins_with(target_org, :org)',
             ExpressionAttributeValues={
                 ':org': target_org.value
             }
