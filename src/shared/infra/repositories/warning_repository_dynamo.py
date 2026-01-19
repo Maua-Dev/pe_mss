@@ -18,10 +18,6 @@ class WarningRepositoryDynamo(IWarningRepository):
     def partition_key_format(warning_id: str) -> str:
         return f"warning#{warning_id}"
     
-    @staticmethod 
-    def sort_key_format(target_org: str) -> str:
-        return target_org
-    
     @staticmethod
     def remove_prefixo(parametro: str):
         
@@ -46,12 +42,10 @@ class WarningRepositoryDynamo(IWarningRepository):
         item = new_warning.model_dump_json()
         item = json.loads(item)
         item['warning_id'] = self.partition_key_format(new_warning.warning_id)
-        item['target_org'] = self.sort_key_format(new_warning.target_org)
 
         self.dynamo.put_item(
             item=item, 
             partition_key=item['warning_id'], 
-            sort_key=item['target_org']
         )
         
         return new_warning
@@ -59,7 +53,6 @@ class WarningRepositoryDynamo(IWarningRepository):
     def get_warning(self, warning_id: str) -> Optional[Warning]:
         try:
             item = self.dynamo.get_item(partition_key=self.partition_key_format(warning_id))
-            # item['Item']['target_org'] = item['Item']['target_org'].split('#')[1]
             item["Item"]["warning_id"] = self.remove_prefixo(item["Item"]["warning_id"])
             warning = Warning.model_validate(item['Item'])
             return warning
@@ -96,6 +89,7 @@ class WarningRepositoryDynamo(IWarningRepository):
         
         response = self.dynamo.scan_items(
             TableName=self.TABLE_NAME,
+            IndexName="RoleOrgIndex",
             FilterExpression='begins_with(target_org, :org)',
             ExpressionAttributeValues={
                 ':org': target_org.value

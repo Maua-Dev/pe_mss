@@ -33,10 +33,6 @@ class DynamoConstruct(Construct):
                 name="warning_id",
                 type=dynamodb.AttributeType.STRING
             ),
-            sort_key=dynamodb.Attribute(
-                name="target_org",
-                type=dynamodb.AttributeType.STRING
-            ),
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             removal_policy=removal_policy,
         
