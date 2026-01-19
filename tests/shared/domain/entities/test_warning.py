@@ -15,9 +15,9 @@ class TestWarning:
             body=WarningBody(
                 title="Titulo do Aviso!",
                 description="Descrição do Aviso!",
-                expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).timestamp() * 1000)
             ),
-            created_at=datetime.datetime.now(datetime.timezone.utc)
+            created_at=int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
         )
         
         assert warning.warning_id is not None
@@ -25,8 +25,8 @@ class TestWarning:
         assert ORGANIZATION(warning.target_org) == ORGANIZATION.DEV
         assert warning.body.title == "Titulo do Aviso!"
         assert warning.body.description == "Descrição do Aviso!"
-        assert warning.body.expire > datetime.datetime.now(datetime.timezone.utc)
-        assert warning.created_at <= datetime.datetime.now(datetime.timezone.utc)
+        assert warning.body.expire > int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
+        assert warning.created_at <= int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
         
     def test_warning_wrong_type_title(self):
         with pytest.raises(ValidationError) as exc_info:
@@ -36,9 +36,9 @@ class TestWarning:
                 body=WarningBody(
                     title=123,  # Tipo errado
                     description="Descrição do Aviso!",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc)
+                created_at=int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
             )
             
         assert "should be a valid string" in str(exc_info.value)
@@ -51,9 +51,9 @@ class TestWarning:
                 body=WarningBody(
                     # title ausente
                     description="Descrição do Aviso!",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc)
+                created_at=int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
             )
             
         assert "Field required" in str(exc_info.value)
@@ -66,9 +66,9 @@ class TestWarning:
                 body=WarningBody(
                     title="Titulo do Aviso!",
                     description="Descrição do Aviso!",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc),
+                created_at=int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000),
                 extra_field="This field is not defined"  # Campo extra não definido
             )
             
@@ -82,9 +82,9 @@ class TestWarning:
                 body=WarningBody(
                     title="Titulo do Aviso!",
                     description="Descrição do Aviso!",
-                    expire=datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)
+                    expire=int((datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=7)).timestamp() * 1000)
                 ),
-                created_at=datetime.datetime.now(datetime.timezone.utc)
+                created_at=int(datetime.datetime.now(datetime.timezone.utc).timestamp() * 1000)
             )
             
         assert "Input should be 'ADM', 'USER' or 'PRESIDENT'" in str(exc_info.value)

@@ -12,7 +12,7 @@ from src.shared.infra.external.dynamo.datasources.dynamo_datasource import Dynam
 
 class WarningRepositoryDynamo(IWarningRepository):
     PARTITION_KEY = "warning_id"
-    TABLE_NAME = "warnings"
+    TABLE_NAME = Environments.get_envs().warning_table_name
     
     @staticmethod
     def partition_key_format(warning_id: str) -> str:
@@ -36,7 +36,7 @@ class WarningRepositoryDynamo(IWarningRepository):
         envs = Environments.get_envs()
 
         self.dynamo = DynamoDatasource(
-            endpoint_url=f'{envs.dynamo_endpoint_url}:{envs.dynamo_endpoint_port}',
+            endpoint_url=envs.endpoint_url,
             dynamo_table_name=self.TABLE_NAME,
             region=envs.dynamo_region,
             partition_key=self.PARTITION_KEY,
@@ -90,8 +90,8 @@ class WarningRepositoryDynamo(IWarningRepository):
     
     def get_warnings_by_org(self, target_org: ORGANIZATION) -> list[Warning]:
         response = self.dynamo.query(
-            TableName='warnings',
-            IndexName='OrganizationIndex',
+            TableName=self.TABLE_NAME,
+            IndexName='OrganizationIndex', #need a specific index for this. Org as PK
             KeyConditionExpression='target_org = :org',
             ExpressionAttributeValues={
                 ':org': target_org.value
@@ -109,8 +109,8 @@ class WarningRepositoryDynamo(IWarningRepository):
     
     def get_warnings_by_role(self, target_role: ROLE) -> list[Warning]:
         response = self.dynamo.query(
-            TableName='warnings',
-            IndexName='RoleIndex',
+            TableName=self.TABLE_NAME,
+            IndexName='RoleOrgIndex', #composite index with role as PK and org as SK
             KeyConditionExpression='target_role = :role',
             ExpressionAttributeValues={
                 ':role': target_role.value
@@ -126,26 +126,22 @@ class WarningRepositoryDynamo(IWarningRepository):
             
         return warnings
     
-    # NOT WORKING - NEEDS NEW GSI WITH BOTH target_org AND target_role AS KEYS 
-    # NOT NEEDED FOR NOW
     def get_warnings_by_org_and_role(self, target_org: ORGANIZATION, target_role: ROLE) -> list[Warning]:
-        pass
-    # def get_warnings_by_org_and_role(self, target_org: ORGANIZATION, target_role: ROLE) -> list[Warning]:
-    #     response = self.dynamo.query(
-    #         TableName='warnings',
-    #         IndexName='RoleIndex',
-    #         KeyConditionExpression='target_org = :org AND target_role = :role',
-    #         ExpressionAttributeValues={
-    #             ':org': target_org.value,
-    #             ':role': target_role.value
-    #         }
-    #     )
+        response = self.dynamo.query(
+            TableName=self.TABLE_NAME,
+            IndexName='RoleOrgIndex', #composite index with role as PK and org as SK
+            KeyConditionExpression='target_org = :org AND target_role = :role',
+            ExpressionAttributeValues={
+                ':org': target_org.value,
+                ':role': target_role.value
+            }
+        )
         
-    #     warnings = []
+        warnings = []
         
-    #     for warning_json in response["Items"]:
+        for warning_json in response["Items"]:
             
-    #         warning_json["warning_id"] = self.remove_prefixo(warning_json["warning_id"])
-    #         warnings.append(Warning.model_validate(warning_json))
+            warning_json["warning_id"] = self.remove_prefixo(warning_json["warning_id"])
+            warnings.append(Warning.model_validate(warning_json))
             
-    #     return warnings
+        return warnings

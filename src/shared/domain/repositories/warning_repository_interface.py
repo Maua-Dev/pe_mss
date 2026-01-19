@@ -10,7 +10,7 @@ class IWarningRepository(ABC):
     #creation
     
     @abstractmethod
-    def create_warning(self, new_warning: Warning, target_id: str, target_role: ROLE) -> Optional[Warning]:
+    def create_warning(self, new_warning: Warning) -> Optional[Warning]:
         """ 
         Método que cria um aviso no banco de dados
 
@@ -59,13 +59,12 @@ class IWarningRepository(ABC):
     #deletes
     
     @abstractmethod
-    def delete_warning(self, warning_id: str, organization: ORGANIZATION) -> Optional[Warning]:
+    def delete_warning(self, warning_id: str) -> Optional[Warning]:
         """
         Método que delete um alerta
 
         Args:
             warning_id (str): id do alerta a ser deletado
-            organization (ORGANIZATION): organização do alerta a ser deletado
 
         Returns:
             Optional[Warning]: caso o alerta exista e seja deletado, retorna o alerta
@@ -74,13 +73,12 @@ class IWarningRepository(ABC):
     #getters
     
     @abstractmethod
-    def get_warning(self, warning_id: str, target_org: ORGANIZATION) -> Optional[Warning]:
+    def get_warning(self, warning_id: str) -> Optional[Warning]:
         """
         Método para buscar um aviso no banco por seu id
 
         Args:
             warning_id (str): id do aviso
-            target_org (ORGANIZATION): organização do aviso a ser buscado
 
         Returns:
             Optional[Warning]: retorna um aviso caso encontre-o

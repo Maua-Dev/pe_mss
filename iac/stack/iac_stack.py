@@ -2,7 +2,10 @@ from aws_cdk import (
     # Duration,
     Stack,
     # aws_sqs as sqs,
+    aws_iam as iam
 )
+
+
 from constructs import Construct
 from aws_cdk.aws_apigateway import RestApi, Cors
 
@@ -10,6 +13,8 @@ from aws_cdk.aws_apigateway import RestApi, Cors
 from components.aurora_construct import AuroraConstruct
 from components.lambda_construct import LambdaConstruct
 from components.bucket_construct import BucketContruct
+from components.dynamo_construct import DynamoConstruct
+from components.sm_construct import SmConstruct
 import os
 
 class IacStack(Stack):
@@ -33,13 +38,16 @@ class IacStack(Stack):
                                     }
                                 )
 
-        api_gateway_resource = self.rest_api.root.add_resource("pe-mss", default_cors_preflight_options=
-        {
-            "allow_origins": Cors.ALL_ORIGINS,
-            "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": Cors.DEFAULT_HEADERS
-        }
-                                                               )
+        api_gateway_resource = self.rest_api.root.add_resource(
+            "pe-mss", 
+            default_cors_preflight_options = {
+                "allow_origins": Cors.ALL_ORIGINS,
+                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": Cors.DEFAULT_HEADERS
+            }
+        )
+        
+        self.dynamo_construct = DynamoConstruct(self, "PEDynamo")
 
         self.aurora = AuroraConstruct(self, "Aurora")
         self.s3_bucket = BucketContruct(self)
@@ -52,15 +60,40 @@ class IacStack(Stack):
             "REGION": self.region,
             "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name,
             "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT"),
-            "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT")
+            "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT"),
+            "WARNING_TABLE_NAME": self.dynamo_construct.warning_table.table_name
         }
 
-        self.lambda_stack = LambdaConstruct(self, api_gateway_resource=api_gateway_resource,
-                                        environment_variables=ENVIRONMENT_VARIABLES)
+        self.sm_construct= SmConstruct(self, environment_variables=ENVIRONMENT_VARIABLES)
 
-        for fn in self.lambda_stack.functions_that_need_db_access:
+        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"]= self.sm_construct.event_secret.secret_arn
+
+        self.lambda_construct = LambdaConstruct(
+            self, 
+            api_gateway_resource=api_gateway_resource,
+            environment_variables=ENVIRONMENT_VARIABLES,
+            sm_construct=self.sm_construct
+        )
+
+        for fn in self.lambda_construct.functions_that_need_db_access:
             self.aurora.cluster.grant_data_api_access(fn)
             self.aurora.secret.grant_read(fn)
+            
+        for fn in self.lambda_construct.functions_that_need_s3_permissions:
             self.s3_bucket.s3_bucket_user.grant_read_write(fn)
+            
+        for fn in self.lambda_construct.functions_that_need_dynamo_permissions:
+            self.dynamo_construct.warning_table.grant_read_write_data(fn)
+            
+            # needed for gsi access
+            # methods that query to gsi will need this additional policy
+            # if any other use than query to gsi is needed, this must be adjusted
+            fn.add_to_role_policy(iam.PolicyStatement(
+                effect=iam.Effect.ALLOW,
+                actions=["dynamodb:Query"],
+                resources=[
+                    f"{self.dynamo_construct.warning_table.table_arn}/index/*"
+                ]
+            ))
 
         
