@@ -41,30 +41,46 @@ class GetWarningController:
             
             if warning_id:
                 if role or organization:
-                    return BadRequest("You should inform warning_id or role and organization (only one)")
-                
-                warning= self.get_warning_usecase(warning_id)
-                
-            if not role and organization or role and not organization:
-                return BadRequest("You should inform role and organization")
-            
-            if role and organization:
+                    return BadRequest("When using warning_id, you cannot specify role or organization")
+                warning = self.get_warning_usecase(warning_id=warning_id)
 
-                if not hasattr(ROLE, ROLE(role).name):
+            
+            elif role and organization:
+                try:
+                    role_enum = ROLE(role)
+                    org_enum = ORGANIZATION(organization)
+                except ValueError:
                     raise WrongTypeParameter(
-                        fieldName="target_role",
+                        fieldName="role or organization",
+                        fieldTypeExpected=f"one of {[role.name for role in ROLE]} and {[org.name for org in ORGANIZATION]}",
+                        fieldTypeReceived=f"{role} and {organization}"
+                    )
+                warning = self.get_warning_usecase(role=role_enum, organization=org_enum)
+
+            elif role:
+                try:
+                    role_enum = ROLE(role)
+                except ValueError:
+                    raise WrongTypeParameter(
+                        fieldName="role",
                         fieldTypeExpected=f"one of {[role.name for role in ROLE]}",
                         fieldTypeReceived=role
                     )
-                
-                if not hasattr(ORGANIZATION, ORGANIZATION(organization).name):
+                warning = self.get_warning_usecase(role=role_enum)
+
+            elif organization:
+                try:
+                    org_enum = ORGANIZATION(organization)
+                except ValueError:
                     raise WrongTypeParameter(
                         fieldName="organization",
                         fieldTypeExpected=f"one of {[org.name for org in ORGANIZATION]}",
                         fieldTypeReceived=organization
                     )
-            
-                warning= self.get_warning_usecase(role=ROLE(role), organization=ORGANIZATION(organization))
+                warning = self.get_warning_usecase(organization=org_enum)
+                
+            else:
+                return BadRequest("Invalid parameters")
 
             viewmodel= GetWarningViewModel(warning=warning)
 
