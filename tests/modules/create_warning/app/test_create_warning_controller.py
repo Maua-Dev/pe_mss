@@ -39,7 +39,7 @@ class Test_CreateWarningController:
         assert response.status_code == 400
         assert response.body == 'Field new_warning is missing'
     
-    def test_create_warning_controller_with_specif_warning_and_as_admin(self):
+    def test_create_warning_controller_with_specific_warning_and_as_admin(self):
         repo = WarningRepositoryMock()
         user_repo= UserRepositoryMock()
         usecase= CreateWarningUsecase(repo=repo, user_repo=user_repo)

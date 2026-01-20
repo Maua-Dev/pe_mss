@@ -67,25 +67,24 @@ class WarningRepositoryMock(IWarningRepository):
         
         return new_warning
     
-    def update_warning(self, warning: Warning) -> Optional[Warning]:
+    def update_warning(self, warning_id: str, new_warning: Warning) -> Optional[Warning]:
         
-        warning_found = False
-        
+        found = False
         for i, existing_warning in enumerate(self.warnings):
             
-            if existing_warning.warning_id == warning.warning_id:
+            if existing_warning.warning_id == warning_id:
                 
-                self.warnings[i] = warning
+                self.warnings[i] = new_warning
                 
-                warning_found = True
+                found = True
                 
                 break
-        
-        if not warning_found:
+
+        if not found:
             
-            raise NoItemsFound(warning.warning_id)
+            raise NoItemsFound(warning_id)
         
-        return warning
+        return new_warning
     
     def delete_warning(self, warning_id: str) -> Optional[Warning]:
         

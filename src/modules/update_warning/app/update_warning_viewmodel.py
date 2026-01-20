@@ -17,5 +17,5 @@ class UpdateWarningViewmodel:
                 },
                 "created_at": self.warning.created_at,
             },
-            "message": "the warning was created successfully"
+            "message": "the warning was updated successfully"
         }

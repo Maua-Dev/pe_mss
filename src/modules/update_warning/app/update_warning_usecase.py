@@ -17,13 +17,13 @@ class UpdateWarningUsecase:
 
         title: str | None,
         description: str | None,
-        expire: int | None,
-        target_role: str | None,
         user_id: str | None,
-        target_org=None | None) -> Warning:
+        expire: int | None = None,
+        target_role: str | None = None,
+        target_org: str | None = None) -> Warning:
         
         if self.user_repo.get_user(user_id=user_id).role != ROLE.ADM:
-            raise ForbiddenAction("Only ADM users can create warnings.")
+            raise ForbiddenAction("Only ADM users can update warnings.")
         
         original_warning = self.repo.get_warning(warning_id)
     
@@ -50,6 +50,7 @@ class UpdateWarningUsecase:
             warning= Warning(
                 warning_id=warning_id ,
                 target_role=target_role if target_role else original_warning.target_role,
+                target_org=original_warning.target_org,
                 body=body
             )
         
