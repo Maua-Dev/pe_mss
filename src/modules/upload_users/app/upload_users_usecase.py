@@ -72,13 +72,22 @@ class UploadUsersUsecase:
                 "Authorization": f"{auth_token}" #Already has Bearer prefix
             }
         )
-
-        if response.status != 200:
-            error_data = response.data.decode('utf-8')
-            raise EntityError(f"Error uploading users: {error_data}")
+        
+        response_text = response.data.decode('utf-8')
+        duplicated_users = []
+        
+        if response.status == 400 and "alredy exists" in response_text:
+            # NO FUTURO IMPLEMENTAR A CAPTURA DE VÁRIOS USUÁRIOS DUPLICADOS
+            duplicated_users.append({
+                "message": response_text
+            })
+        
+        # Se for outro tipo de erro (não duplicado), levanta exceção
+        elif response.status == 400 or response.status == 500:
+            raise EntityError(f"Error from create_user endpoint: {response_text}")
         
         try:
-            response_data = json.loads(response.data.decode('utf-8'))
+            response_data = json.loads(response_text)
         except json.JSONDecodeError:
             raise EntityError("Failed to decode JSON response from create_user endpoint.")
         
@@ -126,5 +135,4 @@ class UploadUsersUsecase:
             return list(response_data.get("data"))
         
         else:
-            # Lidar com qualquer outro formato inesperado
             raise EntityError(f"Unexpected response format from API: {type(response_data)}")

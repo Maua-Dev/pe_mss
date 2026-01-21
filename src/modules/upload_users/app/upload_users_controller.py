@@ -45,19 +45,19 @@ class UploadUsersController:
             return OK(viewmodel.to_dict())
 
         except NoItemsFound as err:
-            return NotFound(body=err.message)
+            return NotFound(body={"message": err.message})
 
         except MissingParameters as err:
-            return BadRequest(body=err.message)
+            return BadRequest(body={"message": err.message})
 
         except WrongTypeParameter as err:
-            return BadRequest(body=err.message)
+            return BadRequest(body={"message": err.message})
 
         except EntityError as err:
-            return BadRequest(body=err.message)
+            return BadRequest(body={"message": err.message})
         
         except ForbiddenAction as err:
-            return Forbidden(body=err.message)
+            return Forbidden(body={"message": err.message})
 
         except Exception as err:
-            return InternalServerError(body=err.args[0])
+            return InternalServerError(body={"message": err.args[0]})
