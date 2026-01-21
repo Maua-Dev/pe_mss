@@ -111,6 +111,13 @@ class UploadUsersUsecase:
                             
                         created_users.append(user_data)
                         
+                    # THIS WILL NEVER RAISE DUPLICATED AS MOCK
+                    # METHOD DOES NOT HAVE A CHECK FOR DUPLICATES
+                    
+                    # IF ANY OTHER TESTS ARE WRITTEN THAT REQUIRE THIS,
+                    # PLEASE MODIFY THE MOCK REPO TO RAISE THE ERROR
+                    # AND FIX ALL OTHER TESTS THAT WILL FOR CERTAIN BREAK!!
+                        
                     except DuplicatedItem:
                         duplicated_users.append(user_data)
                         continue
