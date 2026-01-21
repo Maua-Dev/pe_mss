@@ -140,8 +140,6 @@ class UserRepositoryMock(IUserRepository):
         return self.users
     
     def create_user(self, new_user: User) -> Optional[User]:
-        if new_user in self.users:
-            raise DuplicatedItem("User already exists")
         self.users.append(new_user)
         return new_user
 
