@@ -36,11 +36,15 @@ class UploadUsersController:
                     fieldTypeReceived=type(file_base64).__name__
                 )
 
-            uploaded_content = self.UploadUsersUsecase(file_base64=file_base64, requester_user_id=requester_user_id, auth_token=auth_token)
+            created_users, duplicated_users = self.UploadUsersUsecase(file_base64=file_base64, requester_user_id=requester_user_id, auth_token=auth_token)
 
-            print(uploaded_content)
+            print(f"Created: {len(created_users)} users. Duplicated: {len(duplicated_users)} users.")
 
-            viewmodel = UploadUsersViewmodel(status=200 if isinstance(uploaded_content, list) else 500)
+            viewmodel = UploadUsersViewmodel(
+                status=200,
+                uploaded_users=created_users,
+                duplicated_users=duplicated_users
+            )
 
             return OK(viewmodel.to_dict())
 
