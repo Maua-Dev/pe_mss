@@ -94,7 +94,7 @@ class UploadUsersUsecase:
                         except:
                             created_users.append(user_data)
 
-                    elif response.status == 400 and "alredy exists" in response_text:
+                    elif response.status == 409 and "already exists" in response_text:
                         duplicated_users.append(user_data)
                     
                     else:
