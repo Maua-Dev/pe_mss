@@ -1,6 +1,6 @@
 from urllib3 import request
-from src.modules.update_warning.app.update_warning_usecase import UpdateWarningUsecase
-from src.modules.update_warning.app.update_warning_viewmodel import UpdateWarningViewmodel
+from .update_warning_usecase import UpdateWarningUsecase
+from .update_warning_viewmodel import UpdateWarningViewmodel
 from src.shared.helpers.errors.controller_errors import MissingParameters, WrongTypeParameter
 from src.shared.helpers.errors.domain_errors import EntityError
 from src.shared.helpers.errors.usecase_errors import DuplicatedItem, ForbiddenAction, NoItemsFound

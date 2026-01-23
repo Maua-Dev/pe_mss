@@ -1,6 +1,6 @@
 import json
-from src.modules.update_warning.app.update_warning_controller import UpdateWarningController
-from src.modules.update_warning.app.update_warning_usecase import UpdateWarningUsecase
+from .update_warning_controller import UpdateWarningController
+from .update_warning_usecase import UpdateWarningUsecase
 from src.shared.environments import Environments
 from src.shared.helpers.external_interfaces.http_lambda_requests import LambdaHttpRequest, LambdaHttpResponse
 

@@ -1,5 +1,4 @@
-import psycopg2
-import psycopg2.extras
+import psycopg
 from typing import Optional, Dict, Any, List, Generator
 import re
 from contextlib import contextmanager
@@ -20,7 +19,7 @@ class TestsRdsDatasource:
             "host": "localhost",
             "port": "5432"
         }
-        self.conn = psycopg2.connect(**self.connection_params)
+        self.conn = psycopg.connect(**self.connection_params)
         self._in_transaction = False
 
     @staticmethod
@@ -47,7 +46,7 @@ class TestsRdsDatasource:
         query_psycopg2 = self._translate_query(sql)
         
         try:
-            with self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor) as cursor:
+            with self.conn.cursor(row_factory=psycopg.rows.dict_row) as cursor:
                 cursor.execute(query_psycopg2, params)
                 
                 results = []
@@ -109,7 +108,7 @@ class TestsRdsDatasource:
         
         try:
             with self.conn.cursor() as cursor:
-                psycopg2.extras.execute_batch(cursor, query_psycopg2, params_list)
+                psycopg.extras.execute_batch(cursor, query_psycopg2, params_list)
                 rowcount = cursor.rowcount
 
                 if not self._in_transaction:
