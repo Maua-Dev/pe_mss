@@ -1,4 +1,4 @@
-import psycopg
+import psycopg2
 import os
 from src.shared.infra.repositories.warning_repository_mock import WarningRepositoryMock
 from src.shared.environments import Environments
@@ -6,7 +6,7 @@ from src.shared.environments import Environments
 def get_local_db_connection():
     """Função centralizada para obter uma conexão com o banco"""
     envs = Environments.get_envs()
-    return psycopg.connect(
+    return psycopg2.connect(
         dbname=envs.db_name,
         user=envs.db_local_user, 
         password=envs.db_local_pass,
@@ -95,7 +95,7 @@ if __name__ == '__main__':
         conn.commit()
         cursor.close()
         
-    except psycopg.OperationalError as e:
+    except psycopg2.OperationalError as e:
         print(f"Connection error: {e}. Please check if the PostgreSQL container is running.")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
