@@ -58,7 +58,7 @@ class UpdateWarningUsecase:
             eb_client= EventBridgeClient()
             expire_timestamp_ms = expire
             
-            eb_client.create_trigger_for_deletion(
+            eb_client.update_trigger_expiration(
                 warning_id=warning.warning_id,
                 expire=expire_timestamp_ms
             )
