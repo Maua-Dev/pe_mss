@@ -46,7 +46,7 @@ class TestWarningRepositoryMock:
             created_at=previous_warning.created_at
         )
         
-        warning = repo.update_warning(warning=updated_warning)
+        warning = repo.update_warning(warning_id=warning_id, new_warning=updated_warning)
         
         assert warning == updated_warning
         assert updated_warning != previous_warning
