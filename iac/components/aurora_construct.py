@@ -63,12 +63,6 @@ class AuroraConstruct(Construct):
                 "WriterInstance",
                 scale_with_writer=True,
             ),
-            readers=[
-                rds.ClusterInstance.serverless_v2(
-                    "ReaderInstance",
-                    scale_with_writer=True,
-                )
-            ] if stage == "PROD" else [],
             serverless_v2_min_capacity=0,
             serverless_v2_max_capacity=2,
             default_database_name=db_name,
@@ -80,7 +74,7 @@ class AuroraConstruct(Construct):
             removal_policy=removal,
             enable_data_api=True,
             backup=rds.BackupProps(
-                retention=Duration.days(7 if stage != "PROD" else 30)
+                retention=Duration.days(5)
             ),
         )
 
