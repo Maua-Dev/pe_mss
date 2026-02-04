@@ -236,7 +236,7 @@ class Test_GetWarningPresenter:
 
         assert response["statusCode"] == 400
         body = json.loads(response["body"])
-        assert "You should inform warning_id or role and organization" in body
+        assert "You should inform warning_id or role and organization or role or organization (at least one)" in body
 
     def test_get_warning_presenter_with_both_warning_id_and_role(self):
         event = {

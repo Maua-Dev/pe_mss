@@ -6,7 +6,7 @@ class NoItemsFound(BaseError):
 
 class DuplicatedItem(BaseError):
     def __init__(self, message: str):
-        super().__init__(f'The item alredy exists for this {message}')
+        super().__init__(f'The item already exists for this {message}')
         
 class ForbiddenAction(BaseError):
     def __init__(self, message: str):

@@ -170,12 +170,21 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
+        self.update_warning = self.create_lambda_api_gateway_integration(
+            module_name="update_warning",
+            method="PUT",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            authorizer=token_authorizer_lambda
+        )
+
         # ALL LAMBDAS THAT USE EVENT BRIDGE CLIENT NEED READ ACCESS TO THE SECRET
         
         secret = sm_construct.event_secret
                 
         secret.grant_read(self.create_warning)
         secret.grant_read(self.delete_warning)
+        secret.grant_read(self.update_warning)
 
         event_bridge_policy= iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
@@ -209,6 +218,7 @@ class LambdaConstruct(Construct):
 
         self.create_warning.add_to_role_policy(event_bridge_policy)
         self.delete_warning.add_to_role_policy(event_bridge_policy)
+        self.update_warning.add_to_role_policy(event_bridge_policy)
 
         self.functions_that_need_db_access = [
             self.auth_user_function,
@@ -222,14 +232,16 @@ class LambdaConstruct(Construct):
             self.create_warning,
             self.delete_warning,
             self.get_warning,
-            self.get_all_warnings
+            self.get_all_warnings,
+            self.update_warning
         ]
 
         self.functions_that_need_dynamo_permissions = [
             self.create_warning,
             self.delete_warning,
             self.get_warning,
-            self.get_all_warnings
+            self.get_all_warnings,
+            self.update_warning
         ]
         
         self.functions_that_need_s3_permissions = [
