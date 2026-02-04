@@ -23,7 +23,7 @@ class Test_UploadUsersController:
         response = controller(request=request)
 
         assert response.status_code == 400
-        assert response.body == 'Field user_from_authorizer is missing'
+        assert response.body == {'message': 'Field user_from_authorizer is missing'}
 
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test in GitHub Actions")
     def test_upload_users_controller_without_file_base64(self):
@@ -37,11 +37,12 @@ class Test_UploadUsersController:
                 'displayName': 'Pedro',
                 'mail': '20.00789-4@maua.br',
             },
+            'auth_token': 'mock_token'
         })
         
         response = controller(request=request)
         assert response.status_code == 400
-        assert response.body == 'Field file_base64 is missing'
+        assert response.body == {'message': 'Field file_base64 is missing'}
     
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test in GitHub Actions")
     def test_upload_users_controller_with_wrong_type_file_base64(self):
@@ -55,12 +56,13 @@ class Test_UploadUsersController:
                 'displayName': 'Pedro',
                 'mail': '20.00789-4@maua.br',
             },
+            'auth_token': 'mock_token',
             'file_base64': 12345
         })
 
         response = controller(request=request)
         assert response.status_code == 400
-        assert "Field file_base64 isn't in the right type" in response.body
+        assert response.body == {'message': "Field file_base64 isn't in the right type.\n Received: int.\n Expected: str"}
 
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test in GitHub Actions")
     def test_upload_users_controller_as_president(self):
@@ -74,9 +76,39 @@ class Test_UploadUsersController:
                 'displayName': 'Pedro',
                 'mail': '20.00789-4@maua.br',
             },
+            'auth_token': 'mock_token',
             'file_base64': self.test_base64_xlsx
         })
 
         response = controller(request=request)
         assert response.status_code == 200
-        assert response.body == {'status': 200, 'message': 'the users were uploaded successfully'}
+        assert response.body == {
+            'status': 200, 
+            'operation_for_comparison': {
+                'uploaded_users': [
+                    {
+                        "name": "João Pedro", 
+                        "email": "21.00511-1@maua.br", 
+                        "organization": "DEV", 
+                        "role": "USER", 
+                        "state": "PENDING"
+                    }, 
+                    {
+                        "name": "Maria Clara", 
+                        "email": "20.00123-4@maua.br", 
+                        "organization": "DEV", 
+                        "role": "USER", 
+                        "state": "PENDING"
+                    }, 
+                    {
+                        "name": "Lebron James", 
+                        "email": "22.00456-7@maua.br", 
+                        "organization": "DEV", 
+                        "role": "USER", 
+                        "state": "PENDING"
+                    }
+                ],
+                'duplicated_users': []
+            },
+            'message': 'the users were uploaded successfully'
+        }

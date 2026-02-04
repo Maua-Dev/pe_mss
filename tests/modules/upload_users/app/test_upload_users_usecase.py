@@ -13,12 +13,15 @@ class Test_UploadUsersUsecase:
     def test_upload_users_as_president_usecase(self):
         repo = UserRepositoryMock()
         usecase = UploadUsersUsecase(repo=repo)
-        uploaded_users = usecase(file_base64=self.test_base64_xlsx, requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069')
+        created_users, duplicated_users = usecase(
+            file_base64=self.test_base64_xlsx, 
+            requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069',
+            auth_token="dummy token for testing"
+        )
         
-        assert len(uploaded_users) == 3
-        assert uploaded_users[0]['name'] == 'João Pedro'
-        assert uploaded_users[1]['name'] == 'Maria Clara'
-        assert uploaded_users[2]['name'] == 'Lebron James'
+        # THIS WILL RETURN 0 AS THE CREATED AND DUPLICATED ARE ONLY RETURNED VIA API ROUTE
+        assert len(created_users) == 3
+        assert len(duplicated_users) == 0
     
     @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Skipping test in GitHub Actions")
     def test_upload_users_as_non_president_usecase(self):
@@ -26,7 +29,11 @@ class Test_UploadUsersUsecase:
         usecase = UploadUsersUsecase(repo=repo)
         
         try:
-            usecase(file_base64=self.test_base64_xlsx, requester_user_id='b2b6f8d4-6f3e-4e8c-9a4f-5f1e5c8e7d9a')
+            usecase(
+                file_base64=self.test_base64_xlsx, 
+                requester_user_id='b2b6f8d4-6f3e-4e8c-9a4f-5f1e5c8e7d9a',
+                auth_token="dummy token for testing"
+            )
         except Exception as e:
             assert str(e) == 'No items found for b2b6f8d4-6f3e-4e8c-9a4f-5f1e5c8e7d9a'
     
@@ -36,7 +43,11 @@ class Test_UploadUsersUsecase:
         usecase = UploadUsersUsecase(repo=repo)
         
         try:
-            usecase(file_base64="invalid_base64_string", requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069')
+            usecase(
+                file_base64="invalid_base64_string", 
+                requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069',
+                auth_token="dummy token for testing"
+            )
         except Exception as e:
             assert str(e) == 'Incorrect padding'
         
@@ -46,6 +57,10 @@ class Test_UploadUsersUsecase:
         usecase = UploadUsersUsecase(repo=repo)
         
         try:
-            usecase(file_base64=self.test_base64_xlsx, requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f070')  # User ID that does not exist in mock repo
+            usecase(
+                file_base64=self.test_base64_xlsx, 
+                requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f070',  # User ID that does not exist in mock repo
+                auth_token="dummy token for testing"
+            )
         except Exception as e:
             assert str(e) == 'No items found for e6bed58f-424a-4b62-b408-18e0a8d1f070'

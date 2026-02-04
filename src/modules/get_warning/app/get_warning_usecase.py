@@ -17,12 +17,15 @@ class GetWarningUsecase:
 
         else:
             
+            #commumly used for filters
             if role and not organization:
                 warning = self.repo.get_warnings_by_role(target_role=role)
-                
+            
+            #commumly used for filters
             elif organization and not role:
                 warning = self.repo.get_warnings_by_org(target_org=organization)
-                
+
+            #commumly used for taking all warnings of a normal user  
             else:
                 warning = self.repo.get_warnings_by_org_and_role(
                     target_role=role,
