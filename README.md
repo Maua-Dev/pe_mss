@@ -279,6 +279,8 @@ These conventions keep the Clean Architecture layers consistent across modules a
 ## Contributors 💰🤝💰
 
 - Leonardo Luiz Seixas Iorio - [lseixas](https://github.com/lseixas) 🥷
+- Lucas Gozze Crapino - [LucasCrapino](https://github.com/LucasCrapino) 🐼
+
 
 ## Special Thanks 🙏
 
