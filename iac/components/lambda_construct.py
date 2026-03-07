@@ -44,6 +44,7 @@ class LambdaConstruct(Construct):
         self, 
         scope: Construct, 
         api_gateway_resource: Resource,
+        rest_api: apigw.RestApi,
         environment_variables: dict,
         sm_construct: Construct,
     ) -> None:
@@ -75,11 +76,24 @@ class LambdaConstruct(Construct):
             compatible_runtimes=[lambda_.Runtime.PYTHON_3_11]
         )
         
+        self.create_user_function= self.create_lambda_api_gateway_integration(
+            module_name="create_user",
+            method="POST",
+            mss_student_api_resource=api_gateway_resource,
+            environment_variables=environment_variables,
+            authorizer=token_authorizer_lambda
+        )
+        
+        env_vars_with_create_user_endpoint = environment_variables.copy()
+        env_vars_with_create_user_endpoint["CREATE_USER_ENDPOINT"] = rest_api.url_for_path(
+            f"{api_gateway_resource.path}/pe-mss/create-user"
+        )
+        
         self.upload_users_function = self.create_lambda_api_gateway_integration(
             module_name="upload_users",
             method="POST",
             mss_student_api_resource=api_gateway_resource,
-            environment_variables=environment_variables,
+            environment_variables=env_vars_with_create_user_endpoint,
             authorizer=token_authorizer_lambda
         )
         
@@ -107,14 +121,6 @@ class LambdaConstruct(Construct):
         self.get_user_function = self.create_lambda_api_gateway_integration(
             module_name="get_user",
             method="GET",
-            mss_student_api_resource=api_gateway_resource,
-            environment_variables=environment_variables,
-            authorizer=token_authorizer_lambda
-        )
-
-        self.create_user_function= self.create_lambda_api_gateway_integration(
-            module_name="create_user",
-            method="POST",
             mss_student_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
             authorizer=token_authorizer_lambda

@@ -15,6 +15,7 @@ from components.lambda_construct import LambdaConstruct
 from components.bucket_construct import BucketContruct
 from components.dynamo_construct import DynamoConstruct
 from components.sm_construct import SmConstruct
+from components.apigw_component import ApigwComponent
 import os
 
 class IacStack(Stack):
@@ -23,32 +24,9 @@ class IacStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         stage = kwargs['tags']['stage']
-
-        self.rest_api = RestApi(self, "PortalEntidades_RestApi",
-                                    rest_api_name="PortalEntidades_RestApi",
-                                    description="This is the Portal das Entidades RestApi",
-                                    default_cors_preflight_options=
-                                    {
-                                        "allow_origins": Cors.ALL_ORIGINS,
-                                        "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                                        "allow_headers": ["*"]
-                                    },
-                                    deploy_options={
-                                        "stage_name": stage.lower()
-                                    }
-                                )
-
-        api_gateway_resource = self.rest_api.root.add_resource(
-            "pe-mss", 
-            default_cors_preflight_options = {
-                "allow_origins": Cors.ALL_ORIGINS,
-                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": Cors.DEFAULT_HEADERS
-            }
-        )
         
+        self.apigw_component = ApigwComponent(self, "Apigw")
         self.dynamo_construct = DynamoConstruct(self, "PEDynamo")
-
         self.aurora = AuroraConstruct(self, "Aurora")
         self.s3_bucket = BucketContruct(self)
 
@@ -60,7 +38,6 @@ class IacStack(Stack):
             "REGION": self.region,
             "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name,
             "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT"),
-            "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT"),
             "WARNING_TABLE_NAME": self.dynamo_construct.warning_table.table_name
         }
 
@@ -70,7 +47,8 @@ class IacStack(Stack):
 
         self.lambda_construct = LambdaConstruct(
             self, 
-            api_gateway_resource=api_gateway_resource,
+            api_gateway_resource=self.apigw_component.api_gateway_resource,
+            rest_api=self.apigw_component.rest_api,
             environment_variables=ENVIRONMENT_VARIABLES,
             sm_construct=self.sm_construct
         )

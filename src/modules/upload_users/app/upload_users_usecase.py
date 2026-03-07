@@ -25,7 +25,7 @@ class UploadUsersUsecase:
             
         self.http_client = urllib3.PoolManager()
 
-    def __call__(self, file_base64: str, requester_user_id: User, auth_token: str) -> tuple[list[dict], list[dict]]:
+    def __call__(self, file_base64: str, requester_user_id: str, auth_token: str) -> tuple[list[dict], list[dict]]:
         
         created_users = []
         duplicated_users = []

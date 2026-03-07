@@ -219,7 +219,7 @@ Local setup is supported with Docker, local Postgres, DynamoDB Local, and option
   DYNAMO_REGION=local
   ```
 
-Additional variables are required for cloud environments (e.g. `AWS_ACCOUNT_ID`, `AWS_REGION`, `STACK_NAME`, `GRAPH_MICROSOFT_ENDPOINT`, `CREATE_USER_ENDPOINT`).
+Additional variables are required for cloud environments (e.g. `AWS_ACCOUNT_ID`, `AWS_REGION`, `STACK_NAME`, `GRAPH_MICROSOFT_ENDPOINT`).
 
 ---
 
