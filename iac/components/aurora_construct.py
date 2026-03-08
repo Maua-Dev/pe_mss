@@ -54,6 +54,19 @@ class AuroraConstruct(Construct):
         
         db_name = "PortalEntidades_UserTable"
 
+        aurora_paramter_group= rds.ParameterGroup(
+            self,
+            f"AuroraPgCronParamGroup-{stage}",
+            engine=rds.DatabaseClusterEngine.aurora_postgres(
+                version=rds.AuroraPostgresEngineVersion.VER_16_8
+            ),
+            description= "paramter group que habilita o pg_cron",
+            paramter={
+                "shared_preload_libraries": "pg_stat_statements, pg_cron",
+                "cron.database_name": db_name
+            }
+        )
+
         self.cluster = rds.DatabaseCluster(
             self, f"AuroraSrvls-{stage}",
             engine=rds.DatabaseClusterEngine.aurora_postgres(
@@ -76,6 +89,7 @@ class AuroraConstruct(Construct):
             backup=rds.BackupProps(
                 retention=Duration.days(5)
             ),
+            parameter_group=aurora_paramter_group
         )
 
         self.secret = self.cluster.secret 
