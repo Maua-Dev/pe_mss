@@ -37,8 +37,8 @@ class UserRepositoryPostgres(IUserRepository):
             VALUES (:user_id, :name, :email, :ra, :role, :state, :active, :course, :year, :organization)
             RETURNING *;
         """
-        
-        user_dto = UserPostgresDTO.from_entity(new_user).to_postgres()
+        user_dto= User.model_dump_json()
+        # user_dto = UserPostgresDTO.from_entity(new_user).to_postgres()
 
         try:
             with self.postgres.transaction() as tx_id:
@@ -50,7 +50,8 @@ class UserRepositoryPostgres(IUserRepository):
 
                 if result:
                     user_data_from_db = result[0]
-                    return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+                    return User.model_validate(user_data_from_db)
+                    # return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
 
             raise Exception("Erro ao criar usuário.")
 
@@ -79,7 +80,8 @@ class UserRepositoryPostgres(IUserRepository):
             
             if result:
                 user_data_from_db = result[0]
-                return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+                return User.model_validate(user_data_from_db)
+                # return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
             
             raise NoItemsFound("There is no user with that user id")
 
@@ -97,7 +99,7 @@ class UserRepositoryPostgres(IUserRepository):
         if result:
             users_list= []
             for user_data in result:
-                users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
+                users_list.append(User.model_validate(user_data))
             return users_list
             
         raise NoItemsFound("There is no user in the database")
@@ -143,7 +145,9 @@ class UserRepositoryPostgres(IUserRepository):
 
         if result:
             user_data_from_db = result[0]
-            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+            return User.model_validate(user_data_from_db)
+            # return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+            
             # return User.from_dict(user_data_from_db)
 
         return None
@@ -207,7 +211,7 @@ class UserRepositoryPostgres(IUserRepository):
         
         users_list= []
         for user_data in result:
-            users_list.append(UserPostgresDTO.from_postgres(user_data).to_entity())
+            users_list.append(User.model_validate(user_data))
 
         return users_list
     def get_user_by_email(self, email: str) -> User | None:
@@ -219,7 +223,8 @@ class UserRepositoryPostgres(IUserRepository):
 
         if result:
             user_data_from_db = result[0]
-            return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+            return User.model_validate(user_data_from_db)
+            # return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
             # return User.from_dict(user_data_from_db)
 
         raise NoItemsFound("No user was found with that email")
@@ -243,7 +248,8 @@ class UserRepositoryPostgres(IUserRepository):
 
         if result_requester:
             user_requester_data_from_db = result_requester[0]
-            requester_user= UserPostgresDTO.from_postgres(user_requester_data_from_db).to_entity()
+            requester_user= User.model_validate(user_requester_data_from_db)
+            # requester_user= UserPostgresDTO.from_postgres(user_requester_data_from_db).to_entity()
         else:
             raise NoItemsFound("No user was found with that requester id")
         
@@ -285,7 +291,8 @@ class UserRepositoryPostgres(IUserRepository):
 
         if result_requester:
             user_requester_data_from_db = result_requester[0]
-            requester_user= UserPostgresDTO.from_postgres(user_requester_data_from_db).to_entity()
+            requester_user= User.model_validate(user_requester_data_from_db)
+            # requester_user= UserPostgresDTO.from_postgres(user_requester_data_from_db).to_entity()
         else:
             raise NoItemsFound("No user was found with that requester id")
 
@@ -294,7 +301,8 @@ class UserRepositoryPostgres(IUserRepository):
 
         if result_target:
             user_target_data_from_db = result_target[0]
-            target_user= UserPostgresDTO.from_postgres(user_target_data_from_db).to_entity()
+            target_user= User.model_validate(user_target_data_from_db)
+            # target_user= UserPostgresDTO.from_postgres(user_target_data_from_db).to_entity()
         else:
             raise NoItemsFound("No user was found with that target id")
 
@@ -367,7 +375,8 @@ class UserRepositoryPostgres(IUserRepository):
 
             if result:
                 user_data_from_db = result[0]
-                return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+                return User.model_validate(user_data_from_db)
+                # return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
                 
             raise NoItemsFound("No user was found with that user id")
 
@@ -399,7 +408,8 @@ class UserRepositoryPostgres(IUserRepository):
 
             if result:
                 user_data_from_db = result[0]
-                return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
+                return User.model_validate(user_data_from_db)
+                # return UserPostgresDTO.from_postgres(user_data_from_db).to_entity()
                 
             raise NoItemsFound("No user was found with that email")
 
