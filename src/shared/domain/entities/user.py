@@ -66,6 +66,17 @@ class User(BaseModel):
         extra="forbid",
         populate_by_name=True
     )
+
+    @field_validator("user_id")
+    @classmethod
+    def user_id_valid_uuid4(cls, v: str) -> str:
+        try:
+            uuid.UUID(v)
+
+        except ValueError:
+            raise ValueError("Invalid format for user id")
+        
+        return v
     
 
 

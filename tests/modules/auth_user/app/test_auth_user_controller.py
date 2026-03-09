@@ -191,20 +191,23 @@ class Test_AuthUserController:
 
 
     # Esse teste nao esta passando usando o pydantic, pois uma forma que bolei para ver se era um uuid4 era usando o tamanho de 36 caracteres, porem dessa forma ele nao permite nem criar a classe ja gera um erro para nem permitir você criar a classe
-    # def test_auth_user_controller_id_is_not_on_uud_format(self):
-    #     repo = UserRepositoryMock()
-    #     usecase= AuthUserUsecase(repo=repo)
-    #     controller= AuthUserController(usecase=usecase)
+    def test_auth_user_controller_id_is_not_on_uud_format(self):
+        repo = UserRepositoryMock()
+        usecase= AuthUserUsecase(repo=repo)
+        controller= AuthUserController(usecase=usecase)
 
-    #     request = HttpRequest(body={
-    #         'user_from_authorizer':{
-    #             'id': '123456789',
-    #             'displayName': 'Aurélio',
-    #             'mail': '24.00564-5@maua.br'
-    #         }
-    #     })
+        request = HttpRequest(body={
+            'user_from_authorizer':{
+                'id': '123456789',
+                'displayName': 'Aurélio',
+                'mail': '24.00564-5@maua.br'
+            }
+        })
 
-    #     response= controller(request=request)
+        response= controller(request=request)
 
-    #     assert response.status_code == 400
-    #     assert response.body == 'Invalid format for user id'
+        assert response.status_code == 400
+
+        print(response.body)
+
+        assert "Invalid format for user id" in response.body

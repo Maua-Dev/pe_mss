@@ -26,10 +26,10 @@ class UpdateUserUsecase:
                 new_organization: Optional[str] = None, 
                 new_active: Optional[str] = None) -> User:
 
-        if User.validate_id(target_id) is False:
+        if User.user_id_valid_uuid4(target_id) is False:
             raise EntityError("user_id")
 
-        if User.validate_id(requester_id) is False:
+        if User.user_id_valid_uuid4(requester_id) is False:
             raise EntityError("requester_id")
         
         # raise for not found user

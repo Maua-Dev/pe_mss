@@ -2,6 +2,7 @@ import re
 import logging
 from .auth_user_usecase import AuthUserUsecase
 from .auth_user_viewmodel import AuthUserViewmodel
+from pydantic import ValidationError
 from src.shared.domain.entities.user import User
 from src.shared.domain.enums.active_enum import ACTIVE
 from src.shared.domain.enums.role_enum import ROLE
@@ -92,5 +93,8 @@ class AuthUserController:
         except EntityError as err:
             return BadRequest(body=err.message)
 
+        except ValidationError as err:
+            return BadRequest(body=str(err))
+
         except Exception as err:
-            return InternalServerError(body=err.args[0])
+            return InternalServerError(body=err.args[0] if err.args else "Internal Server Error")

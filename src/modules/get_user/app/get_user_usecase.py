@@ -11,7 +11,7 @@ class GetUserUsecase:
 
     def __call__(self, user_id: str) -> User:
         
-        if not User.validate_id(user_id):
+        if not User.user_id_valid_uuid4(user_id):
             raise EntityError("user_id")
         
         user = self.user_repo.get_user(user_id = user_id)

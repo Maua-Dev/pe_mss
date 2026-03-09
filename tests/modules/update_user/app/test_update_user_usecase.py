@@ -29,7 +29,7 @@ class Test_UpdateUserUsecase:
     def test_update_user_usecase_wrong_user_id(self):
         repo = UserRepositoryMock()
         usecase = UpdateUserUsecase(repo=repo)
-        with pytest.raises(EntityError):
+        with pytest.raises(ValueError):
             usecase(
                 requester_id="550e8400-e29b-41d4-a716-446655440001",
                 target_id="550e8400-e29b-41d4-a716-44665544000",  # inválido

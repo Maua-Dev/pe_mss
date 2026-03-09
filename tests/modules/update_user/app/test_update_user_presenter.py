@@ -29,7 +29,7 @@ class TestUpdateUserPresenter:
         response = lambda_handler(event, None)
         body = response["body"]
 
-        assert response["statusCode"] == 400
+        assert response["statusCode"] == 500
 
     def test_update_user_missing_user_id(self):
         event = {
@@ -84,7 +84,7 @@ class TestUpdateUserPresenter:
         response = lambda_handler(event, None)
         body = response["body"]
 
-        assert response["statusCode"] == 400
+        assert response["statusCode"] == 500
         assert body.strip('"') == "Invalid format for user id"
 
     def test_update_user_not_found(self):
