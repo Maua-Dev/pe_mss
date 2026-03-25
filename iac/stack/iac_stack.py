@@ -7,7 +7,7 @@ from aws_cdk import (
 
 
 from constructs import Construct
-from aws_cdk.aws_apigateway import RestApi, Cors
+from aws_cdk.aws_apigateway import RestApi, Cors, GatewayResponse, ResponseType
 
 # Aqui não precisamos importar subindo um diretório pois a execução acontece diretamente do diretório iac
 from components.aurora_construct import AuroraConstruct
@@ -45,6 +45,32 @@ class IacStack(Stack):
                 "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
                 "allow_headers": Cors.DEFAULT_HEADERS
             }
+        )
+        
+        GatewayResponse(
+            self,
+            "AuthorizerDenyResponse",
+            rest_api=self.rest_api,
+            type=ResponseType.ACCESS_DENIED,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'*'",
+                "Access-Control-Allow-Methods": "'*'",
+            },
+            status_code="403"
+        )
+        
+        GatewayResponse(
+            self,
+            "AuthorizerUnauthorizedResponse",
+            rest_api=self.rest_api,
+            type=ResponseType.UNAUTHORIZED,
+            response_headers={
+                "Access-Control-Allow-Origin": "'*'",
+                "Access-Control-Allow-Headers": "'*'",
+                "Access-Control-Allow-Methods": "'*'",
+            },
+            status_code="401"
         )
         
         self.dynamo_construct = DynamoConstruct(self, "PEDynamo")
