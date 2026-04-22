@@ -15,13 +15,9 @@ class UploadUsersController:
     def __call__(self, request: IRequest) -> IResponse:
         try:
             requester_user = request.data.get('user_from_authorizer')
-            auth_token = request.data.get('auth_token')
             
             if requester_user is None:
                 raise MissingParameters('user_from_authorizer')
-                        
-            if auth_token is None:
-                raise MissingParameters('auth_token (passed in headers as Authorization: Bearer <token>)')
             
             requester_user_id = requester_user.get('id')
 
@@ -36,7 +32,7 @@ class UploadUsersController:
                     fieldTypeReceived=type(file_base64).__name__
                 )
 
-            created_users, duplicated_users = self.UploadUsersUsecase(file_base64=file_base64, requester_user_id=requester_user_id, auth_token=auth_token)
+            created_users, duplicated_users = self.UploadUsersUsecase(file_base64=file_base64, requester_user_id=requester_user_id)
 
             print(f"Created: {len(created_users)} users. Duplicated: {len(duplicated_users)} users.")
 

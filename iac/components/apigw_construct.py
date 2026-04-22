@@ -13,7 +13,6 @@ from aws_cdk.aws_apigateway import (
 class ApigwConstruct(Construct):
     rest_api: RestApi
     api_gateway_resource: Resource
-    create_user_endpoint: str
 
     def __init__(
         self,
@@ -51,9 +50,7 @@ class ApigwConstruct(Construct):
             path_part="pe-mss",
             default_cors_preflight_options=cors_options
         )
-        
-        self.create_user_endpoint = f"{self.rest_api.url}{self.api_gateway_resource.path.lstrip('/')}/create_user"
-        
+                
         GatewayResponse(
             self,
             "AuthorizerDenyResponse",
