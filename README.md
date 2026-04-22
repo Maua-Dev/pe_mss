@@ -166,7 +166,7 @@ The `iac/` directory is an **AWS CDK (Python)** project that defines all infrast
 - **Constructs (`components/`)**
   - `aurora_construct.py` – Aurora PostgreSQL Serverless v2 cluster + VPC + RDS Data API configuration.
   - `dynamo_construct.py` – DynamoDB table for warnings, including GSI such as `RoleOrgIndex`.
-  - `bucket_construct.py` – S3 bucket with CloudFront distribution for static content/uploads.
+  - `s3_construct.py` – S3 bucket with CloudFront distribution for static content/uploads.
   - `lambda_construct.py` – Lambda functions for all modules; integrates with API Gateway routes and authorizer.
   - `sm_construct.py` – Secrets Manager configuration (e.g. credentials, EventBridge secrets).
 
@@ -183,7 +183,7 @@ There are also auxiliary files under `iac/local/` to support local infrastructur
 Local setup is supported with Docker, local Postgres, DynamoDB Local, and optional SAM for invoking Lambdas.
 
 - **Dependencies**
-  - Python 3.11+
+  - Python 3.13+
   - Docker + Docker Compose
   - Node.js (for CDK CLI)
 

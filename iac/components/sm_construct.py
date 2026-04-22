@@ -4,22 +4,28 @@ from aws_cdk import (
 import json
 from constructs import Construct
 
+
 class SmConstruct(Construct):
     event_secret: secretsmanager.ISecret
 
     def __init__(
         self,
         scope: Construct,
-        environment_variables: dict
+        construct_id: str,
+        stack_name: str,
+        stage: str,
+        environment_variables: dict,
+        **kargs
     ):
-        stage= environment_variables.get("STAGE", "errorStage")
-        stack_name= environment_variables.get("STACK_NAME", "errorStackName")
 
-        super().__init__(scope, f"{stack_name}_SmConstruct_{stage}")
+        super().__init__(scope, construct_id, **kargs)
 
-        self.event_secret= secretsmanager.Secret(
+        stage = stage.lower()
+
+        self.event_secret = secretsmanager.Secret(
             self,
-            "EventBridgeDeleteSecret",
+            id="EventBridgeDeleteSecret",
+            secret_name=f"{stack_name}/event-bridge-delete-secret/{stage}",
             description="Secret used to sign EventBridge delete trigger",
             generate_secret_string=secretsmanager.SecretStringGenerator(
                 secret_string_template=json.dumps({"EVENT_SECRET": ""}),

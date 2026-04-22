@@ -19,31 +19,26 @@ app = cdk.App()
 
 aws_region = os.environ.get("AWS_REGION")
 aws_account_id = os.environ.get("AWS_ACCOUNT_ID")
+
 stack_name = os.environ.get("STACK_NAME")
-
-if 'prod' in stack_name:
-    stage = 'PROD'
-
-elif 'homolog' in stack_name:
-    stage = 'HOMOLOG'
-
-elif 'dev' in stack_name:
-    stage = 'DEV'
-
-else:
-    stage = 'TEST'
+stage = os.environ.get("GITHUB_REF_NAME").lower()
 
 tags = {
     'project': 'PortalEntidades',
     'stage': stage,
-    'stack': 'BACK',
+    'stack': stack_name,
     'owner': 'DevCommunity'
 }
 
 IacStack(
     scope=app,
-    construct_id=stack_name,
-    env=cdk.Environment(account=aws_account_id, region=aws_region),
+    stack_id=stack_name,
+    stack_name=stack_name,
+    stage=stage,
+    env=cdk.Environment(
+        account=aws_account_id,
+        region=aws_region
+    ),
     tags=tags
 )
 

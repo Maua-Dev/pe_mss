@@ -51,7 +51,7 @@ def adjust_layer_directory():
                 "-t", PYTHON_TOP_LEVEL_DIR,
                 "--no-cache-dir",
                 "--platform", "manylinux2014_x86_64",
-                "--python-version", "3.11",
+                "--python-version", "3.13",
                 "--only-binary=:all:"
             ]
         )

@@ -2,111 +2,116 @@ from aws_cdk import (
     # Duration,
     Stack,
     # aws_sqs as sqs,
-    aws_iam as iam
+    aws_iam as iam,
+    Aws
 )
 
 
 from constructs import Construct
-from aws_cdk.aws_apigateway import RestApi, Cors, GatewayResponse, ResponseType
-
 # Aqui não precisamos importar subindo um diretório pois a execução acontece diretamente do diretório iac
 from components.aurora_construct import AuroraConstruct
 from components.lambda_construct import LambdaConstruct
-from components.bucket_construct import BucketContruct
+from components.s3_construct import S3Construct
 from components.dynamo_construct import DynamoConstruct
 from components.sm_construct import SmConstruct
+from components.ssm_construct import SsmConstruct
+from components.apigw_construct import ApigwConstruct
 import os
 
 class IacStack(Stack):
 
-    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
-        super().__init__(scope, construct_id, **kwargs)
+    def __init__(
+        self, 
+        scope: Construct, 
+        stack_id: str,
+        stack_name: str,
+        stage: str,
+        **kwargs
+    ) -> None:
+        
+        super().__init__(scope, stack_id, **kwargs)
 
-        stage = kwargs['tags']['stage']
+        stage = stage.lower()
 
-        self.rest_api = RestApi(self, "PortalEntidades_RestApi",
-                                    rest_api_name="PortalEntidades_RestApi",
-                                    description="This is the Portal das Entidades RestApi",
-                                    default_cors_preflight_options=
-                                    {
-                                        "allow_origins": Cors.ALL_ORIGINS,
-                                        "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                                        "allow_headers": ["*"]
-                                    },
-                                    deploy_options={
-                                        "stage_name": stage.lower()
-                                    }
-                                )
+        self.apigw_construct = ApigwConstruct(
+            self,
+            construct_id="Apigw",
+            stack_name=stack_name,
+            stage=stage
+        )
+        
+        self.dynamo_construct = DynamoConstruct(
+            self, 
+            construct_id="Dynamo",
+            stack_name=stack_name,
+            stage=stage
+        )
 
-        api_gateway_resource = self.rest_api.root.add_resource(
-            "pe-mss", 
-            default_cors_preflight_options = {
-                "allow_origins": Cors.ALL_ORIGINS,
-                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-                "allow_headers": Cors.DEFAULT_HEADERS
+        self.aurora_construct = AuroraConstruct(
+            self, 
+            construct_id="Aurora",
+            stack_name=stack_name,
+            stage=stage
+        )
+        
+        self.s3_construct = S3Construct(
+            self,
+            construct_id="S3",
+            stack_name=stack_name,
+            stage=stage
+        )
+        
+        self.ssm_construct = SsmConstruct(
+            self,
+            construct_id="SystemsManager",
+            stack_name=stack_name,
+            stage=stage,
+            mss_name_identification_for_path="portalentidades",
+            api=self.apigw_construct.rest_api,
+            api_gateway_resource=self.apigw_construct.api_gateway_resource,
+            extra_params={
+                "cdn/user_spredsheets": self.s3_construct.cloudfront_distribution_users_spreadsheet
             }
         )
-        
-        GatewayResponse(
-            self,
-            "AuthorizerDenyResponse",
-            rest_api=self.rest_api,
-            type=ResponseType.ACCESS_DENIED,
-            response_headers={
-                "Access-Control-Allow-Origin": "'*'",
-                "Access-Control-Allow-Headers": "'*'",
-                "Access-Control-Allow-Methods": "'*'",
-            },
-            status_code="403"
-        )
-        
-        GatewayResponse(
-            self,
-            "AuthorizerUnauthorizedResponse",
-            rest_api=self.rest_api,
-            type=ResponseType.UNAUTHORIZED,
-            response_headers={
-                "Access-Control-Allow-Origin": "'*'",
-                "Access-Control-Allow-Headers": "'*'",
-                "Access-Control-Allow-Methods": "'*'",
-            },
-            status_code="401"
-        )
-        
-        self.dynamo_construct = DynamoConstruct(self, "PEDynamo")
-
-        self.aurora = AuroraConstruct(self, "Aurora")
-        self.s3_bucket = BucketContruct(self)
 
         ENVIRONMENT_VARIABLES = {
-            "STAGE": stage,
-            "DB_CLUSTER_ARN": self.aurora.cluster.cluster_arn,
-            "DB_SECRET_ARN":  self.aurora.secret.secret_arn,
-            "DB_NAME": self.aurora.default_database_name,
-            "REGION": self.region,
-            "S3_BUCKET_NAME": self.s3_bucket.s3_bucket_user.bucket_name,
+            "STAGE": stage.capitalize(),
+            "DB_CLUSTER_ARN": self.aurora_construct.cluster.cluster_arn,
+            "DB_SECRET_ARN":  self.aurora_construct.secret.secret_arn,
+            "DB_NAME": self.aurora_construct.default_database_name,
+            "REGION": Aws.region,
+            "S3_BUCKET_NAME": self.s3_construct.s3_bucket_users_spreadsheet.bucket_name,
             "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT"),
-            "CREATE_USER_ENDPOINT": os.environ.get("CREATE_USER_ENDPOINT"),
+            "CREATE_USER_ENDPOINT": self.apigw_construct.create_user_endpoint,
             "WARNING_TABLE_NAME": self.dynamo_construct.warning_table.table_name
         }
 
-        self.sm_construct= SmConstruct(self, environment_variables=ENVIRONMENT_VARIABLES)
+        self.sm_construct = SmConstruct(
+            self, 
+            construct_id="SecretsManager",
+            stack_name=stack_name,
+            stage=stage,
+            environment_variables=ENVIRONMENT_VARIABLES
+        )
 
-        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"]= self.sm_construct.event_secret.secret_arn
+        ENVIRONMENT_VARIABLES["EVENT_SECRET_ARN"] = self.sm_construct.event_secret.secret_arn
 
         self.lambda_construct = LambdaConstruct(
             self, 
-            api_gateway_resource=api_gateway_resource,
+            construct_id="Lambda",
+            stack_name=stack_name,
+            stage=stage,
+            api_gateway_resource=self.apigw_construct.api_gateway_resource,
             environment_variables=ENVIRONMENT_VARIABLES,
             sm_construct=self.sm_construct
         )
 
-        for fn in self.lambda_construct.functions_that_need_db_access:
-            self.aurora.cluster.grant_data_api_access(fn)
-            self.aurora.secret.grant_read(fn)
+        for fn in self.lambda_construct.functions_that_need_aurora_access:
+            self.aurora_construct.cluster.grant_data_api_access(fn)
+            self.aurora_construct.secret.grant_read(fn)
             
         for fn in self.lambda_construct.functions_that_need_s3_permissions:
-            self.s3_bucket.s3_bucket_user.grant_read_write(fn)
+            self.s3_construct.s3_bucket_users_spreadsheet.grant_read_write(fn)
             
         for fn in self.lambda_construct.functions_that_need_dynamo_permissions:
             self.dynamo_construct.warning_table.grant_read_write_data(fn)

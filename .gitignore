@@ -137,4 +137,5 @@ dmypy.json
 iac/local/docker/dynamodb/shared-local-instance.db
 
 #MACOS shit
-*.DS_Store
+.DS_Store
+**/.DS_Store

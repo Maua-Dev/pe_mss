@@ -1,80 +1,104 @@
-import os
+from typing import Optional
+
 from aws_cdk import (
     aws_lambda as lambda_,
-    NestedStack, Duration,
+    Duration,
     aws_apigateway as apigw,
     Stack,
     aws_iam as iam
 )
 from constructs import Construct
-from aws_cdk.aws_apigateway import Resource, LambdaIntegration
+from aws_cdk.aws_apigateway import Resource, LambdaIntegration, TokenAuthorizer
+
+
+def _module_to_pascal(module_name: str) -> str:
+    return "".join(part.capitalize() for part in module_name.split("_"))
 
 
 class LambdaConstruct(Construct):
-   
+    functions_that_need_dynamo_permissions: list
+    functions_that_need_s3_permissions: list
+    functions_that_need_aurora_access: list
+    stage: str
+    stack_name: str
+
     def create_lambda_api_gateway_integration(
-        self, 
-        module_name: str, 
-        method: str, 
-        mss_student_api_resource: Resource,
-        environment_variables: dict = {"STAGE": "TEST"}, 
-        authorizer = None
+            self,
+            module_name: str,
+            method: str,
+            mss_student_api_resource: Resource,
+            environment_variables: dict = {"STAGE": "TEST"},
+            authorizer: Optional[TokenAuthorizer] = None
     ):
-        
         function = lambda_.Function(
-            self, module_name.title(),
+            self,
+            id=_module_to_pascal(module_name),
+            function_name=f"{module_name}-{self.stack_name}-{self.stage}"[:63],
             code=lambda_.Code.from_asset(f"../src/modules/{module_name}"),
             handler=f"app.{module_name}_presenter.lambda_handler",
-            runtime=lambda_.Runtime.PYTHON_3_11,
+            runtime=lambda_.Runtime.PYTHON_3_13,
             layers=[self.lambda_layer],
             environment=environment_variables,
-            timeout=Duration.seconds(67)
+            timeout=Duration.seconds(15)
         )
 
         mss_student_api_resource.add_resource(
-            module_name.replace("_", "-")).add_method(
-                method,
-                integration=LambdaIntegration(function),
-                authorizer=authorizer
-            )
+            module_name.replace("_", "-")
+        ).add_method(
+            method,
+            integration=LambdaIntegration(function),
+            authorization_type=apigw.AuthorizationType.CUSTOM if authorizer else apigw.AuthorizationType.NONE,
+            authorizer=authorizer
+        )
 
         return function
 
     def __init__(
-        self, 
-        scope: Construct, 
+        self,
+        scope: Construct,
+        construct_id: str,
+        stage: str,
+        stack_name: str,
         api_gateway_resource: Resource,
         environment_variables: dict,
         sm_construct: Construct,
+        **kargs
     ) -> None:
-        
-        super().__init__(scope, "PortalEntidades_Lambdas")
-        
+        super().__init__(scope, construct_id, **kargs)
+
+        self.stage = stage.lower()
+        self.stack_name = stack_name
+
+        self.lambda_layer = lambda_.LayerVersion(
+            self,
+            id="LambdaLayer",
+            layer_version_name=f"{stack_name}-LambdaLayer-{self.stage}",
+            # WARNING: O diretório "build" deve ser o mesmo usado em adjust_layer_directory.py
+            code=lambda_.Code.from_asset("./build"),
+            compatible_runtimes=[lambda_.Runtime.PYTHON_3_13]
+        )
+
         authorizer_lambda = lambda_.Function(
-            self, "AuthorizerPEMssLambda",
+            self,
+            id="GraphAuthorizerLambda",
+            function_name=f"graph-authorizer-{self.stack_name}-{self.stage}"[:63],
             code=lambda_.Code.from_asset("../src/shared/authorizer"),
             handler="graph_authorizer.lambda_handler",
-            runtime=lambda_.Runtime.PYTHON_3_11,
+            runtime=lambda_.Runtime.PYTHON_3_13,
+            layers=[self.lambda_layer],
             environment=environment_variables,
             timeout=Duration.seconds(15)
         )
 
         token_authorizer_lambda = apigw.TokenAuthorizer(
-            self, "TokenAuthorizerPEMssApi",
+            self,
+            id="GraphAuthorizer",
+            authorizer_name=f"graph-authorizer-{self.stack_name}-{self.stage}",
             handler=authorizer_lambda,
             identity_source=apigw.IdentitySource.header("Authorization"),
-            authorizer_name="AuthorizerPEMssLambda",
             results_cache_ttl=Duration.seconds(0)
         )
 
-        self.lambda_layer = lambda_.LayerVersion(
-            self, 
-            "PortalEntidades_Layer",
-            # WARNING: O diretório "build" deve ser o mesmo usado em adjust_layer_direcory.py
-            code=lambda_.Code.from_asset("./build"),
-            compatible_runtimes=[lambda_.Runtime.PYTHON_3_11]
-        )
-        
         self.upload_users_function = self.create_lambda_api_gateway_integration(
             module_name="upload_users",
             method="POST",
@@ -82,13 +106,13 @@ class LambdaConstruct(Construct):
             environment_variables=environment_variables,
             authorizer=token_authorizer_lambda
         )
-        
+
         allowed_arns = [self.upload_users_function.function_arn]
         authorizer_lambda.add_environment(
             "ALLOWED_LAMBDA_ARNS", ",".join(allowed_arns)
         )
-        
-        self.auth_user_function= self.create_lambda_api_gateway_integration(
+
+        self.auth_user_function = self.create_lambda_api_gateway_integration(
             module_name="auth_user",
             method="POST",
             mss_student_api_resource=api_gateway_resource,
@@ -96,7 +120,7 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
-        self.get_all_users_function= self.create_lambda_api_gateway_integration(
+        self.get_all_users_function = self.create_lambda_api_gateway_integration(
             module_name="get_all_users",
             method="GET",
             mss_student_api_resource=api_gateway_resource,
@@ -112,15 +136,15 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
-        self.create_user_function= self.create_lambda_api_gateway_integration(
+        self.create_user_function = self.create_lambda_api_gateway_integration(
             module_name="create_user",
             method="POST",
             mss_student_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
             authorizer=token_authorizer_lambda
         )
-        
-        self.delete_user_function= self.create_lambda_api_gateway_integration(
+
+        self.delete_user_function = self.create_lambda_api_gateway_integration(
             module_name="delete_user",
             method="DELETE",
             mss_student_api_resource=api_gateway_resource,
@@ -128,14 +152,14 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
-        self.export_users_function= self.create_lambda_api_gateway_integration(
+        self.export_users_function = self.create_lambda_api_gateway_integration(
             module_name="export_users",
             method="GET",
             mss_student_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
             authorizer=token_authorizer_lambda
         )
-          
+
         self.update_user_function = self.create_lambda_api_gateway_integration(
             module_name="update_user",
             method="PUT",
@@ -144,15 +168,15 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
-        self.delete_warning = self.create_lambda_api_gateway_integration(
+        self.delete_warning_function = self.create_lambda_api_gateway_integration(
             module_name="delete_warning",
             method="DELETE",
             mss_student_api_resource=api_gateway_resource,
             environment_variables=environment_variables,
             authorizer=token_authorizer_lambda
         )
-        
-        self.delete_warning.add_permission(
+
+        self.delete_warning_function.add_permission(
             "AllowEventBridgeToInvoke",
             principal=iam.ServicePrincipal("events.amazonaws.com"),
             action="lambda:InvokeFunction",
@@ -160,9 +184,9 @@ class LambdaConstruct(Construct):
         )
 
         env_vars_with_arn = environment_variables.copy()
-        env_vars_with_arn["DELETE_WARNING_LAMBDA_ARN"] = self.delete_warning.function_arn
+        env_vars_with_arn["DELETE_WARNING_LAMBDA_ARN"] = self.delete_warning_function.function_arn
 
-        self.create_warning= self.create_lambda_api_gateway_integration(
+        self.create_warning_function = self.create_lambda_api_gateway_integration(
             module_name="create_warning",
             method="POST",
             mss_student_api_resource=api_gateway_resource,
@@ -170,7 +194,7 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
-        self.update_warning = self.create_lambda_api_gateway_integration(
+        self.update_warning_function = self.create_lambda_api_gateway_integration(
             module_name="update_warning",
             method="PUT",
             mss_student_api_resource=api_gateway_resource,
@@ -179,14 +203,14 @@ class LambdaConstruct(Construct):
         )
 
         # ALL LAMBDAS THAT USE EVENT BRIDGE CLIENT NEED READ ACCESS TO THE SECRET
-        
-        secret = sm_construct.event_secret
-                
-        secret.grant_read(self.create_warning)
-        secret.grant_read(self.delete_warning)
-        secret.grant_read(self.update_warning)
 
-        event_bridge_policy= iam.PolicyStatement(
+        secret = sm_construct.event_secret
+
+        secret.grant_read(self.create_warning_function)
+        secret.grant_read(self.delete_warning_function)
+        secret.grant_read(self.update_warning_function)
+
+        event_bridge_policy = iam.PolicyStatement(
             effect=iam.Effect.ALLOW,
             actions=[
                 "events:PutRule",
@@ -200,7 +224,7 @@ class LambdaConstruct(Construct):
             ]
         )
 
-        self.get_warning= self.create_lambda_api_gateway_integration(
+        self.get_warning_function = self.create_lambda_api_gateway_integration(
             module_name="get_warning",
             method="GET",
             mss_student_api_resource=api_gateway_resource,
@@ -208,7 +232,7 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
-        self.get_all_warnings= self.create_lambda_api_gateway_integration(
+        self.get_all_warnings_function = self.create_lambda_api_gateway_integration(
             module_name="get_all_warnings",
             method="GET",
             mss_student_api_resource=api_gateway_resource,
@@ -216,11 +240,11 @@ class LambdaConstruct(Construct):
             authorizer=token_authorizer_lambda
         )
 
-        self.create_warning.add_to_role_policy(event_bridge_policy)
-        self.delete_warning.add_to_role_policy(event_bridge_policy)
-        self.update_warning.add_to_role_policy(event_bridge_policy)
+        self.create_warning_function.add_to_role_policy(event_bridge_policy)
+        self.delete_warning_function.add_to_role_policy(event_bridge_policy)
+        self.update_warning_function.add_to_role_policy(event_bridge_policy)
 
-        self.functions_that_need_db_access = [
+        self.functions_that_need_aurora_access = [
             self.auth_user_function,
             self.create_user_function,
             self.delete_user_function,
@@ -229,21 +253,21 @@ class LambdaConstruct(Construct):
             self.get_user_function,
             self.export_users_function,
             self.update_user_function,
-            self.create_warning,
-            self.delete_warning,
-            self.get_warning,
-            self.get_all_warnings,
-            self.update_warning
+            self.create_warning_function,
+            self.delete_warning_function,
+            self.get_warning_function,
+            self.get_all_warnings_function,
+            self.update_warning_function
         ]
 
         self.functions_that_need_dynamo_permissions = [
-            self.create_warning,
-            self.delete_warning,
-            self.get_warning,
-            self.get_all_warnings,
-            self.update_warning
+            self.create_warning_function,
+            self.delete_warning_function,
+            self.get_warning_function,
+            self.get_all_warnings_function,
+            self.update_warning_function
         ]
-        
+
         self.functions_that_need_s3_permissions = [
             self.upload_users_function
         ]
