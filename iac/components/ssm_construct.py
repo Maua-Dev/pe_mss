@@ -11,6 +11,7 @@ class SsmConstruct(Construct):
         scope: Construct,
         construct_id: str,
         stage: str,
+        stack_name: str,
         mss_name_identification_for_path: str,
         api: RestApi,
         api_gateway_resource: Resource,
