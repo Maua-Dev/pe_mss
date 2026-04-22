@@ -76,7 +76,7 @@ class IacStack(Stack):
             "DB_CLUSTER_ARN": self.aurora_construct.cluster.cluster_arn,
             "DB_SECRET_ARN":  self.aurora_construct.secret.secret_arn,
             "DB_NAME": self.aurora_construct.default_database_name,
-            "REGION": Aws.region,
+            "REGION": Aws.REGION,
             "S3_BUCKET_NAME": self.s3_construct.s3_bucket_users_spreadsheet.bucket_name,
             "GRAPH_MICROSOFT_ENDPOINT": os.environ.get("GRAPH_MICROSOFT_ENDPOINT"),
             "CREATE_USER_ENDPOINT": self.apigw_construct.create_user_endpoint,
