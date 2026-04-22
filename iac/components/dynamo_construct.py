@@ -37,7 +37,9 @@ class DynamoConstruct(Construct):
             billing_mode=dynamodb.BillingMode.PAY_PER_REQUEST,
             removal_policy=removal_policy,
             table_name=f"{self.WARNING_TABLE_NAME}-{stage}",
-            point_in_time_recovery=stage == "prod"
+            point_in_time_recovery_specification=dynamodb.PointInTimeRecoverySpecification(
+                point_in_time_recovery_enabled=(stage == "prod")
+            ),
         )
 
         self.warning_table.add_global_secondary_index(

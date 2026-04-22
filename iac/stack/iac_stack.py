@@ -69,9 +69,6 @@ class IacStack(Stack):
             mss_name_identification_for_path="portalentidades",
             api=self.apigw_construct.rest_api,
             api_gateway_resource=self.apigw_construct.api_gateway_resource,
-            extra_params={
-                "cdn/user_spredsheets": self.s3_construct.cloudfront_distribution_users_spreadsheet
-            }
         )
 
         ENVIRONMENT_VARIABLES = {
