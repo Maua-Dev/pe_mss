@@ -107,13 +107,9 @@ class S3Construct(Construct):
             RemovalPolicy.RETAIN if self.stage in RETAINED_STAGES else RemovalPolicy.DESTROY
         )
 
-        identifier = f"{Aws.ACCOUNT_ID}-{Aws.REGION}"
+        prefix = f"{stack_name}-users-spreadsheet-{self.stage}".lower().replace("_", "-")
 
-        bucket_name = (
-            f"{stack_name}-users-spreadsheet-{self.stage}-{identifier}"
-            .lower()
-            .replace("_", "-")
-        )
+        bucket_name = f"{prefix}-{Aws.ACCOUNT_ID}-{Aws.REGION}"
 
         self.s3_bucket_users_spreadsheet, self.cloudfront_distribution_users_spreadsheet = (
             self.create_bucket_with_distribution(
