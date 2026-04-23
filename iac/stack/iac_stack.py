@@ -72,7 +72,8 @@ class IacStack(Stack):
         )
 
         ENVIRONMENT_VARIABLES = {
-            "STAGE": stage.capitalize(),
+            # enum em environments pega isso apenas se for upper
+            "STAGE": stage.upper(),
             "DB_CLUSTER_ARN": self.aurora_construct.cluster.cluster_arn,
             "DB_SECRET_ARN":  self.aurora_construct.secret.secret_arn,
             "DB_NAME": self.aurora_construct.default_database_name,
