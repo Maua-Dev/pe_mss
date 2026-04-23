@@ -106,8 +106,10 @@ class S3Construct(Construct):
         self.removal_policy = (
             RemovalPolicy.RETAIN if self.stage in RETAINED_STAGES else RemovalPolicy.DESTROY
         )
+        
+        # abreviei o prefixo pq ta maior que 63 caracteres no cdk (se colocar o stack_name junto)
 
-        prefix = f"{stack_name}-users-spreadsheet-{self.stage}".lower().replace("_", "-")
+        prefix = f"pe-users-spreadsheet-{self.stage}".lower().replace("_", "-")
 
         bucket_name = f"{prefix}-{Aws.ACCOUNT_ID}-{Aws.REGION}"
 
