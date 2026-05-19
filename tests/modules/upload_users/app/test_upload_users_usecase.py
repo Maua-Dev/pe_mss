@@ -15,8 +15,7 @@ class Test_UploadUsersUsecase:
         usecase = UploadUsersUsecase(repo=repo)
         created_users, duplicated_users = usecase(
             file_base64=self.test_base64_xlsx, 
-            requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069',
-            auth_token="dummy token for testing"
+            requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069'
         )
         
         # THIS WILL RETURN 0 AS THE CREATED AND DUPLICATED ARE ONLY RETURNED VIA API ROUTE
@@ -31,8 +30,7 @@ class Test_UploadUsersUsecase:
         try:
             usecase(
                 file_base64=self.test_base64_xlsx, 
-                requester_user_id='b2b6f8d4-6f3e-4e8c-9a4f-5f1e5c8e7d9a',
-                auth_token="dummy token for testing"
+                requester_user_id='b2b6f8d4-6f3e-4e8c-9a4f-5f1e5c8e7d9a'
             )
         except Exception as e:
             assert str(e) == 'No items found for b2b6f8d4-6f3e-4e8c-9a4f-5f1e5c8e7d9a'
@@ -45,8 +43,7 @@ class Test_UploadUsersUsecase:
         try:
             usecase(
                 file_base64="invalid_base64_string", 
-                requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069',
-                auth_token="dummy token for testing"
+                requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f069'
             )
         except Exception as e:
             assert str(e) == 'Incorrect padding'
@@ -59,8 +56,7 @@ class Test_UploadUsersUsecase:
         try:
             usecase(
                 file_base64=self.test_base64_xlsx, 
-                requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f070',  # User ID that does not exist in mock repo
-                auth_token="dummy token for testing"
+                requester_user_id='e6bed58f-424a-4b62-b408-18e0a8d1f070'  # User ID that does not exist in mock repo
             )
         except Exception as e:
             assert str(e) == 'No items found for e6bed58f-424a-4b62-b408-18e0a8d1f070'

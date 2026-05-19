@@ -5,57 +5,55 @@ from aws_cdk import (
     aws_rds as rds,
 )
 from constructs import Construct
-import os
+
+
+RETAINED_STAGES = {"prod", "homolog"}
+
 
 class AuroraConstruct(Construct):
-    def __init__(self, scope: Construct, id_: str) -> None:
-        super().__init__(scope, id_)
 
-        github_ref_name = (os.environ.get("GITHUB_REF_NAME") or "").lower()
-        if "prod" in github_ref_name:
-            stage, removal = "PROD", RemovalPolicy.RETAIN
-        elif "homolog" in github_ref_name:
-            stage, removal = "HOMOLOG", RemovalPolicy.RETAIN
-        else:
-            stage, removal = "DEV", RemovalPolicy.DESTROY
+    def __init__(
+        self,
+        scope: Construct,
+        construct_id: str,
+        stack_name: str,
+        stage: str,
+        **kargs
+    ) -> None:
+
+        super().__init__(scope, construct_id, **kargs)
+
+        stage = stage.lower()
+
+        removal = RemovalPolicy.RETAIN if stage in RETAINED_STAGES else RemovalPolicy.DESTROY
 
         vpc = ec2.Vpc(
-            self, f"PortalEntidadesVpc-{stage}",
+            self,
+            id="Vpc",
+            vpc_name=f"{stack_name}-Vpc-{stage}",
             max_azs=2,
-            cidr="10.0.0.0/16",
+            ip_addresses=ec2.IpAddresses.cidr("10.0.0.0/16"),
             subnet_configuration=[
                 ec2.SubnetConfiguration(
-                    name=f"PrivateSubnet-{stage}",
+                    name="PrivateSubnet",
                     subnet_type=ec2.SubnetType.PRIVATE_ISOLATED,
                     cidr_mask=24
                 )
             ],
             nat_gateways=0
         )
-        
-        single_az_selection = ec2.SubnetSelection(
-            subnet_type=ec2.SubnetType.PRIVATE_ISOLATED,
-            availability_zones=[vpc.availability_zones[0]] 
+
+        creds = rds.Credentials.from_generated_secret(
+            "app_user",
+            secret_name=f"/pe_mss/aurora/{stage}/credentials"
         )
-        
-        vpc.add_interface_endpoint(
-            f"SecretsManagerEndpoint-{stage}",
-            service=ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
-            subnets=single_az_selection
-        )
-        
-        vpc.add_interface_endpoint(
-            f"RdsDataEndpoint-{stage}",
-            service=ec2.InterfaceVpcEndpointAwsService.RDS_DATA,
-            subnets=single_az_selection
-        )
-        
-        creds = rds.Credentials.from_generated_secret("app_user", secret_name=f"/pe_mss/aurora/{stage}/credentials")
-        
-        db_name = "PortalEntidades_UserTable"
+
+        db_name = "portal_entidades"
 
         self.cluster = rds.DatabaseCluster(
-            self, f"AuroraSrvls-{stage}",
+            self,
+            id="AuroraCluster",
+            cluster_identifier=f"{stack_name}-AuroraCluster-{stage}".lower(),
             engine=rds.DatabaseClusterEngine.aurora_postgres(
                 version=rds.AuroraPostgresEngineVersion.VER_16_8
             ),
@@ -78,6 +76,6 @@ class AuroraConstruct(Construct):
             ),
         )
 
-        self.secret = self.cluster.secret 
+        self.secret = self.cluster.secret
         self.default_database_name = db_name
         self.vpc = vpc
